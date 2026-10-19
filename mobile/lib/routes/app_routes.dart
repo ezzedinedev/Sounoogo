@@ -17,6 +17,8 @@ abstract final class AppRoutes {
   static const safetyPlanEdit = '/safety-plan/edit';
   static const mood = '/mood';
   static const breathing = '/exercises/breathing';
+  static const settings = '/settings';
+  static const settingsPin = '/settings/pin';
 
   static String professional(int id) => '/professionals/$id';
   static String course(String slug) => '/courses/$slug';

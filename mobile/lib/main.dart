@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'app/core/theme/app_theme.dart';
 import 'app/di/app_binding.dart';
+import 'app/modules/settings/presentation/widgets/app_frame.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 
@@ -30,6 +31,7 @@ class SunoogoApp extends StatelessWidget {
       supportedLocales: const [Locale('fr', 'FR')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       initialBinding: AppBinding(),
+      builder: (context, child) => AppFrame(child: child ?? const SizedBox.shrink()),
       initialRoute: AppRoutes.splash,
       getPages: AppPages.pages,
       defaultTransition: Transition.cupertino,

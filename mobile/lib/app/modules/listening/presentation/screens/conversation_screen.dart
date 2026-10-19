@@ -165,7 +165,7 @@ class _Bubble extends StatelessWidget {
                 Formatters.time(message.createdAt),
                 style: AppTextStyles.caption.copyWith(
                   fontSize: 11,
-                  color: mine ? AppColors.white.withValues(alpha: 0.7) : AppColors.textMuted,
+                  color: mine ? AppColors.white.withValues(alpha: 0.8) : AppColors.textSecondary,
                 ),
               ),
             ],

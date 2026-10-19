@@ -7,7 +7,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Sunoogo</string>
+	<string>SUNOOGO</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Face ID permet de déverrouiller SUNOOGO sans saisir ton code.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

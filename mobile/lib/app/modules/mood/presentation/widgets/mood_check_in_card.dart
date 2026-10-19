@@ -67,6 +67,7 @@ class MoodCheckInCard extends GetView<MoodController> {
                     children: [
                       for (final level in MoodLevel.values)
                         Pressable(
+                          semanticLabel: 'Je me sens : ${level.label}',
                           onTap: () => MoodCheckInSheet.show(level),
                           child: MoodFace(level: level, selected: today?.level == level),
                         ),

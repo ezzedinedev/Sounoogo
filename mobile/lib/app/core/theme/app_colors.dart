@@ -33,5 +33,11 @@ abstract final class AppColors {
   static const sos = Color(0xFFC81E1E);
   static const sosSoft = Color(0xFFFDEDED);
 
+  /// Calculatrice de la sortie rapide : volontairement hors charte, pour ne rien laisser deviner.
+  static const decoyBackground = Color(0xFF1C1C1E);
+  static const decoyDigit = Color(0xFF333336);
+  static const decoyFunction = Color(0xFFA5A5A5);
+  static const decoyOperator = Color(0xFFFF9F0A);
+
   static const brandGradient = LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [violet500, violet800]);
 }

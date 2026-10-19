@@ -47,3 +47,8 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // Thème AppCompat de l'activité (invite biométrique).
+    implementation("androidx.appcompat:appcompat:1.7.1")
+}

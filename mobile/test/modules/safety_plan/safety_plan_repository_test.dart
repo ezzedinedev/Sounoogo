@@ -16,7 +16,10 @@ class _MockLocal extends Mock implements SafetyPlanLocalDataSource {}
 class _MockRepository extends Mock implements SafetyPlanRepository {}
 
 void main() {
-  const plan = SafetyPlan(reasonsToLive: ['Mon petit frère'], supportContacts: [SafetyContact(name: 'Awa', phone: '70123456')]);
+  const plan = SafetyPlan(
+    reasonsToLive: ['Mon petit frère'],
+    supportContacts: [SafetyContact(name: 'Awa', phone: '70123456')],
+  );
 
   setUpAll(() => registerFallbackValue(const SafetyPlan()));
 
@@ -69,7 +72,10 @@ void main() {
     final saved = await SaveSafetyPlan(repository)(
       const SafetyPlan(
         warningSigns: ['  Je ne dors plus ', '', '   '],
-        supportContacts: [SafetyContact(name: 'Awa', phone: '70 12 34 56'), SafetyContact(name: '', phone: '')],
+        supportContacts: [
+          SafetyContact(name: 'Awa', phone: '70 12 34 56'),
+          SafetyContact(name: '', phone: ''),
+        ],
       ),
     );
 

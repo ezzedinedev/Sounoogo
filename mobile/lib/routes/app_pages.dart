@@ -26,6 +26,9 @@ import '../app/modules/mood/presentation/screens/mood_screen.dart';
 import '../app/modules/safety_plan/presentation/bindings/safety_plan_binding.dart';
 import '../app/modules/safety_plan/presentation/screens/safety_plan_edit_screen.dart';
 import '../app/modules/safety_plan/presentation/screens/safety_plan_screen.dart';
+import '../app/modules/settings/presentation/bindings/settings_binding.dart';
+import '../app/modules/settings/presentation/screens/pin_setup_screen.dart';
+import '../app/modules/settings/presentation/screens/settings_screen.dart';
 import 'app_routes.dart';
 
 abstract final class AppPages {
@@ -48,5 +51,7 @@ abstract final class AppPages {
     GetPage(name: AppRoutes.safetyPlanEdit, page: SafetyPlanEditScreen.new, binding: SafetyPlanBinding()),
     GetPage(name: AppRoutes.mood, page: MoodScreen.new, binding: MoodBinding()),
     GetPage(name: AppRoutes.breathing, page: BreathingScreen.new),
+    GetPage(name: AppRoutes.settings, page: SettingsScreen.new, binding: SettingsScreenBinding()),
+    GetPage(name: AppRoutes.settingsPin, page: PinSetupScreen.new, binding: SettingsScreenBinding()),
   ];
 }

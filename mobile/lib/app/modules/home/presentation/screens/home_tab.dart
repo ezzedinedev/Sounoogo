@@ -9,6 +9,7 @@ import '../../../emergency/presentation/widgets/emergency_sheet.dart';
 import '../../../../../routes/app_routes.dart';
 import '../../../listening/presentation/controllers/listening_controller.dart';
 import '../../../mood/presentation/widgets/mood_check_in_card.dart';
+import '../../../settings/presentation/widgets/quick_exit_button.dart';
 import '../controllers/home_controller.dart';
 
 class HomeTab extends GetView<HomeController> {
@@ -24,7 +25,15 @@ class HomeTab extends GetView<HomeController> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.md, AppSpacing.page, 120),
           children: [
-            Row(children: [const BrandMark(size: 36), const Spacer(), const SosButton()]),
+            const Row(
+              children: [
+                BrandMark(size: 36),
+                Spacer(),
+                QuickExitButton(),
+                SizedBox(width: AppSpacing.xs),
+                SosButton(),
+              ],
+            ),
             const SizedBox(height: AppSpacing.xl),
             Text.rich(
               TextSpan(

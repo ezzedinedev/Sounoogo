@@ -33,7 +33,11 @@ void main() {
   test('la couche données ne dépend pas de la présentation', () {
     expectNoImport(
       layer('data'),
-      (i) => i.contains('/presentation/') || i.startsWith('package:get/') || i.startsWith('package:flutter/'),
+      // Canaux natifs (services) et calcul en tâche de fond (foundation) sont permis : rien d'UI.
+      (i) =>
+          i.contains('/presentation/') ||
+          i.startsWith('package:get/') ||
+          (i.startsWith('package:flutter/') && !{'package:flutter/services.dart', 'package:flutter/foundation.dart'}.contains(i)),
       'Les data sources et repositories ignorent les écrans et GetX.',
     );
   });

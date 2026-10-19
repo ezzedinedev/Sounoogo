@@ -24,6 +24,12 @@ class PremiumNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Barre de hauteur fixe : on limite l'agrandissement du texte, les libellés restent lus en entier
+    // par les lecteurs d'écran grâce à la sémantique de chaque onglet.
+    return MediaQuery.withClampedTextScaling(maxScaleFactor: 1.1, child: _bar(context));
+  }
+
+  Widget _bar(BuildContext context) {
     return SafeArea(
       minimum: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.md),
       child: Container(
@@ -42,7 +48,8 @@ class PremiumNavBar extends StatelessWidget {
           children: [
             for (final (index, item) in items.indexed)
               Expanded(
-                flex: index == currentIndex ? 2 : 1,
+                // L'onglet actif prend la place de son libellé ; les autres gardent une cible de 48 px.
+                flex: index == currentIndex ? 3 : 1,
                 child: _NavButton(
                   item: item,
                   selected: index == currentIndex,
@@ -82,7 +89,7 @@ class _NavButton extends StatelessWidget {
             duration: const Duration(milliseconds: 320),
             curve: Curves.easeOutCubic,
             height: 48,
-            padding: EdgeInsets.symmetric(horizontal: selected ? AppSpacing.lg : 0),
+            padding: EdgeInsets.symmetric(horizontal: selected ? AppSpacing.md + 2 : 0),
             decoration: BoxDecoration(
               color: selected ? AppColors.white : Colors.transparent,
               borderRadius: BorderRadius.circular(AppSpacing.radiusPill),

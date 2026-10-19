@@ -50,5 +50,10 @@ abstract final class AppTextStyles {
   static const label = TextStyle(fontFamily: _sans, fontSize: 14, height: 1.3, fontWeight: FontWeight.w600, color: AppColors.textPrimary);
   static const caption = TextStyle(fontFamily: _sans, fontSize: 12.5, height: 1.4, color: AppColors.textSecondary);
   static const button = TextStyle(fontFamily: _sans, fontSize: 15.5, fontWeight: FontWeight.w600, letterSpacing: 0.1);
+
+  /// Calculatrice de la sortie rapide : police système, sans rappel de la marque.
+  static const decoyDisplay = TextStyle(fontSize: 76, color: AppColors.white, fontWeight: FontWeight.w300);
+  static const decoyKey = TextStyle(fontSize: 30, color: AppColors.white);
+
   static const figure = TextStyle(fontFamily: _serif, fontSize: 40, height: 1, fontStyle: FontStyle.italic, color: AppColors.textPrimary);
 }

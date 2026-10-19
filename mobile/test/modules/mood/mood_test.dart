@@ -15,7 +15,13 @@ void main() {
   test('le journal de l\'API devient des entités typées', () {
     final journal = MoodJournalModel.fromJson({
       'data': [
-        {'date': '2026-10-19', 'mood': 2, 'mood_label': 'Difficile', 'feelings': ['tired'], 'note': null},
+        {
+          'date': '2026-10-19',
+          'mood': 2,
+          'mood_label': 'Difficile',
+          'feelings': ['tired'],
+          'note': null,
+        },
       ],
       'summary': {'average': 2.0, 'streak': 1, 'low_streak': 1, 'checked_in_today': false, 'suggestion': 'exercise'},
     });
@@ -32,7 +38,13 @@ void main() {
   test('RecordMood dédoublonne les émotions, en garde 5 au plus et ignore une note vide', () async {
     final repository = _MockMoodRepository();
     const empty = MoodJournal(entries: [], summary: MoodSummary.empty);
-    when(() => repository.record(any(), feelings: any(named: 'feelings'), note: any(named: 'note'))).thenAnswer((_) async => empty);
+    when(
+      () => repository.record(
+        any(),
+        feelings: any(named: 'feelings'),
+        note: any(named: 'note'),
+      ),
+    ).thenAnswer((_) async => empty);
 
     await RecordMood(repository)(MoodLevel.low, feelings: ['sad', 'sad', 'tired', 'lonely', 'anxious', 'stressed', 'angry'], note: '  ');
 

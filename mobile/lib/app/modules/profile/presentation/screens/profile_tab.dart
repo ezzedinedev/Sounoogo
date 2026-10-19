@@ -80,6 +80,11 @@ class ProfileTab extends GetView<ProfileController> {
                 _Tile(icon: Icons.insights_outlined, label: 'Mon journal d\'humeur', onTap: () => Get.toNamed(AppRoutes.mood)),
                 _Tile(icon: Icons.shield_moon_outlined, label: 'Mon plan de sécurité', onTap: () => Get.toNamed(AppRoutes.safetyPlan)),
                 _Tile(
+                  icon: Icons.lock_outline_rounded,
+                  label: 'Confidentialité et affichage',
+                  onTap: () => Get.toNamed(AppRoutes.settings),
+                ),
+                _Tile(
                   icon: Icons.workspace_premium_outlined,
                   label: 'Abonnement',
                   trailing: user.subscription?.isActive ?? false ? user.subscription!.plan?.name : 'Gratuit',
