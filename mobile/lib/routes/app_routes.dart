@@ -17,6 +17,11 @@ abstract final class AppRoutes {
   static const safetyPlanEdit = '/safety-plan/edit';
   static const mood = '/mood';
   static const breathing = '/exercises/breathing';
+  static const exercises = '/exercises';
+  static const exercisePlayer = '/exercises/play/:slug';
+  static const guides = '/guides';
+  static const guideDetail = '/guides/:slug';
+  static const directory = '/directory';
   static const settings = '/settings';
   static const settingsPin = '/settings/pin';
 
@@ -24,4 +29,6 @@ abstract final class AppRoutes {
   static String course(String slug) => '/courses/$slug';
   static String lessonOf(String slug, int id) => '/courses/$slug/lessons/$id';
   static String payment(String reference) => '/payments/$reference';
+  static String exercise(String slug) => '/exercises/play/$slug';
+  static String guide(String slug) => '/guides/$slug';
 }

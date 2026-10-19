@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../core/network/api_provider.dart';
 import '../core/realtime/realtime_service.dart';
+import '../core/storage/json_cache.dart';
 import '../core/storage/secure_cache.dart';
 import '../core/storage/token_storage.dart';
 import '../modules/emergency/presentation/bindings/emergency_binding.dart';
@@ -31,6 +32,7 @@ class AppBinding extends Bindings {
     Get
       ..put(tokens, permanent: true)
       ..put(cache, permanent: true)
+      ..put(JsonCache(), permanent: true)
       ..put(api, permanent: true)
       ..put(RealtimeService(tokens), permanent: true)
       ..put(

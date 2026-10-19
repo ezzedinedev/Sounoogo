@@ -23,6 +23,9 @@
         ],
         'Contenus' => [
             ['backoffice.courses.index', 'Formations', 'school', 'courses.manage', 'backoffice.courses.*'],
+            ['backoffice.exercises.index', 'Exercices', 'sparkles', 'content.manage', 'backoffice.exercises.*'],
+            ['backoffice.guides.index', 'Guides', 'book', 'content.manage', 'backoffice.guides.*'],
+            ['backoffice.resources.index', 'Ressources', 'map-pin', 'content.manage', 'backoffice.resources.*'],
             ['backoffice.plans.index', 'Offres', 'tag', 'plans.manage', 'backoffice.plans.*'],
             ['backoffice.emergency-contacts.index', 'Numéros d\'urgence', 'phone-call', 'emergency-contacts.manage', 'backoffice.emergency-contacts.*'],
             ['backoffice.activity.index', 'Journal', 'history', 'activity.view', 'backoffice.activity.*'],

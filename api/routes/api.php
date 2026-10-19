@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BookingController;
+use App\Http\Controllers\Api\V1\ContentController;
 use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\CourseController;
 use App\Http\Controllers\Api\V1\EmergencyController;
@@ -32,6 +33,14 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::get('professionals/{professional}', [ProfessionalController::class, 'show'])->name('professionals.show');
     Route::get('courses', [CourseController::class, 'index'])->name('courses.index');
     Route::get('courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+
+    // Contenus en libre accès
+    Route::controller(ContentController::class)->group(function () {
+        Route::get('exercises', 'exercises')->name('exercises.index');
+        Route::get('guides', 'guides')->name('guides.index');
+        Route::get('guides/{slug}', 'guide')->name('guides.show');
+        Route::get('resources', 'resources')->name('resources.index');
+    });
 
     Route::post('payments/webhooks/{provider}', [PaymentController::class, 'webhook'])->name('payments.webhook');
     Route::get('payments/mock/{reference}', [PaymentController::class, 'mock'])->name('payments.mock');

@@ -26,6 +26,7 @@ class RolesAndPermissionsSeeder extends Seeder
         'plans.manage' => [],
         'emergency-contacts.manage' => [],
         'activity.view' => [],
+        'content.manage' => [RoleName::Supervisor],
     ];
 
     public function run(): void

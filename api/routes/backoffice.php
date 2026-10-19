@@ -77,6 +77,12 @@ Route::prefix('admin')->name('backoffice.')->group(function () {
             Route::delete('formations/{course}/lecons/{lesson}', [Backoffice\LessonController::class, 'destroy'])->scopeBindings()->name('courses.lessons.destroy');
         });
 
+        Route::middleware('permission:content.manage')->group(function () {
+            Route::resource('exercices', Backoffice\ExerciseController::class)->except(['show'])->parameters(['exercices' => 'exercise'])->names('exercises');
+            Route::resource('guides', Backoffice\GuideController::class)->except(['show'])->names('guides');
+            Route::resource('ressources', Backoffice\SupportResourceController::class)->except(['show'])->parameters(['ressources' => 'resource'])->names('resources');
+        });
+
         Route::middleware('permission:plans.manage')->group(function () {
             Route::get('offres', [Backoffice\PlanController::class, 'index'])->name('plans.index');
             Route::put('offres/{plan}', [Backoffice\PlanController::class, 'update'])->name('plans.update');

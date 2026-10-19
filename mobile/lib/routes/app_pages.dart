@@ -29,6 +29,14 @@ import '../app/modules/safety_plan/presentation/screens/safety_plan_screen.dart'
 import '../app/modules/settings/presentation/bindings/settings_binding.dart';
 import '../app/modules/settings/presentation/screens/pin_setup_screen.dart';
 import '../app/modules/settings/presentation/screens/settings_screen.dart';
+import '../app/modules/directory/presentation/bindings/directory_binding.dart';
+import '../app/modules/directory/presentation/screens/directory_screen.dart';
+import '../app/modules/exercises/presentation/bindings/exercises_binding.dart';
+import '../app/modules/exercises/presentation/screens/exercise_player_screen.dart';
+import '../app/modules/exercises/presentation/screens/exercises_screen.dart';
+import '../app/modules/guides/presentation/bindings/guides_binding.dart';
+import '../app/modules/guides/presentation/screens/guide_screen.dart';
+import '../app/modules/guides/presentation/screens/guides_screen.dart';
 import 'app_routes.dart';
 
 abstract final class AppPages {
@@ -51,6 +59,11 @@ abstract final class AppPages {
     GetPage(name: AppRoutes.safetyPlanEdit, page: SafetyPlanEditScreen.new, binding: SafetyPlanBinding()),
     GetPage(name: AppRoutes.mood, page: MoodScreen.new, binding: MoodBinding()),
     GetPage(name: AppRoutes.breathing, page: BreathingScreen.new),
+    GetPage(name: AppRoutes.exercises, page: ExercisesScreen.new, binding: ExercisesBinding()),
+    GetPage(name: AppRoutes.exercisePlayer, page: ExercisePlayerScreen.new, binding: ExercisesBinding()),
+    GetPage(name: AppRoutes.guides, page: GuidesScreen.new, binding: GuidesBinding()),
+    GetPage(name: AppRoutes.guideDetail, page: GuideScreen.new, binding: GuidesBinding()),
+    GetPage(name: AppRoutes.directory, page: DirectoryScreen.new, binding: DirectoryBinding()),
     GetPage(name: AppRoutes.settings, page: SettingsScreen.new, binding: SettingsScreenBinding()),
     GetPage(name: AppRoutes.settingsPin, page: PinSetupScreen.new, binding: SettingsScreenBinding()),
   ];

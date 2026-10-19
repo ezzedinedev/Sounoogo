@@ -82,6 +82,10 @@ class HomeTab extends GetView<HomeController> {
               ],
             ),
             const SizedBox(height: AppSpacing.xl),
+            const Text('Boîte à outils', style: AppTextStyles.subtitle),
+            const SizedBox(height: AppSpacing.md),
+            const _Toolbox(),
+            const SizedBox(height: AppSpacing.xl),
             const _Commitments(),
             const SizedBox(height: AppSpacing.lg),
             Card(
@@ -242,6 +246,54 @@ class _Commitments extends StatelessWidget {
                 ],
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Ressources utilisables sans attendre personne : exercices, structures proches, guides pour l'entourage.
+class _Toolbox extends StatelessWidget {
+  const _Toolbox();
+
+  @override
+  Widget build(BuildContext context) {
+    const tools = [
+      (Icons.spa_outlined, 'Exercices', 'Respirer, s\'apaiser', AppRoutes.exercises),
+      (Icons.place_outlined, 'Près de toi', 'Centres et associations', AppRoutes.directory),
+      (Icons.volunteer_activism_outlined, 'Aider un proche', 'Repères pour l\'entourage', AppRoutes.guides),
+    ];
+    // Hauteur commune : la carte la plus haute donne la mesure aux autres.
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final (index, (icon, title, subtitle, route)) in tools.indexed) ...[
+            if (index > 0) const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: ScaleOnPress(
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => Get.toNamed(route),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(icon, color: AppColors.violet700),
+                          const SizedBox(height: AppSpacing.md),
+                          Text(title, style: AppTextStyles.label),
+                          const SizedBox(height: 2),
+                          Text(subtitle, style: AppTextStyles.caption.copyWith(fontSize: 11.5), maxLines: 2),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

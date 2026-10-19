@@ -7,6 +7,9 @@ use App\Domain\Billing\Models\Plan;
 use App\Domain\Billing\Models\Subscription;
 use App\Domain\Consultation\Models\Booking;
 use App\Domain\Consultation\Models\ProfessionalProfile;
+use App\Domain\Content\Models\Exercise;
+use App\Domain\Content\Models\Guide;
+use App\Domain\Content\Models\SupportResource;
 use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Models\Course;
@@ -17,6 +20,8 @@ use App\Domain\Listening\Models\Conversation;
 use App\Domain\Listening\Models\EmergencyAlert;
 use App\Domain\Listening\Models\EmergencyContact;
 use App\Domain\Listening\Models\Report;
+use App\Domain\Wellbeing\Models\MoodEntry;
+use App\Domain\Wellbeing\Models\SafetyPlan;
 use App\Http\View\EmergencyContactsComposer;
 use App\Infrastructure\AI\ClaudeListenerCopilot;
 use App\Infrastructure\AI\ClaudeRiskClassifier;
@@ -67,6 +72,11 @@ class AppServiceProvider extends ServiceProvider
             'subscription' => Subscription::class,
             'course' => Course::class,
             'lesson' => Lesson::class,
+            'exercise' => Exercise::class,
+            'guide' => Guide::class,
+            'support_resource' => SupportResource::class,
+            'safety_plan' => SafetyPlan::class,
+            'mood_entry' => MoodEntry::class,
         ]);
 
         Gate::policy(Conversation::class, ConversationPolicy::class);
