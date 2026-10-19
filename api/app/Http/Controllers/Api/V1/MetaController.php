@@ -28,7 +28,7 @@ class MetaController extends Controller
         return response()->json([
             'emergency_contacts' => EmergencyContactResource::collection($emergency->contactsFor($country)),
             'payment_providers' => collect($gateways->available())
-                ->map(fn ($provider) => ['value' => $provider->value, 'label' => $provider->label()]),
+                ->map(fn ($provider) => ['value' => $provider->value, 'label' => $provider->label(), 'requires_phone' => $provider->requiresPhone()]),
             'plans' => PlanResource::collection(Plan::where('is_active', true)->orderBy('price')->get()),
         ]);
     }

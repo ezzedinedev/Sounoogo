@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../../routes/app_routes.dart';
 import '../../../../core/error/failure.dart';
 import '../../domain/entities/payment.dart';
+import '../../domain/entities/payment_method.dart';
 import '../../domain/entities/payment_target.dart';
 import '../../domain/usecases/get_payment.dart';
 import '../../domain/usecases/start_payment.dart';
@@ -30,19 +31,19 @@ class PaymentController extends GetxController {
   /// Demande le moyen de paiement puis lance le paiement.
   /// Renvoie `false` si le membre a fermé le choix sans payer.
   Future<bool> checkout(PaymentTarget target, {required String label, required int amount}) async {
-    final provider = await PaymentProviderSheet.show(label: label, amount: amount);
-    if (provider == null) {
+    final method = await PaymentProviderSheet.show(label: label, amount: amount);
+    if (method == null) {
       return false;
     }
-    await pay(target, provider);
+    await pay(target, method);
     return true;
   }
 
-  Future<void> pay(PaymentTarget target, String provider) async {
+  Future<void> pay(PaymentTarget target, PaymentMethod method) async {
     isLoading.value = true;
     errorMessage.value = null;
     try {
-      final started = await _startPayment(target, provider);
+      final started = await _startPayment(target, method);
       payment.value = started;
       await _openCheckout(started);
       Get.toNamed(AppRoutes.payment(started.reference));

@@ -53,7 +53,5 @@ void main() {
   });
 }
 
-List<String> _imports(File file) => RegExp(r"^import '([^']+)';", multiLine: true)
-    .allMatches(file.readAsStringSync())
-    .map((m) => m.group(1)!)
-    .toList();
+List<String> _imports(File file) =>
+    RegExp(r"^import '([^']+)';", multiLine: true).allMatches(file.readAsStringSync()).map((m) => m.group(1)!).toList();

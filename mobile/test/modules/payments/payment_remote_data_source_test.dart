@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sunoogo/app/core/network/api_provider.dart';
 import 'package:sunoogo/app/modules/payments/data/datasources/payment_remote_data_source.dart';
+import 'package:sunoogo/app/modules/payments/domain/entities/payment_method.dart';
 import 'package:sunoogo/app/modules/payments/domain/entities/payment_target.dart';
 
 class _MockApiProvider extends Mock implements ApiProvider {}
@@ -21,17 +22,18 @@ void main() {
   });
 
   test('chaque cible de paiement appelle sa route', () async {
-    await source.start(const BookingPayment(3), 'wave');
-    await source.start(const CoursePurchase('estime-de-soi'), 'wave');
-    await source.start(const SubscriptionPayment('monthly'), 'orange_money');
+    const mobileMoney = PaymentMethod('moneyfusion', phone: '70123456');
+    await source.start(const BookingPayment(3), mobileMoney);
+    await source.start(const CoursePurchase('estime-de-soi'), const PaymentMethod('mock'));
+    await source.start(const SubscriptionPayment('essentiel'), mobileMoney);
 
-    verify(() => api.post('/bookings/3/pay', data: {'provider': 'wave'})).called(1);
-    verify(() => api.post('/courses/estime-de-soi/purchase', data: {'provider': 'wave'})).called(1);
-    verify(() => api.post('/subscription', data: {'provider': 'orange_money', 'plan': 'monthly'})).called(1);
+    verify(() => api.post('/bookings/3/pay', data: {'provider': 'moneyfusion', 'phone': '70123456'})).called(1);
+    verify(() => api.post('/courses/estime-de-soi/purchase', data: {'provider': 'mock'})).called(1);
+    verify(() => api.post('/subscription', data: {'provider': 'moneyfusion', 'phone': '70123456', 'plan': 'essentiel'})).called(1);
   });
 
   test('la réponse devient une entité Payment', () async {
-    final payment = await source.start(const BookingPayment(3), 'wave');
+    final payment = await source.start(const BookingPayment(3), const PaymentMethod('mock'));
 
     expect(payment.reference, 'PAY-1');
     expect(payment.isPending, isTrue);

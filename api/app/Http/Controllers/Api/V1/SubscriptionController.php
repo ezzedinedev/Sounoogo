@@ -32,6 +32,6 @@ class SubscriptionController extends Controller
         $plan = Plan::where('code', $request->validated('plan'))->firstOrFail();
         $subscription = $start($request->user(), $plan);
 
-        return new PaymentResource($initiate($request->user(), $subscription, $plan->price, $request->provider()));
+        return new PaymentResource($initiate($request->user(), $subscription, $plan->price, $request->provider(), $request->phone()));
     }
 }

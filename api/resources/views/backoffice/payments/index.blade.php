@@ -1,4 +1,4 @@
-<x-admin.page title="Paiements" description="Wave, Orange Money et paiements de test.">
+<x-admin.page title="Paiements" description="Paiements Mobile Money (MoneyFusion) et paiements de test.">
     <div class="mb-4 grid gap-4 sm:grid-cols-3">
         <x-admin.stat label="Encaissé ce mois-ci" :value="number_format($totalMonth, 0, ',', ' ').' F'" detail="Paiements confirmés par les prestataires" />
     </div>

@@ -12,9 +12,13 @@ void main() {
   });
 
   test('les erreurs de validation gardent le détail par champ', () {
-    final failure = const ApiException('invalide', statusCode: 422, fieldErrors: {
-      'email': ['Adresse déjà utilisée.'],
-    }).toFailure();
+    final failure = const ApiException(
+      'invalide',
+      statusCode: 422,
+      fieldErrors: {
+        'email': ['Adresse déjà utilisée.'],
+      },
+    ).toFailure();
 
     expect(failure, isA<ValidationFailure>());
     expect((failure as ValidationFailure).firstError('email'), 'Adresse déjà utilisée.');

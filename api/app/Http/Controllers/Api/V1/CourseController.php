@@ -63,7 +63,7 @@ class CourseController extends Controller
         abort_if($course->isFree(), 409, 'Cette formation est gratuite.');
         abort_if($enroll->accessFor($request->user(), $course) !== null, 409, 'Tu as déjà accès à cette formation.');
 
-        return new PaymentResource($initiate($request->user(), $course, $course->price, $request->provider()));
+        return new PaymentResource($initiate($request->user(), $course, $course->price, $request->provider(), $request->phone()));
     }
 
     /** Contenu d'une leçon (inscrits, ou leçon d'aperçu). */

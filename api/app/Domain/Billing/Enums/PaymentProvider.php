@@ -5,17 +5,21 @@ namespace App\Domain\Billing\Enums;
 enum PaymentProvider: string
 {
     case Mock = 'mock';
-    case Wave = 'wave';
-    case OrangeMoney = 'orange_money';
+    case MoneyFusion = 'moneyfusion';
     case PayPal = 'paypal';
 
     public function label(): string
     {
         return match ($this) {
             self::Mock => 'Test',
-            self::Wave => 'Wave',
-            self::OrangeMoney => 'Orange Money',
+            self::MoneyFusion => 'Mobile Money',
             self::PayPal => 'PayPal',
         };
+    }
+
+    /** Le prestataire débite un compte Mobile Money : il lui faut le numéro du payeur. */
+    public function requiresPhone(): bool
+    {
+        return $this === self::MoneyFusion;
     }
 }

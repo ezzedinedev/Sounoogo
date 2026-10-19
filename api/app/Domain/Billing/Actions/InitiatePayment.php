@@ -3,6 +3,7 @@
 namespace App\Domain\Billing\Actions;
 
 use App\Domain\Billing\Contracts\Payable;
+use App\Domain\Billing\Data\Payer;
 use App\Domain\Billing\Enums\PaymentProvider;
 use App\Domain\Billing\Enums\PaymentStatus;
 use App\Domain\Billing\Models\Payment;
@@ -16,7 +17,7 @@ final class InitiatePayment
 {
     public function __construct(private readonly PaymentGatewayManager $gateways) {}
 
-    public function __invoke(User $user, Payable&Model $payable, int $amount, PaymentProvider $provider): Payment
+    public function __invoke(User $user, Payable&Model $payable, int $amount, PaymentProvider $provider, ?string $phone = null): Payment
     {
         $gateway = $this->gateways->for($provider);
 
@@ -33,7 +34,7 @@ final class InitiatePayment
         ]);
 
         try {
-            $session = $gateway->createCheckout($payment);
+            $session = $gateway->createCheckout($payment, new Payer(name: $user->pseudonym, phone: $phone));
         } catch (Throwable $e) {
             $payment->update(['status' => PaymentStatus::Failed, 'meta' => [...$payment->meta, 'error' => $e->getMessage()]]);
 

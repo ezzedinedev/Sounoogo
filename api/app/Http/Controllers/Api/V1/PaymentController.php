@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\Billing\Actions\RefreshPaymentStatus;
 use App\Domain\Billing\Actions\SettlePayment;
 use App\Domain\Billing\Enums\PaymentProvider;
 use App\Domain\Billing\Enums\PaymentStatus;
@@ -26,12 +27,12 @@ class PaymentController extends Controller
         );
     }
 
-    /** Suivre l'état d'un paiement après le retour du prestataire. */
-    public function show(Request $request, Payment $payment): PaymentResource
+    /** Suivre l'état d'un paiement après le retour du prestataire (l'état est revérifié s'il est en attente). */
+    public function show(Request $request, Payment $payment, RefreshPaymentStatus $refresh): PaymentResource
     {
         abort_unless($payment->user_id === $request->user()->id, 404);
 
-        return new PaymentResource($payment);
+        return new PaymentResource($refresh($payment));
     }
 
     /**

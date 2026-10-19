@@ -1,4 +1,5 @@
 import '../entities/payment.dart';
+import '../entities/payment_method.dart';
 import '../entities/payment_target.dart';
 import '../repositories/payment_repository.dart';
 
@@ -7,5 +8,5 @@ final class StartPayment {
 
   final PaymentRepository _repository;
 
-  Future<Payment> call(PaymentTarget target, String provider) => _repository.start(target, provider);
+  Future<Payment> call(PaymentTarget target, PaymentMethod method) => _repository.start(target, method);
 }

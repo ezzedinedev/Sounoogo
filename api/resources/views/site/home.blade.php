@@ -72,7 +72,7 @@
             <div class="mt-14">
                 @foreach ([
                     ['Gratuit, pour toujours', 'Un écoutant formé à l\'écoute active te répond par chat. Aucun nom, aucun numéro demandé. Si tes messages montrent que tu es en danger, un superviseur est alerté immédiatement.', 'site.partials.screens-listening'],
-                    ['À la séance', 'Psychologues, conseillers et coachs vérifiés par notre équipe. En cabinet, par téléphone ou en visio, en gardant l\'anonymat si tu le souhaites. Paiement Wave ou Orange Money.', 'site.partials.screens-consultation'],
+                    ['À la séance', 'Psychologues, conseillers et coachs vérifiés par notre équipe. En cabinet, par téléphone ou en visio, en gardant l\'anonymat si tu le souhaites. Paiement par Mobile Money.', 'site.partials.screens-consultation'],
                     ['Avec l\'abonnement', 'Des parcours courts et concrets pour retrouver l\'estime de soi et ton indépendance affective. Une leçon par jour, quelques minutes, des exercices simples.', 'site.partials.screens-learning'],
                 ] as $index => [$badge, $text, $screens])
                     <div id="niveau-{{ $index }}" role="tabpanel" aria-labelledby="niveau-tab-{{ $index }}" @class(['hidden' => $index !== 0])>
@@ -212,7 +212,7 @@
                     </div>
                 @endforeach
             </div>
-            <p class="mt-10 text-center text-sm text-muted-foreground">Paiement par Wave ou Orange Money, directement dans l'application.</p>
+            <p class="mt-10 text-center text-sm text-muted-foreground">Paiement par Mobile Money, directement dans l'application.</p>
         </x-site.container>
     </section>
 

@@ -11,7 +11,7 @@
             <h1 class="mt-6 text-3xl font-medium tracking-tight">{{ $succeeded ? 'Merci, ton paiement est en cours de validation' : 'Le paiement n\'a pas abouti' }}</h1>
             <p class="mt-4 text-muted-foreground-1 leading-relaxed">
                 {{ $succeeded
-                    ? 'Tu peux revenir dans l\'application : ta réservation ou ton abonnement s\'activera dès que Wave ou Orange Money nous aura confirmé le paiement.'
+                    ? 'Tu peux revenir dans l\'application : ta réservation ou ton abonnement s\'activera dès que le paiement Mobile Money sera confirmé.'
                     : 'Aucun montant n\'a été débité. Reviens dans l\'application pour réessayer ou choisir un autre moyen de paiement.' }}
             </p>
             @if ($reference)

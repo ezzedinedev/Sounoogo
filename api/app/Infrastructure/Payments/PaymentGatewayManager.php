@@ -19,8 +19,7 @@ final class PaymentGatewayManager
 
         return $this->container->make(match ($provider) {
             PaymentProvider::Mock => MockGateway::class,
-            PaymentProvider::Wave => WaveGateway::class,
-            PaymentProvider::OrangeMoney => OrangeMoneyGateway::class,
+            PaymentProvider::MoneyFusion => MoneyFusionGateway::class,
             PaymentProvider::PayPal => throw PaymentProviderUnavailable::for($provider),
         });
     }
@@ -30,12 +29,8 @@ final class PaymentGatewayManager
     {
         $providers = [];
 
-        if (filled(config('sunoogo.payments.wave.api_key'))) {
-            $providers[] = PaymentProvider::Wave;
-        }
-
-        if (filled(config('sunoogo.payments.orange_money.client_id'))) {
-            $providers[] = PaymentProvider::OrangeMoney;
+        if (filled(config('sunoogo.payments.moneyfusion.api_url'))) {
+            $providers[] = PaymentProvider::MoneyFusion;
         }
 
         if (! app()->isProduction()) {

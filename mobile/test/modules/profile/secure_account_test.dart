@@ -12,11 +12,13 @@ void main() {
 
   setUp(() {
     repository = _MockProfileRepository();
-    when(() => repository.secureAccount(
-          email: any(named: 'email'),
-          phone: any(named: 'phone'),
-          password: any(named: 'password'),
-        )).thenAnswer((_) async => member);
+    when(
+      () => repository.secureAccount(
+        email: any(named: 'email'),
+        phone: any(named: 'phone'),
+        password: any(named: 'password'),
+      ),
+    ).thenAnswer((_) async => member);
   });
 
   test('un identifiant avec @ est un e-mail', () async {

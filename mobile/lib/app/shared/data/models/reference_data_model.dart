@@ -7,7 +7,11 @@ import 'plan_model.dart';
 abstract final class ReferenceDataModel {
   static ReferenceData fromJson(Map<String, dynamic> json) => ReferenceData(
     emergencyContacts: _list(json['emergency_contacts'], EmergencyContactModel.fromJson),
-    paymentProviders: _list(json['payment_providers'], (p) => PaymentProvider(value: p['value'] as String, label: p['label'] as String)),
+    paymentProviders: _list(
+      json['payment_providers'],
+      (p) =>
+          PaymentProvider(value: p['value'] as String, label: p['label'] as String, requiresPhone: p['requires_phone'] as bool? ?? false),
+    ),
     plans: _list(json['plans'], PlanModel.fromJson),
   );
 

@@ -22,7 +22,7 @@ class SiteController extends Controller
                 ['Qui sont les écoutants ?', 'Des bénévoles et salariés formés à l\'écoute active, encadrés par des superviseurs cliniques. Ils ne donnent pas de diagnostic : ils t\'écoutent et t\'aident à y voir plus clair.'],
                 ['Que se passe-t-il si je ne vais vraiment pas bien ?', 'Le bouton SOS affiche les numéros d\'urgence et prévient un superviseur en temps réel. Si tes messages montrent que tu es en danger, le superviseur est aussi alerté automatiquement.'],
                 ['Combien coûte une consultation ?', 'Chaque professionnel fixe son tarif, affiché avant la réservation. Avec l\'abonnement Sérénité, tu bénéficies de 20 % de réduction.'],
-                ['Comment payer ?', 'Par Wave ou Orange Money, directement depuis l\'application. Aucune carte bancaire n\'est nécessaire.'],
+                ['Comment payer ?', 'Par Mobile Money, directement depuis l\'application : tu valides le paiement sur ton téléphone. Aucune carte bancaire n\'est nécessaire.'],
             ],
         ]);
     }

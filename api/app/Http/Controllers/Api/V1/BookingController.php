@@ -54,13 +54,13 @@ class BookingController extends Controller
         return new BookingResource($booking->load(['slot', 'professional.user', 'member']));
     }
 
-    /** Payer la consultation (Wave, Orange Money…). Renvoie l'URL de paiement. */
+    /** Payer la consultation (Mobile Money via MoneyFusion). Renvoie l'URL de paiement. */
     public function pay(PayRequest $request, Booking $booking, InitiatePayment $initiate): PaymentResource
     {
         $this->authorize('pay', $booking);
         abort_unless($booking->status === BookingStatus::PendingPayment, 409, 'Cette réservation n\'est pas en attente de paiement.');
 
-        return new PaymentResource($initiate($request->user(), $booking, $booking->price, $request->provider()));
+        return new PaymentResource($initiate($request->user(), $booking, $booking->price, $request->provider(), $request->phone()));
     }
 
     public function cancel(Booking $booking, CancelBooking $cancel): BookingResource
