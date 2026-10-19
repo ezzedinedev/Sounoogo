@@ -13,7 +13,7 @@ import '../../domain/usecases/start_payment.dart';
 import '../widgets/payment_provider_sheet.dart';
 import '../../../../core/widgets/app_toast.dart';
 
-/// Parcours de paiement : choix du moyen, ouverture de la page Wave / Orange Money,
+/// Parcours de paiement : choix du moyen, ouverture de la page Mobile Money (MoneyFusion),
 /// puis suivi de l'état jusqu'à la confirmation du prestataire.
 class PaymentController extends GetxController {
   PaymentController({required this._startPayment, required this._getPayment});

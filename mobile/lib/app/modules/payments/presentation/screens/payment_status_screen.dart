@@ -33,7 +33,7 @@ class PaymentStatusScreen extends GetView<PaymentController> {
               Icons.hourglass_top_rounded,
               AppColors.violet700,
               'En attente de confirmation',
-              'Termine le paiement dans Wave ou Orange Money, puis reviens ici.',
+              'Valide le paiement sur ton téléphone, puis reviens ici.',
             ),
           };
 

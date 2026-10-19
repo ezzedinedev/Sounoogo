@@ -60,6 +60,8 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   mocktail: ^1.0.5
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.8
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -82,3 +84,22 @@ flutter:
         - asset: assets/fonts/InstrumentSerif-Regular.ttf
         - asset: assets/fonts/InstrumentSerif-Italic.ttf
           style: italic
+
+# Icônes de lancement : `dart run flutter_launcher_icons`
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/launch/icon.png
+  adaptive_icon_background: "#602FB8"
+  adaptive_icon_foreground: assets/launch/icon_foreground.png
+  remove_alpha_ios: true
+
+# Splash natif (avant le premier écran Flutter) : `dart run flutter_native_splash:create`.
+# Même dégradé que l'écran de démarrage animé, sans logo pour ne pas le voir « sauter ».
+flutter_native_splash:
+  color: "#4C2494"
+  background_image: assets/launch/splash_background.png
+  android_12:
+    color: "#4C2494"
+    image: assets/launch/splash_android12.png
+  web: false

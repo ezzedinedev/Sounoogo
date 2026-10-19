@@ -8,6 +8,7 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../controllers/course_detail_controller.dart';
 import '../widgets/course_cover.dart';
+import '../../../../core/widgets/fade_slide_in.dart';
 
 class CourseDetailScreen extends GetView<CourseDetailController> {
   const CourseDetailScreen({super.key});
@@ -35,7 +36,9 @@ class CourseDetailScreen extends GetView<CourseDetailController> {
               pinned: true,
               backgroundColor: AppColors.violet800,
               foregroundColor: AppColors.white,
-              flexibleSpace: FlexibleSpaceBar(background: CourseCover(url: course.coverUrl, height: 240)),
+              flexibleSpace: FlexibleSpaceBar(
+                background: CourseCover(url: course.coverUrl, height: 240, heroTag: 'course-${course.slug}'),
+              ),
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.xl, AppSpacing.page, 120),
@@ -53,11 +56,16 @@ class CourseDetailScreen extends GetView<CourseDetailController> {
                     const SizedBox(height: AppSpacing.lg),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-                      child: LinearProgressIndicator(
-                        value: enrollment.progress / 100,
-                        minHeight: 8,
-                        backgroundColor: AppColors.violet100,
-                        color: AppColors.violet700,
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0, end: enrollment.progress / 100),
+                        duration: const Duration(milliseconds: 900),
+                        curve: Curves.easeOutCubic,
+                        builder: (_, value, _) => LinearProgressIndicator(
+                          value: value,
+                          minHeight: 8,
+                          backgroundColor: AppColors.violet100,
+                          color: AppColors.violet700,
+                        ),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
@@ -66,24 +74,27 @@ class CourseDetailScreen extends GetView<CourseDetailController> {
                   const SizedBox(height: AppSpacing.xl),
                   const Text('Leçons', style: AppTextStyles.subtitle),
                   const SizedBox(height: AppSpacing.sm),
-                  for (final lesson in course.lessons)
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      onTap: () => controller.openLesson(lesson),
-                      leading: CircleAvatar(
-                        backgroundColor: completed.contains(lesson.id) ? AppColors.violet700 : AppColors.violet50,
-                        child: completed.contains(lesson.id)
-                            ? const Icon(Icons.check_rounded, color: AppColors.white, size: 20)
-                            : Text('${lesson.position}', style: AppTextStyles.label.copyWith(color: AppColors.violet800)),
-                      ),
-                      title: Text(lesson.title, style: AppTextStyles.label),
-                      subtitle: Text(
-                        '${lesson.durationMinutes} min${lesson.isPreview ? ' · aperçu gratuit' : ''}',
-                        style: AppTextStyles.caption,
-                      ),
-                      trailing: Icon(
-                        enrollment != null || lesson.isPreview ? Icons.play_circle_outline_rounded : Icons.lock_outline_rounded,
-                        color: AppColors.violet700,
+                  for (final (index, lesson) in course.lessons.indexed)
+                    FadeSlideIn(
+                      index: index + 2,
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        onTap: () => controller.openLesson(lesson),
+                        leading: CircleAvatar(
+                          backgroundColor: completed.contains(lesson.id) ? AppColors.violet700 : AppColors.violet50,
+                          child: completed.contains(lesson.id)
+                              ? const Icon(Icons.check_rounded, color: AppColors.white, size: 20)
+                              : Text('${lesson.position}', style: AppTextStyles.label.copyWith(color: AppColors.violet800)),
+                        ),
+                        title: Text(lesson.title, style: AppTextStyles.label),
+                        subtitle: Text(
+                          '${lesson.durationMinutes} min${lesson.isPreview ? ' · aperçu gratuit' : ''}',
+                          style: AppTextStyles.caption,
+                        ),
+                        trailing: Icon(
+                          enrollment != null || lesson.isPreview ? Icons.play_circle_outline_rounded : Icons.lock_outline_rounded,
+                          color: AppColors.violet700,
+                        ),
                       ),
                     ),
                 ],

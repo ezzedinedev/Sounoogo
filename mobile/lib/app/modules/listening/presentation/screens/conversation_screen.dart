@@ -23,12 +23,19 @@ class _ConversationScreenState extends State<ConversationScreen> {
   final _scroll = ScrollController();
   late final Worker _worker;
 
+  /// Première apparition de chaque message. Ceux déjà là à l'ouverture ne sont pas animés ;
+  /// un nouveau message garde son animation même si la liste se reconstruit pendant qu'elle joue.
+  late final Map<int, DateTime> _firstSeen = {for (final message in controller.messages) message.id: DateTime(2000)};
+
   @override
   void initState() {
     super.initState();
     _worker = ever(controller.messages, (_) => _scrollToEnd());
     _scrollToEnd();
   }
+
+  bool _isNew(Message message) =>
+      DateTime.now().difference(_firstSeen.putIfAbsent(message.id, DateTime.now)) < const Duration(milliseconds: 600);
 
   @override
   void dispose() {
@@ -58,12 +65,18 @@ class _ConversationScreenState extends State<ConversationScreen> {
         title: Obx(() {
           final current = controller.conversation.value;
           final waiting = current?.isWaiting ?? true;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(waiting ? 'En attente d\'un écoutant' : (current?.listenerName ?? 'Écoute'), style: AppTextStyles.subtitle),
-              Text(current?.isClosed ?? false ? 'Conversation terminée' : 'Anonyme · chiffrée', style: AppTextStyles.caption),
-            ],
+          final title = waiting ? 'En attente d\'un écoutant' : (current?.listenerName ?? 'Écoute');
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            layoutBuilder: (current, previous) => Stack(alignment: Alignment.centerLeft, children: [...previous, ?current]),
+            child: Column(
+              key: ValueKey(title),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: AppTextStyles.subtitle),
+                Text(current?.isClosed ?? false ? 'Conversation terminée' : 'Anonyme · chiffrée', style: AppTextStyles.caption),
+              ],
+            ),
           );
         }),
         actions: [
@@ -85,15 +98,28 @@ class _ConversationScreenState extends State<ConversationScreen> {
       body: Column(
         children: [
           Expanded(
-            child: Obx(
-              () => ListView.builder(
+            child: Obx(() {
+              final waiting = controller.conversation.value?.isWaiting ?? false;
+              final messages = controller.messages;
+              return ListView.builder(
                 controller: _scroll,
                 padding: const EdgeInsets.all(AppSpacing.page),
-                itemCount: controller.messages.length,
-                itemBuilder: (_, index) =>
-                    _Bubble(message: controller.messages[index], mine: controller.messages[index].senderId == controller.myId),
-              ),
-            ),
+                itemCount: messages.length + (waiting ? 1 : 0),
+                itemBuilder: (_, index) {
+                  if (index == messages.length) {
+                    return const _WaitingForListener();
+                  }
+                  final message = messages[index];
+                  final mine = message.senderId == controller.myId;
+                  return _Arrival(
+                    key: ValueKey(message.id),
+                    fromRight: mine,
+                    animate: _isNew(message),
+                    child: _Bubble(message: message, mine: mine),
+                  );
+                },
+              );
+            }),
           ),
           Obx(() {
             final current = controller.conversation.value;
@@ -219,13 +245,30 @@ class _Composer extends StatelessWidget {
                     ),
                   ),
                 ),
-                IconButton.filled(
-                  onPressed: sending ? null : onSend,
-                  tooltip: 'Envoyer',
-                  style: IconButton.styleFrom(backgroundColor: AppColors.violet700, foregroundColor: AppColors.white),
-                  icon: sending
-                      ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
-                      : const Icon(Icons.arrow_upward_rounded),
+                // Le bouton s'allume dès qu'il y a quelque chose à envoyer.
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: input,
+                  builder: (_, value, _) {
+                    final ready = value.text.trim().isNotEmpty && !sending;
+                    return AnimatedScale(
+                      scale: ready || sending ? 1 : 0.86,
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOutBack,
+                      child: IconButton.filled(
+                        onPressed: ready ? onSend : null,
+                        tooltip: 'Envoyer',
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.violet700,
+                          foregroundColor: AppColors.white,
+                          disabledBackgroundColor: AppColors.violet100,
+                          disabledForegroundColor: AppColors.violet300,
+                        ),
+                        icon: sending
+                            ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
+                            : const Icon(Icons.arrow_upward_rounded),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -236,10 +279,27 @@ class _Composer extends StatelessWidget {
   }
 }
 
-class _RatingBar extends StatelessWidget {
+class _RatingBar extends StatefulWidget {
   const _RatingBar({required this.onRate});
 
   final ValueChanged<int> onRate;
+
+  @override
+  State<_RatingBar> createState() => _RatingBarState();
+}
+
+class _RatingBarState extends State<_RatingBar> {
+  int _rating = 0;
+
+  Future<void> _rate(int rating) async {
+    if (_rating > 0) {
+      return;
+    }
+    setState(() => _rating = rating);
+    // Le temps de voir les cœurs se remplir avant d'envoyer.
+    await Future<void>.delayed(const Duration(milliseconds: 650));
+    widget.onRate(rating);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -262,8 +322,17 @@ class _RatingBar extends StatelessWidget {
                 for (var rating = 1; rating <= 5; rating++)
                   IconButton(
                     tooltip: '$rating sur 5',
-                    onPressed: () => onRate(rating),
-                    icon: const Icon(Icons.favorite_border_rounded, color: AppColors.violet700, size: 30),
+                    onPressed: () => _rate(rating),
+                    icon: AnimatedScale(
+                      scale: rating <= _rating ? 1.15 : 1,
+                      duration: Duration(milliseconds: 200 + rating * 60),
+                      curve: Curves.easeOutBack,
+                      child: Icon(
+                        rating <= _rating ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        color: AppColors.violet700,
+                        size: 30,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -271,5 +340,129 @@ class _RatingBar extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Arrivée d'un message : il glisse depuis son côté en grandissant légèrement.
+class _Arrival extends StatelessWidget {
+  const _Arrival({super.key, required this.fromRight, required this.animate, required this.child});
+
+  final bool fromRight;
+  final bool animate;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final still = !animate || MediaQuery.of(context).disableAnimations;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: still ? 1 : 0, end: 1),
+      duration: const Duration(milliseconds: 380),
+      curve: Curves.easeOutCubic,
+      builder: (_, t, child) => Opacity(
+        opacity: t,
+        child: Transform.translate(
+          offset: Offset((fromRight ? 24 : -24) * (1 - t), 8 * (1 - t)),
+          child: Transform.scale(scale: 0.94 + 0.06 * t, alignment: fromRight ? Alignment.bottomRight : Alignment.bottomLeft, child: child),
+        ),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// Tant qu'aucun écoutant n'a rejoint : une présence qui « respire » et des points de saisie.
+class _WaitingForListener extends StatefulWidget {
+  const _WaitingForListener();
+
+  @override
+  State<_WaitingForListener> createState() => _WaitingForListenerState();
+}
+
+class _WaitingForListenerState extends State<_WaitingForListener> with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 1800));
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.of(context).disableAnimations) {
+      _pulse.value = 0.5;
+    } else if (!_pulse.isAnimating) {
+      _pulse.repeat();
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
+      child: Column(
+        children: [
+          SizedBox.square(
+            dimension: 96,
+            child: AnimatedBuilder(
+              animation: _pulse,
+              builder: (_, _) => Stack(
+                alignment: Alignment.center,
+                children: [
+                  for (final delay in const [0.0, 0.5])
+                    Builder(
+                      builder: (_) {
+                        final t = (_pulse.value + delay) % 1;
+                        return Container(
+                          width: 48 + 48 * t,
+                          height: 48 + 48 * t,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.violet300.withValues(alpha: 0.35 * (1 - t)),
+                          ),
+                        );
+                      },
+                    ),
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: const BoxDecoration(gradient: AppColors.brandGradient, shape: BoxShape.circle),
+                    child: const Icon(Icons.headset_mic_outlined, color: AppColors.white, size: 22),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          const Text('Recherche d\'un écoutant disponible', style: AppTextStyles.label),
+          const SizedBox(height: AppSpacing.md),
+          AnimatedBuilder(
+            animation: _pulse,
+            builder: (_, _) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var i = 0; i < 3; i++)
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: 7,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.violet500.withValues(alpha: 0.3 + 0.7 * _dot(i)),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Chaque point s'allume à son tour.
+  double _dot(int index) {
+    final t = (_pulse.value * 3 - index) % 3;
+    return t < 1 ? 1 - (t - 0.5).abs() * 2 : 0;
   }
 }

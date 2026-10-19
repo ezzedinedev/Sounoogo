@@ -15,18 +15,24 @@ class MoodFace extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label: level.label,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: selected ? AppColors.violet700 : AppColors.violet50,
-          border: Border.all(color: selected ? AppColors.violet700 : AppColors.violet100, width: 1.5),
-        ),
-        child: CustomPaint(
-          painter: _FacePainter(level: level, color: selected ? AppColors.white : AppColors.violet700),
+      selected: selected,
+      child: AnimatedScale(
+        scale: selected ? 1.08 : 1,
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutBack,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: selected ? AppColors.violet700 : AppColors.violet50,
+            border: Border.all(color: selected ? AppColors.violet700 : AppColors.violet100, width: 1.5),
+          ),
+          child: CustomPaint(
+            painter: _FacePainter(level: level, color: selected ? AppColors.white : AppColors.violet700),
+          ),
         ),
       ),
     );

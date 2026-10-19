@@ -8,6 +8,7 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../controllers/bookings_controller.dart';
 import '../../domain/entities/booking.dart';
+import '../../../../core/widgets/fade_slide_in.dart';
 
 class BookingsScreen extends GetView<BookingsController> {
   const BookingsScreen({super.key});
@@ -36,7 +37,7 @@ class BookingsScreen extends GetView<BookingsController> {
             padding: const EdgeInsets.all(AppSpacing.page),
             itemCount: controller.items.length,
             separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
-            itemBuilder: (_, index) => _BookingCard(controller.items[index]),
+            itemBuilder: (_, index) => FadeSlideIn(index: index, child: _BookingCard(controller.items[index])),
           );
         }),
       ),

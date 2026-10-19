@@ -11,6 +11,8 @@ import '../../../listening/presentation/controllers/listening_controller.dart';
 import '../../../mood/presentation/widgets/mood_check_in_card.dart';
 import '../../../settings/presentation/widgets/quick_exit_button.dart';
 import '../controllers/home_controller.dart';
+import '../../../../core/widgets/fade_slide_in.dart';
+import '../../../../core/widgets/scale_on_press.dart';
 
 class HomeTab extends GetView<HomeController> {
   const HomeTab({super.key});
@@ -24,7 +26,7 @@ class HomeTab extends GetView<HomeController> {
         bottom: false,
         child: ListView(
           padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.md, AppSpacing.page, 120),
-          children: [
+          children: FadeSlideIn.stagger([
             const Row(
               children: [
                 BrandMark(size: 36),
@@ -105,7 +107,7 @@ class HomeTab extends GetView<HomeController> {
                 trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.sos),
               ),
             ),
-          ],
+          ]),
         ),
       ),
     );
@@ -121,49 +123,51 @@ class _HeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-      clipBehavior: Clip.antiAlias,
-      child: Ink(
-        decoration: const BoxDecoration(gradient: AppColors.brandGradient),
-        child: InkWell(
-          onTap: onTap,
-          child: Stack(
-            children: [
-              Positioned(
-                right: -30,
-                top: -30,
-                child: Container(
-                  width: 140,
-                  height: 140,
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: AppColors.white.withValues(alpha: 0.07)),
+    return ScaleOnPress(
+      child: Material(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        clipBehavior: Clip.antiAlias,
+        child: Ink(
+          decoration: const BoxDecoration(gradient: AppColors.brandGradient),
+          child: InkWell(
+            onTap: onTap,
+            child: Stack(
+              children: [
+                Positioned(
+                  right: -30,
+                  top: -30,
+                  child: Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: AppColors.white.withValues(alpha: 0.07)),
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const BrandMark(size: 44, inverse: true),
-                    const SizedBox(height: AppSpacing.xxl),
-                    Text(title, style: AppTextStyles.title.copyWith(color: AppColors.white)),
-                    const SizedBox(height: AppSpacing.xs),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(subtitle, style: AppTextStyles.body.copyWith(color: AppColors.lilac200)),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          decoration: const BoxDecoration(color: AppColors.white, shape: BoxShape.circle),
-                          child: const Icon(Icons.arrow_forward_rounded, color: AppColors.violet800),
-                        ),
-                      ],
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const BrandMark(size: 44, inverse: true),
+                      const SizedBox(height: AppSpacing.xxl),
+                      Text(title, style: AppTextStyles.title.copyWith(color: AppColors.white)),
+                      const SizedBox(height: AppSpacing.xs),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(subtitle, style: AppTextStyles.body.copyWith(color: AppColors.lilac200)),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            decoration: const BoxDecoration(color: AppColors.white, shape: BoxShape.circle),
+                            child: const Icon(Icons.arrow_forward_rounded, color: AppColors.violet800),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -181,25 +185,27 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.sm + 2),
-                decoration: BoxDecoration(color: AppColors.violet50, borderRadius: BorderRadius.circular(AppSpacing.radiusSm)),
-                child: Icon(icon, color: AppColors.violet700),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(title, style: AppTextStyles.subtitle),
-              const SizedBox(height: 2),
-              Text(subtitle, style: AppTextStyles.caption),
-            ],
+    return ScaleOnPress(
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm + 2),
+                  decoration: BoxDecoration(color: AppColors.violet50, borderRadius: BorderRadius.circular(AppSpacing.radiusSm)),
+                  child: Icon(icon, color: AppColors.violet700),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Text(title, style: AppTextStyles.subtitle),
+                const SizedBox(height: 2),
+                Text(subtitle, style: AppTextStyles.caption),
+              ],
+            ),
           ),
         ),
       ),

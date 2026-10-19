@@ -11,6 +11,8 @@ import '../../../../core/widgets/state_views.dart';
 import '../controllers/professionals_controller.dart';
 import '../../domain/entities/professional.dart';
 import '../widgets/professional_avatar.dart';
+import '../../../../core/widgets/fade_slide_in.dart';
+import '../../../../core/widgets/scale_on_press.dart';
 
 class ProfessionalsTab extends GetView<ProfessionalsController> {
   const ProfessionalsTab({super.key});
@@ -81,7 +83,7 @@ class ProfessionalsTab extends GetView<ProfessionalsController> {
                   sliver: SliverList.separated(
                     itemCount: controller.items.length,
                     separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
-                    itemBuilder: (_, index) => _ProfessionalCard(controller.items[index]),
+                    itemBuilder: (_, index) => FadeSlideIn(index: index, child: _ProfessionalCard(controller.items[index])),
                   ),
                 ),
             ],
@@ -121,51 +123,53 @@ class _ProfessionalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => Get.toNamed(AppRoutes.professional(professional.id)),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  ProfessionalAvatar(initials: professional.initials),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(professional.name, style: AppTextStyles.subtitle),
-                        Text(professional.title, style: AppTextStyles.caption),
-                      ],
+    return ScaleOnPress(
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => Get.toNamed(AppRoutes.professional(professional.id)),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    ProfessionalAvatar(initials: professional.initials, heroTag: 'pro-${professional.id}'),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(professional.name, style: AppTextStyles.subtitle),
+                          Text(professional.title, style: AppTextStyles.caption),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Text(professional.specialty, style: AppTextStyles.bodySecondary),
-              const SizedBox(height: AppSpacing.md),
-              Wrap(
-                spacing: AppSpacing.xs + 2,
-                runSpacing: AppSpacing.xs + 2,
-                children: [
-                  if (professional.city != null) _Tag(icon: Icons.place_outlined, label: professional.city!),
-                  for (final mode in professional.modes) _Tag(label: mode.label),
-                ],
-              ),
-              const Divider(height: AppSpacing.xl),
-              Row(
-                children: [
-                  Text(Formatters.money(professional.sessionPrice), style: AppTextStyles.figure.copyWith(fontSize: 26)),
-                  Text('  / ${professional.sessionMinutes} min', style: AppTextStyles.caption),
-                  const Spacer(),
-                  const Icon(Icons.arrow_forward_rounded, color: AppColors.violet700),
-                ],
-              ),
-            ],
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(professional.specialty, style: AppTextStyles.bodySecondary),
+                const SizedBox(height: AppSpacing.md),
+                Wrap(
+                  spacing: AppSpacing.xs + 2,
+                  runSpacing: AppSpacing.xs + 2,
+                  children: [
+                    if (professional.city != null) _Tag(icon: Icons.place_outlined, label: professional.city!),
+                    for (final mode in professional.modes) _Tag(label: mode.label),
+                  ],
+                ),
+                const Divider(height: AppSpacing.xl),
+                Row(
+                  children: [
+                    Text(Formatters.money(professional.sessionPrice), style: AppTextStyles.figure.copyWith(fontSize: 26)),
+                    Text('  / ${professional.sessionMinutes} min', style: AppTextStyles.caption),
+                    const Spacer(),
+                    const Icon(Icons.arrow_forward_rounded, color: AppColors.violet700),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -8,6 +8,7 @@ import '../../../../core/widgets/accent_title.dart';
 import '../../../emergency/presentation/widgets/emergency_sheet.dart';
 import '../controllers/listening_controller.dart';
 import '../../domain/entities/topic.dart';
+import '../../../../core/widgets/fade_slide_in.dart';
 
 /// Onglet « Écoute » : reprendre la conversation en cours ou en ouvrir une.
 class ListeningTab extends GetView<ListeningController> {
@@ -28,7 +29,7 @@ class ListeningTab extends GetView<ListeningController> {
 
         return ListView(
           padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.sm, AppSpacing.page, AppSpacing.xxl),
-          children: [
+          children: FadeSlideIn.stagger([
             if (current != null && !current.isClosed) ...[
               _ResumeCard(waiting: current.isWaiting, listener: current.listenerName, onTap: controller.resume),
               const SizedBox(height: AppSpacing.xl),
@@ -68,7 +69,7 @@ class ListeningTab extends GetView<ListeningController> {
             ),
             const SizedBox(height: AppSpacing.xxl),
             const _HowItWorks(),
-          ],
+          ]),
         );
       }),
     );

@@ -8,7 +8,7 @@ class Payment {
   final String status;
   final String? label;
 
-  /// Page du prestataire (Wave, Orange Money) où le membre valide le paiement.
+  /// Page du prestataire (MoneyFusion) où le membre valide le paiement.
   final String? checkoutUrl;
 
   bool get isPending => status == 'pending';

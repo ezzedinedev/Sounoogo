@@ -8,6 +8,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/accent_title.dart';
 import '../controllers/subscription_controller.dart';
+import '../../../../core/widgets/fade_slide_in.dart';
 
 class SubscriptionScreen extends GetView<SubscriptionController> {
   const SubscriptionScreen({super.key});
@@ -20,7 +21,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
         final current = controller.current;
         return ListView(
           padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.sm, AppSpacing.page, AppSpacing.xxl),
-          children: [
+          children: FadeSlideIn.stagger([
             const AccentTitle("L'écoute reste", accent: 'toujours gratuite', large: true),
             const SizedBox(height: AppSpacing.md),
             const Text(
@@ -43,12 +44,12 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
               _PlanCard(plan: plan, featured: index == controller.plans.length - 1, onChoose: () => controller.subscribe(plan)),
               const SizedBox(height: AppSpacing.lg),
             ],
-            Text(
-              'Paiement par Wave ou Orange Money. Pas de renouvellement automatique.',
+            const Text(
+              'Paiement par Mobile Money. Pas de renouvellement automatique.',
               style: AppTextStyles.caption,
               textAlign: TextAlign.center,
             ),
-          ],
+          ]),
         );
       }),
     );

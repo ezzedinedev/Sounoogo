@@ -8,6 +8,7 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../controllers/professional_detail_controller.dart';
 import '../widgets/professional_avatar.dart';
+import '../../../../core/widgets/fade_slide_in.dart';
 
 class ProfessionalDetailScreen extends GetView<ProfessionalDetailController> {
   const ProfessionalDetailScreen({super.key});
@@ -26,10 +27,10 @@ class ProfessionalDetailScreen extends GetView<ProfessionalDetailController> {
 
         return ListView(
           padding: const EdgeInsets.fromLTRB(AppSpacing.page, 0, AppSpacing.page, 120),
-          children: [
+          children: FadeSlideIn.stagger([
             Row(
               children: [
-                ProfessionalAvatar(initials: pro.initials, size: 72),
+                ProfessionalAvatar(initials: pro.initials, size: 72, heroTag: 'pro-${pro.id}'),
                 const SizedBox(width: AppSpacing.lg),
                 Expanded(
                   child: Column(
@@ -111,7 +112,7 @@ class ProfessionalDetailScreen extends GetView<ProfessionalDetailController> {
               title: const Text('Rester anonyme', style: AppTextStyles.label),
               subtitle: const Text('Le professionnel ne verra que ton pseudonyme.', style: AppTextStyles.caption),
             ),
-          ],
+          ]),
         );
       }),
       bottomNavigationBar: Obx(() {

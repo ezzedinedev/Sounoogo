@@ -12,6 +12,8 @@ import '../controllers/courses_controller.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/entities/enrollment.dart';
 import '../widgets/course_cover.dart';
+import '../../../../core/widgets/fade_slide_in.dart';
+import '../../../../core/widgets/scale_on_press.dart';
 
 class CoursesTab extends GetView<CoursesController> {
   const CoursesTab({super.key});
@@ -52,8 +54,11 @@ class CoursesTab extends GetView<CoursesController> {
                   message: 'Les premières formations arrivent.',
                 )
               else
-                for (final course in controller.items) ...[
-                  _CourseCard(course: course, enrollment: controller.enrollments[course.slug]),
+                for (final (index, course) in controller.items.indexed) ...[
+                  FadeSlideIn(
+                    index: index,
+                    child: _CourseCard(course: course, enrollment: controller.enrollments[course.slug]),
+                  ),
                   const SizedBox(height: AppSpacing.lg),
                 ],
             ],
@@ -72,49 +77,57 @@ class _CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => Get.toNamed(AppRoutes.course(course.slug)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CourseCover(url: course.coverUrl),
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${course.levelLabel.toUpperCase()} · ${course.lessonsCount ?? 0} LEÇONS · ${course.durationMinutes ?? 0} MIN',
-                    style: AppTextStyles.caption.copyWith(color: AppColors.violet700, fontWeight: FontWeight.w600, letterSpacing: 0.6),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(course.title, style: AppTextStyles.subtitle),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(course.summary, style: AppTextStyles.bodySecondary, maxLines: 2, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: AppSpacing.md),
-                  if (enrollment != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-                      child: LinearProgressIndicator(
-                        value: enrollment!.progress / 100,
-                        minHeight: 6,
-                        backgroundColor: AppColors.violet100,
-                        color: AppColors.violet700,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text('${enrollment!.progress} % terminé', style: AppTextStyles.caption),
-                  ] else
+    return ScaleOnPress(
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => Get.toNamed(AppRoutes.course(course.slug)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CourseCover(url: course.coverUrl, heroTag: 'course-${course.slug}'),
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      course.isFree ? 'Offerte' : '${Formatters.money(course.price)} ou incluse dans l\'abonnement',
-                      style: AppTextStyles.label.copyWith(color: course.isFree ? AppColors.violet700 : AppColors.textPrimary),
+                      '${course.levelLabel.toUpperCase()} · ${course.lessonsCount ?? 0} LEÇONS · ${course.durationMinutes ?? 0} MIN',
+                      style: AppTextStyles.caption.copyWith(color: AppColors.violet700, fontWeight: FontWeight.w600, letterSpacing: 0.6),
                     ),
-                ],
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(course.title, style: AppTextStyles.subtitle),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(course.summary, style: AppTextStyles.bodySecondary, maxLines: 2, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: AppSpacing.md),
+                    if (enrollment != null) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+                        // La progression se remplit à l'affichage.
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0, end: enrollment!.progress / 100),
+                          duration: const Duration(milliseconds: 900),
+                          curve: Curves.easeOutCubic,
+                          builder: (_, value, _) => LinearProgressIndicator(
+                            value: value,
+                            minHeight: 6,
+                            backgroundColor: AppColors.violet100,
+                            color: AppColors.violet700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text('${enrollment!.progress} % terminé', style: AppTextStyles.caption),
+                    ] else
+                      Text(
+                        course.isFree ? 'Offerte' : '${Formatters.money(course.price)} ou incluse dans l\'abonnement',
+                        style: AppTextStyles.label.copyWith(color: course.isFree ? AppColors.violet700 : AppColors.textPrimary),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

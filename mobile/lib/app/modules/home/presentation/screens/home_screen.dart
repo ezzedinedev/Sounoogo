@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/widgets/fade_indexed_stack.dart';
 import '../../../../core/widgets/premium_nav_bar.dart';
 import '../../../courses/presentation/screens/courses_tab.dart';
 import '../../../listening/presentation/screens/listening_tab.dart';
@@ -25,7 +26,7 @@ class HomeScreen extends GetView<HomeController> {
     return Obx(
       () => Scaffold(
         extendBody: true,
-        body: IndexedStack(
+        body: FadeIndexedStack(
           index: controller.tab.value,
           children: const [HomeTab(), ListeningTab(), ProfessionalsTab(), CoursesTab(), ProfileTab()],
         ),

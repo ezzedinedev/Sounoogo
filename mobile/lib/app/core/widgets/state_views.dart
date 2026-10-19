@@ -64,7 +64,7 @@ class ErrorState extends StatelessWidget {
   }
 }
 
-/// Bloc de chargement animé (remplace les spinners pour les listes).
+/// Bloc de chargement : un reflet lumineux le traverse en continu (immobile si les animations sont réduites).
 class Skeleton extends StatefulWidget {
   const Skeleton({super.key, this.height = 16, this.width, this.radius = AppSpacing.radiusSm});
 
@@ -77,8 +77,17 @@ class Skeleton extends StatefulWidget {
 }
 
 class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))
-    ..repeat(reverse: true);
+  late final AnimationController _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400));
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.of(context).disableAnimations) {
+      _controller.stop();
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
+  }
 
   @override
   void dispose() {
@@ -88,13 +97,24 @@ class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: Tween(begin: 0.45, end: 1.0).animate(_controller),
-      child: Container(
-        height: widget.height,
-        width: widget.width,
-        decoration: BoxDecoration(color: AppColors.surfaceMuted, borderRadius: BorderRadius.circular(widget.radius)),
-      ),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        final t = _controller.value * 3 - 1;
+        return Container(
+          height: widget.height,
+          width: widget.width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(widget.radius),
+            gradient: LinearGradient(
+              begin: Alignment(t - 1, -0.3),
+              end: Alignment(t + 1, 0.3),
+              colors: const [AppColors.surfaceMuted, AppColors.violet50, AppColors.surfaceMuted],
+              stops: const [0.25, 0.5, 0.75],
+            ),
+          ),
+        );
+      },
     );
   }
 }

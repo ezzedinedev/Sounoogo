@@ -7,6 +7,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../emergency/presentation/widgets/emergency_sheet.dart';
 import '../controllers/profile_controller.dart';
+import '../../../../core/widgets/fade_slide_in.dart';
 
 class ProfileTab extends GetView<ProfileController> {
   const ProfileTab({super.key});
@@ -22,7 +23,7 @@ class ProfileTab extends GetView<ProfileController> {
         }
         return ListView(
           padding: const EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.sm, AppSpacing.page, 120),
-          children: [
+          children: FadeSlideIn.stagger([
             Container(
               padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(gradient: AppColors.brandGradient, borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
@@ -102,7 +103,7 @@ class ProfileTab extends GetView<ProfileController> {
             ),
             const SizedBox(height: AppSpacing.xl),
             const Text('SUNOOGO ne remplace pas un service d\'urgence.', style: AppTextStyles.caption, textAlign: TextAlign.center),
-          ],
+          ]),
         );
       }),
     );

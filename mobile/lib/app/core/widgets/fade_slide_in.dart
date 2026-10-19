@@ -7,6 +7,16 @@ class FadeSlideIn extends StatefulWidget {
 
   final Widget child;
 
+  /// Cascade sur les éléments d'une liste. Les espacements ([SizedBox], [Spacer]) et les enfants
+  /// flexibles d'une [Flex] restent tels quels.
+  static List<Widget> stagger(List<Widget> children, {int start = 0}) {
+    var rank = start;
+    return [
+      for (final child in children)
+        child is SizedBox || child is Spacer || child is Flexible ? child : FadeSlideIn(index: rank++, child: child),
+    ];
+  }
+
   /// Position dans la cascade : chaque rang ajoute 70 ms de délai.
   final int index;
   final double offset;
