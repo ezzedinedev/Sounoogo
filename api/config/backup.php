@@ -162,7 +162,7 @@ return [
              * The disk names on which the backups will be stored.
              */
             // En production : un disque hors du serveur (S3 compatible), par ex. BACKUP_DISKS=backups,s3
-            'disks' => explode(',', (string) env('BACKUP_DISKS', 'backups')),
+            'disks' => array_values(array_filter(explode(',', (string) env('BACKUP_DISKS')))) ?: ['backups'],
 
             /*
              * Determines whether to allow backups to continue when some targets fail instead of failing completely.
@@ -233,7 +233,7 @@ return [
         'notifiable' => Notifiable::class,
 
         'mail' => [
-            'to' => env('BACKUP_NOTIFY_EMAIL', env('MAIL_FROM_ADDRESS', 'hello@example.com')),
+            'to' => env('BACKUP_NOTIFY_EMAIL') ?: env('MAIL_FROM_ADDRESS', 'hello@example.com'),
 
             'from' => [
                 'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
@@ -294,7 +294,7 @@ return [
     'monitor_backups' => [
         [
             'name' => 'sunoogo',
-            'disks' => explode(',', (string) env('BACKUP_DISKS', 'backups')),
+            'disks' => array_values(array_filter(explode(',', (string) env('BACKUP_DISKS')))) ?: ['backups'],
             'health_checks' => [
                 MaximumAgeInDays::class => 1,
                 MaximumStorageInMegabytes::class => 5000,
