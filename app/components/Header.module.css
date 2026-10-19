@@ -1,0 +1,139 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  transition: background 300ms ease, box-shadow 300ms ease;
+}
+
+.transparent {
+  background: transparent;
+}
+
+.scrolled {
+  background: var(--color-surface);
+  box-shadow: 0 1px 0 var(--color-border);
+}
+
+.inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.logo {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: opacity 200ms ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+/* Nav */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  flex: 1;
+}
+
+.transparent .nav a {
+  color: rgba(245, 245, 240, 0.88);
+}
+
+.scrolled .nav a {
+  color: var(--color-text);
+}
+
+.nav a {
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.nav a:hover {
+  color: var(--color-primary);
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.adminLink {
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.transparent .adminLink {
+  color: rgba(245, 245, 240, 0.55);
+}
+
+.scrolled .adminLink {
+  color: var(--color-text-muted);
+}
+
+.adminLink:hover {
+  color: var(--color-primary) !important;
+}
+
+.navCta {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+.transparent .navCta {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(245, 245, 240, 0.95);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.transparent .navCta:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.scrolled .navCta {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.scrolled .navCta:hover {
+  background: var(--color-primary-hover);
+}
+
+@media (max-width: 768px) {
+  .nav,
+  .adminLink {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .logo,
+  .nav a,
+  .adminLink,
+  .navCta {
+    transition: none;
+  }
+}
