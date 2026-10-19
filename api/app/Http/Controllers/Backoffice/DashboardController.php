@@ -18,7 +18,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -31,35 +30,46 @@ class DashboardController extends Controller
             return redirect()->route('backoffice.agenda.index');
         }
 
+        $weekAgo = now()->subWeek();
+        $twoWeeksAgo = now()->subWeeks(2);
+
         $stats = [
             'waiting' => Conversation::where('status', ConversationStatus::Waiting)->count(),
             'active' => Conversation::where('status', ConversationStatus::Active)->count(),
             'open_alerts' => EmergencyAlert::where('status', '!=', AlertStatus::Resolved)->count(),
             'pending_reports' => Report::where('status', ReportStatus::Pending)->count(),
             'listeners_online' => User::role(Role::Listener->value)->where('is_available', true)->count(),
-            'members_week' => User::role(Role::Member->value)->where('created_at', '>=', now()->subWeek())->count(),
+            'conversations_week' => Conversation::where('created_at', '>=', $weekAgo)->count(),
+            'conversations_prev_week' => Conversation::whereBetween('created_at', [$twoWeeksAgo, $weekAgo])->count(),
+            'members_week' => User::role(Role::Member->value)->where('created_at', '>=', $weekAgo)->count(),
+            'members_prev_week' => User::role(Role::Member->value)->whereBetween('created_at', [$twoWeeksAgo, $weekAgo])->count(),
             'bookings_upcoming' => Booking::where('status', BookingStatus::Confirmed)->count(),
             'revenue_month' => (int) Payment::where('status', PaymentStatus::Succeeded)->where('paid_at', '>=', now()->startOfMonth())->sum('amount'),
+            'revenue_prev_month' => (int) Payment::where('status', PaymentStatus::Succeeded)->whereBetween('paid_at', [now()->subMonthNoOverflow()->startOfMonth(), now()->startOfMonth()])->sum('amount'),
         ];
 
-        $conversationsPerDay = Conversation::query()
-            ->where('created_at', '>=', now()->subDays(13)->startOfDay())
-            ->select(DB::raw('date(created_at) as day'), DB::raw('count(*) as total'))
+        $days = collect(range(29, 0))->map(fn (int $offset) => now()->subDays($offset)->toDateString());
+        $perDay = fn (string $model) => $model::query()
+            ->where('created_at', '>=', now()->subDays(29)->startOfDay())
+            ->selectRaw('date(created_at) as day, count(*) as total')
             ->groupBy('day')
             ->pluck('total', 'day');
-
-        $days = collect(range(13, 0))->map(fn (int $offset) => now()->subDays($offset)->toDateString());
+        $conversations = $perDay(Conversation::class);
+        $alerts = $perDay(EmergencyAlert::class);
 
         return view('backoffice.dashboard', [
             'stats' => $stats,
             'chart' => [
                 'labels' => $days->map(fn ($day) => Carbon::parse($day)->translatedFormat('j M'))->values(),
-                'values' => $days->map(fn ($day) => (int) ($conversationsPerDay[$day] ?? 0))->values(),
+                'series' => [
+                    ['name' => 'Conversations', 'data' => $days->map(fn ($day) => (int) ($conversations[$day] ?? 0))->values()],
+                    ['name' => 'Alertes', 'data' => $days->map(fn ($day) => (int) ($alerts[$day] ?? 0))->values()],
+                ],
             ],
             'alerts' => $user->can('alerts.manage')
-                ? EmergencyAlert::with('conversation')->where('status', '!=', AlertStatus::Resolved)->latest()->limit(5)->get()
+                ? EmergencyAlert::with(['member', 'conversation.listener'])->where('status', '!=', AlertStatus::Resolved)->latest()->limit(6)->get()
                 : collect(),
-            'myConversations' => $user->listenerConversations()->with('latestMessage')->where('status', ConversationStatus::Active)->latest('updated_at')->get(),
+            'myConversations' => $user->listenerConversations()->with(['member', 'latestMessage'])->where('status', ConversationStatus::Active)->latest('updated_at')->get(),
         ]);
     }
 }

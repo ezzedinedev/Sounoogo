@@ -11,7 +11,7 @@
         <ul class="mt-4 space-y-2 text-xs">
             @foreach (['Comprendre l\'estime de soi', 'Repérer sa voix critique', 'Lister ses réussites', 'Poser ses limites'] as $lesson)
                 <li class="flex items-center gap-x-2">
-                    <span @class(['inline-flex size-5 items-center justify-center rounded-full', 'bg-white text-primary-900' => $loop->index < 3, 'ring-1 ring-white/40' => $loop->index >= 3])>@if ($loop->index < 3)<x-site.icon name="check" :size="12" />@endif</span>
+                    <span @class(['inline-flex size-5 items-center justify-center rounded-full', 'bg-white text-primary-900' => $loop->index < 3, 'ring-1 ring-white/40' => $loop->index >= 3])>@if ($loop->index < 3)<x-icon name="check" :size="12" />@endif</span>
                     {{ $lesson }}
                 </li>
             @endforeach

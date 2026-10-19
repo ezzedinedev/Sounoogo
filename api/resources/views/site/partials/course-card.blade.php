@@ -6,7 +6,7 @@
     </div>
     <div class="flex flex-1 flex-col px-2 pt-5 pb-2">
         <p class="inline-flex items-center gap-x-2 text-xs font-medium uppercase tracking-wide text-primary-700">
-            <x-site.icon name="book" :size="16" />{{ \App\Domain\Learning\Models\Course::LEVELS[$course->level] ?? $course->level }} · {{ $course->lessons_count }} leçons
+            <x-icon name="book" :size="16" />{{ \App\Domain\Learning\Models\Course::LEVELS[$course->level] ?? $course->level }} · {{ $course->lessons_count }} leçons
         </p>
         <h3 class="mt-3 text-lg font-medium">{{ $course->title }}</h3>
         <p class="mt-2 text-[15px] text-muted-foreground-1 leading-relaxed flex-1">{{ $course->summary }}</p>

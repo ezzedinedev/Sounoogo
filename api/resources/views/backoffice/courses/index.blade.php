@@ -1,34 +1,32 @@
-<x-backoffice.page title="Formations" pretitle="Niveau 3">
+<x-admin.page title="Formations" description="Parcours de confiance en soi et d'indépendance affective.">
     <x-slot:actions>
-        <a href="{{ route('backoffice.courses.create') }}" class="btn btn-primary"><i class="ti ti-plus icon"></i>Nouvelle formation</a>
+        <x-admin.button :href="route('backoffice.courses.create')" icon="plus">Nouvelle formation</x-admin.button>
     </x-slot:actions>
 
-    <div class="card">
+    <x-admin.card flush>
         @if ($courses->isEmpty())
-            <div class="card-body"><x-backoffice.empty icon="school" title="Aucune formation" subtitle="Crée un premier parcours puis ajoute ses leçons." /></div>
+            <x-admin.empty icon="school" title="Aucune formation" subtitle="Crée un premier parcours puis ajoute ses leçons." />
         @else
-            <div class="table-responsive">
-                <table class="table table-vcenter card-table">
-                    <thead><tr><th>Formation</th><th>Niveau</th><th>Prix</th><th>Leçons</th><th>Inscrits</th><th>Publication</th><th class="w-1"></th></tr></thead>
-                    <tbody>
-                        @foreach ($courses as $course)
-                            <tr>
-                                <td>
-                                    <div>{{ $course->title }}</div>
-                                    <div class="small text-secondary text-truncate w-75">{{ $course->summary }}</div>
-                                </td>
-                                <td>{{ \App\Domain\Learning\Models\Course::LEVELS[$course->level] ?? $course->level }}</td>
-                                <td>@if ($course->price === 0)<span class="badge bg-green-lt">Gratuite</span>@else<x-backoffice.money :amount="$course->price" />@endif</td>
-                                <td>{{ $course->lessons_count }}</td>
-                                <td>{{ $course->enrollments_count }}</td>
-                                <td>@if ($course->published_at)<span class="badge bg-green-lt">Publiée</span>@else<span class="badge bg-secondary-lt">Brouillon</span>@endif</td>
-                                <td><a href="{{ route('backoffice.courses.edit', $course) }}" class="btn btn-sm">Modifier</a></td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer">{{ $courses->links() }}</div>
+            <x-admin.table>
+                <thead><tr><th>Formation</th><th>Niveau</th><th class="text-end">Prix</th><th class="text-end">Leçons</th><th class="text-end">Inscrits</th><th>Publication</th><th></th></tr></thead>
+                <tbody>
+                    @foreach ($courses as $course)
+                        <tr>
+                            <td class="max-w-md">
+                                <p class="font-medium">{{ $course->title }}</p>
+                                <p class="truncate text-xs text-muted-foreground">{{ $course->summary }}</p>
+                            </td>
+                            <td>{{ \App\Domain\Learning\Models\Course::LEVELS[$course->level] ?? $course->level }}</td>
+                            <td class="text-end">@if ($course->price === 0)<x-admin.badge variant="success">Gratuite</x-admin.badge>@else<x-admin.money :amount="$course->price" />@endif</td>
+                            <td class="text-end tabular-nums">{{ $course->lessons_count }}</td>
+                            <td class="text-end tabular-nums">{{ $course->enrollments_count }}</td>
+                            <td>@if ($course->published_at)<x-admin.badge variant="success">Publiée</x-admin.badge>@else<x-admin.badge>Brouillon</x-admin.badge>@endif</td>
+                            <td class="text-end"><x-admin.button :href="route('backoffice.courses.edit', $course)" variant="outline" size="sm">Modifier</x-admin.button></td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </x-admin.table>
         @endif
-    </div>
-</x-backoffice.page>
+        <x-slot:footer>@if ($courses->hasPages()){{ $courses->links() }}@endif</x-slot:footer>
+    </x-admin.card>
+</x-admin.page>

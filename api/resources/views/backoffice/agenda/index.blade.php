@@ -1,91 +1,89 @@
-<x-backoffice.page title="Mon agenda" pretitle="Espace professionnel">
-    <div class="row row-cards">
-        <div class="col-lg-5">
-            <div class="card">
-                <div class="card-header"><h3 class="card-title">Ajouter un créneau</h3></div>
-                <div class="card-body">
-                    <form method="post" action="{{ route('backoffice.agenda.slots.store') }}" class="row g-2 align-items-end">
-                        @csrf
-                        <div class="col-6">
-                            <label class="form-label" for="date">Date</label>
-                            <input type="date" id="date" name="date" class="form-control" min="{{ today()->toDateString() }}" value="{{ old('date', today()->addDay()->toDateString()) }}" required>
-                        </div>
-                        <div class="col-3">
-                            <label class="form-label" for="time">Heure</label>
-                            <input type="time" id="time" name="time" class="form-control" value="{{ old('time', '09:00') }}" step="900" required>
-                        </div>
-                        <div class="col-3"><button class="btn btn-primary w-100" type="submit">Ajouter</button></div>
-                    </form>
-                    <p class="text-secondary small mt-2 mb-0">Durée d'une séance : {{ $profile->session_minutes }} min · Tarif : <x-backoffice.money :amount="$profile->session_price" /></p>
-                    @unless ($profile->verified_at)
-                        <div class="alert alert-warning mt-3 mb-0">Ton profil est en cours de vérification : il n'apparaît pas encore dans l'annuaire.</div>
-                    @endunless
-                </div>
-            </div>
+<x-admin.page title="Mon agenda" description="Tes créneaux de consultation et les rendez-vous confirmés.">
+    @unless ($profile->verified_at)
+        <div role="status" class="mb-6 flex items-start gap-3 rounded-lg border border-warning/30 bg-warning-soft px-4 py-3 text-sm">
+            <x-icon name="hourglass" :size="18" class="mt-px text-warning" />
+            <p>Ton profil est en cours de vérification : il n'apparaît pas encore dans l'annuaire.</p>
+        </div>
+    @endunless
 
-            <div class="card mt-3">
-                <div class="card-header"><h3 class="card-title">Créneaux à venir</h3></div>
+    <div class="grid gap-4 sm:grid-cols-3">
+        <x-admin.stat label="Créneaux à venir" :value="$slots->flatten()->where('is_booked', false)->count()" detail="Disponibles à la réservation" />
+        <x-admin.stat label="Consultations confirmées" :value="$bookings->where('status.value', 'confirmed')->count()" detail="À venir ou en cours" />
+        <x-admin.stat label="Tarif" :value="number_format($profile->session_price, 0, ',', ' ').' F'" :detail="$profile->session_minutes.' min par séance'" />
+    </div>
+
+    <div class="mt-4 grid gap-4 lg:grid-cols-5">
+        <div class="grid content-start gap-4 lg:col-span-2">
+            <x-admin.card title="Ajouter un créneau">
+                <form method="post" action="{{ route('backoffice.agenda.slots.store') }}" class="grid gap-4">
+                    @csrf
+                    <div class="grid grid-cols-2 gap-3">
+                        <x-admin.input name="date" type="date" label="Date" :value="today()->addDay()->toDateString()" :min="today()->toDateString()" required />
+                        <x-admin.input name="time" type="time" label="Heure" value="09:00" step="900" required />
+                    </div>
+                    <x-admin.button icon="plus">Ajouter</x-admin.button>
+                </form>
+            </x-admin.card>
+
+            <x-admin.card title="Créneaux à venir" flush>
                 @if ($slots->isEmpty())
-                    <div class="card-body"><x-backoffice.empty icon="calendar-plus" title="Aucun créneau à venir" subtitle="Ajoute des créneaux pour recevoir des réservations." /></div>
+                    <x-admin.empty icon="calendar-plus" title="Aucun créneau à venir" subtitle="Ajoute des créneaux pour recevoir des réservations." />
                 @else
-                    <div class="list-group list-group-flush">
+                    <div class="max-h-[28rem] overflow-y-auto">
                         @foreach ($slots as $day => $daySlots)
-                            <div class="list-group-header sticky-top">{{ \Illuminate\Support\Carbon::parse($day)->translatedFormat('l j F') }}</div>
-                            @foreach ($daySlots as $slot)
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>{{ $slot->starts_at->format('H:i') }} – {{ $slot->ends_at->format('H:i') }}</span>
-                                    @if ($slot->is_booked)
-                                        <span class="badge bg-green-lt">Réservé</span>
-                                    @else
-                                        <form method="post" action="{{ route('backoffice.agenda.slots.destroy', $slot) }}">
-                                            @csrf @method('delete')
-                                            <button class="btn btn-sm btn-ghost-danger" type="submit" aria-label="Supprimer le créneau de {{ $slot->starts_at->format('H:i') }}"><i class="ti ti-trash icon"></i></button>
-                                        </form>
-                                    @endif
-                                </div>
-                            @endforeach
+                            <p class="sticky top-0 bg-muted/80 px-6 py-2 text-xs font-medium text-muted-foreground backdrop-blur">{{ ucfirst(\Illuminate\Support\Carbon::parse($day)->translatedFormat('l j F')) }}</p>
+                            <ul class="divide-y">
+                                @foreach ($daySlots as $slot)
+                                    <li class="flex items-center justify-between px-6 py-2.5 text-sm">
+                                        <span class="tabular-nums">{{ $slot->starts_at->format('H:i') }} – {{ $slot->ends_at->format('H:i') }}</span>
+                                        @if ($slot->is_booked)
+                                            <x-admin.badge variant="success">Réservé</x-admin.badge>
+                                        @else
+                                            <form method="post" action="{{ route('backoffice.agenda.slots.destroy', $slot) }}">
+                                                @csrf @method('delete')
+                                                <x-admin.button variant="ghost" size="icon-sm" aria-label="Supprimer le créneau de {{ $slot->starts_at->format('H:i') }}"><x-icon name="trash" :size="16" class="text-muted-foreground" /></x-admin.button>
+                                            </form>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
                         @endforeach
                     </div>
                 @endif
-            </div>
+            </x-admin.card>
         </div>
 
-        <div class="col-lg-7">
-            <div class="card">
-                <div class="card-header"><h3 class="card-title">Mes consultations</h3></div>
-                @if ($bookings->isEmpty())
-                    <div class="card-body"><x-backoffice.empty icon="calendar-event" title="Aucune consultation confirmée pour le moment" /></div>
-                @else
-                    <div class="table-responsive">
-                        <table class="table table-vcenter card-table">
-                            <thead><tr><th>Date</th><th>Patient</th><th>Format</th><th>État</th><th class="w-1"></th></tr></thead>
-                            <tbody>
-                                @foreach ($bookings as $booking)
-                                    <tr>
-                                        <td>{{ $booking->slot?->starts_at->translatedFormat('D j M, H:i') }}</td>
-                                        <td>
-                                            @if ($booking->keep_anonymous)
-                                                {{ $booking->member->pseudonym }} <span class="badge bg-secondary-lt">anonyme</span>
-                                            @else
-                                                {{ $booking->member->name ?? $booking->member->pseudonym }}
-                                                <div class="small text-secondary">{{ $booking->member->phone ?? $booking->member->email }}</div>
-                                            @endif
-                                            @if ($booking->member_note)<div class="small text-secondary fst-italic">« {{ $booking->member_note }} »</div>@endif
-                                        </td>
-                                        <td>{{ $booking->mode->label() }}</td>
-                                        <td><x-backoffice.status :value="$booking->status" /></td>
-                                        <td>
-                                            @if ($booking->status->value === 'confirmed')
-                                                <form method="post" action="{{ route('backoffice.agenda.bookings.complete', $booking) }}">@csrf<button class="btn btn-sm">Terminée</button></form>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
-            </div>
-        </div>
+        <x-admin.card class="lg:col-span-3" title="Mes consultations" flush>
+            @if ($bookings->isEmpty())
+                <x-admin.empty icon="calendar-event" title="Aucune consultation confirmée pour le moment" />
+            @else
+                <x-admin.table>
+                    <thead><tr><th>Date</th><th>Patient</th><th>Format</th><th>État</th><th></th></tr></thead>
+                    <tbody>
+                        @foreach ($bookings as $booking)
+                            <tr>
+                                <td class="whitespace-nowrap tabular-nums">{{ $booking->slot?->starts_at->translatedFormat('D j M, H:i') }}</td>
+                                <td>
+                                    @if ($booking->keep_anonymous)
+                                        <span class="font-medium">{{ $booking->member->pseudonym }}</span> <x-admin.badge variant="outline">anonyme</x-admin.badge>
+                                    @else
+                                        <p class="font-medium">{{ $booking->member->name ?? $booking->member->pseudonym }}</p>
+                                        <p class="text-xs text-muted-foreground">{{ $booking->member->phone ?? $booking->member->email }}</p>
+                                    @endif
+                                    @if ($booking->member_note)<p class="mt-1 max-w-xs text-xs italic text-muted-foreground">« {{ $booking->member_note }} »</p>@endif
+                                </td>
+                                <td>{{ $booking->mode->label() }}</td>
+                                <td><x-admin.status :value="$booking->status" /></td>
+                                <td class="text-end">
+                                    @if ($booking->status->value === 'confirmed')
+                                        <form method="post" action="{{ route('backoffice.agenda.bookings.complete', $booking) }}">@csrf<x-admin.button variant="outline" size="sm">Terminée</x-admin.button></form>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </x-admin.table>
+            @endif
+        </x-admin.card>
     </div>
-</x-backoffice.page>
+</x-admin.page>

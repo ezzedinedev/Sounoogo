@@ -1,49 +1,120 @@
 /*
- * Back-office — Tabler (MIT), utilisé tel quel. On ne surcharge que les variables
- * du thème pour l'aligner sur l'identité SUNOOGO ; aucun composant sur mesure.
+ * Back-office — langage visuel shadcn/ui, en Tailwind CSS v4 + Preline (interactions).
+ * Neutres « zinc », violet SUNOOGO en couleur principale. Tous les composants passent
+ * par les tokens ci-dessous (mêmes noms que shadcn/ui).
  */
-@import '@tabler/core/dist/css/tabler.min.css';
-@import '@tabler/icons-webfont/dist/tabler-icons.min.css';
+@import 'tailwindcss';
 
-:root,
-[data-bs-theme='light'] {
-    --tblr-font-sans-serif: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    /* Charte SUNOOGO : violet premium et blanc. */
-    --tblr-primary: #602fb8;
-    --tblr-primary-rgb: 96, 47, 184;
-    --tblr-primary-darken: #4c2494;
-    --tblr-primary-lt: #f8f5ff;
-    --tblr-primary-lt-rgb: 248, 245, 255;
-    --tblr-primary-text-emphasis: #4c2494;
-    --tblr-link-color: #602fb8;
-    --tblr-link-color-rgb: 96, 47, 184;
-    --tblr-link-hover-color: #4c2494;
-    --tblr-link-hover-color-rgb: 76, 36, 148;
+@source '../views/backoffice/**/*.blade.php';
+@source '../views/components/admin/**/*.blade.php';
+@source '../views/components/icon.blade.php';
+@source '../js/admin.js';
+@source '../../node_modules/preline/dist/*.js';
+
+@import '../../node_modules/preline/variants.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+    --font-sans: 'Rethink Sans', ui-sans-serif, system-ui, sans-serif;
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary-soft: var(--primary-soft);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-soft: var(--destructive-soft);
+    --color-success: var(--success);
+    --color-success-soft: var(--success-soft);
+    --color-warning: var(--warning);
+    --color-warning-soft: var(--warning-soft);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Barre latérale violet nuit, cohérente avec le site. */
-.navbar-vertical[data-bs-theme='dark'] {
-    --tblr-navbar-bg: #210e40;
-    --tblr-navbar-border-color: #210e40;
-    background-color: #210e40;
+:root {
+    --radius: 0.625rem;
+
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.21 0.02 290);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.21 0.02 290);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.21 0.02 290);
+
+    /* Violet SUNOOGO (#602fb8) */
+    --primary: oklch(0.454 0.2 293);
+    --primary-foreground: oklch(0.985 0 0);
+    --primary-soft: oklch(0.966 0.018 300);
+
+    --secondary: oklch(0.967 0.003 286);
+    --secondary-foreground: oklch(0.21 0.02 290);
+    --muted: oklch(0.967 0.003 286);
+    --muted-foreground: oklch(0.552 0.016 286);
+    --accent: oklch(0.967 0.004 300);
+    --accent-foreground: oklch(0.21 0.02 290);
+
+    --destructive: oklch(0.577 0.245 27.3);
+    --destructive-soft: oklch(0.971 0.013 17.4);
+    --success: oklch(0.527 0.137 150);
+    --success-soft: oklch(0.962 0.044 156.7);
+    --warning: oklch(0.554 0.135 66.4);
+    --warning-soft: oklch(0.987 0.022 95.3);
+
+    --border: oklch(0.92 0.004 286);
+    --input: oklch(0.92 0.004 286);
+    --ring: oklch(0.6 0.15 293);
+
+    --sidebar: oklch(0.985 0.002 300);
+    --sidebar-foreground: oklch(0.21 0.02 290);
+    --sidebar-accent: oklch(0.955 0.012 300);
+    --sidebar-accent-foreground: oklch(0.21 0.02 290);
+    --sidebar-border: oklch(0.92 0.004 286);
+
+    --chart-1: oklch(0.454 0.2 293);
+    --chart-2: oklch(0.78 0.1 300);
 }
 
-/* Bulles de conversation : seul composant propre au métier. */
-.chat-bubble-system {
-    font-size: 0.8125rem;
-    color: var(--tblr-secondary);
-    text-align: center;
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-sidebar text-foreground font-sans antialiased;
+        font-feature-settings: 'tnum' 0;
+    }
+
+    .tabular-nums {
+        font-variant-numeric: tabular-nums;
+    }
 }
 
-.chat-thread {
-    max-height: 60vh;
-    overflow-y: auto;
-}
-
-.chat-bubble-body p {
-    white-space: pre-line;
-}
-
-.chat-bubble-flagged {
-    box-shadow: inset 3px 0 0 var(--tblr-danger);
+/* ApexCharts : infobulles alignées sur le design system. */
+.apexcharts-tooltip.apexcharts-theme-light {
+    @apply rounded-lg! border! border-border! bg-popover! shadow-md! text-sm!;
 }

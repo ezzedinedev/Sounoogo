@@ -1,37 +1,30 @@
-<x-backoffice.page title="Réservations" pretitle="Niveau 2">
+<x-admin.page title="Réservations" description="Toutes les consultations réservées par les membres.">
     <x-slot:actions>
         <form method="get">
-            <select name="statut" class="form-select" onchange="this.form.submit()" aria-label="Filtrer par état">
-                <option value="">Tous les états</option>
-                @foreach (\App\Domain\Consultation\Enums\BookingStatus::cases() as $case)
-                    <option value="{{ $case->value }}" @selected($status === $case)>{{ $case->label() }}</option>
-                @endforeach
-            </select>
+            <x-admin.select name="statut" :options="collect(\App\Domain\Consultation\Enums\BookingStatus::cases())->mapWithKeys(fn ($c) => [$c->value => $c->label()])" :value="$status?->value" placeholder="Tous les états" class="w-56" onchange="this.form.submit()" aria-label="Filtrer par état" />
         </form>
     </x-slot:actions>
 
-    <div class="card">
+    <x-admin.card flush>
         @if ($bookings->isEmpty())
-            <div class="card-body"><x-backoffice.empty icon="calendar-event" title="Aucune réservation" /></div>
+            <x-admin.empty icon="calendar-event" title="Aucune réservation" />
         @else
-            <div class="table-responsive">
-                <table class="table table-vcenter card-table">
-                    <thead><tr><th>Créneau</th><th>Membre</th><th>Professionnel</th><th>Format</th><th>Montant</th><th>État</th></tr></thead>
-                    <tbody>
-                        @foreach ($bookings as $booking)
-                            <tr>
-                                <td>{{ $booking->slot?->starts_at->translatedFormat('D j M, H:i') ?? '—' }}</td>
-                                <td>{{ $booking->member->pseudonym }}</td>
-                                <td>{{ $booking->professional->user->name }}</td>
-                                <td>{{ $booking->mode->label() }}</td>
-                                <td><x-backoffice.money :amount="$booking->price" /></td>
-                                <td><x-backoffice.status :value="$booking->status" /></td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer">{{ $bookings->links() }}</div>
+            <x-admin.table>
+                <thead><tr><th>Créneau</th><th>Membre</th><th>Professionnel</th><th>Format</th><th class="text-end">Montant</th><th>État</th></tr></thead>
+                <tbody>
+                    @foreach ($bookings as $booking)
+                        <tr>
+                            <td class="whitespace-nowrap tabular-nums">{{ $booking->slot?->starts_at->translatedFormat('D j M, H:i') ?? '—' }}</td>
+                            <td class="font-medium">{{ $booking->member->pseudonym }}</td>
+                            <td>{{ $booking->professional->user->name }}</td>
+                            <td>{{ $booking->mode->label() }}</td>
+                            <td class="text-end"><x-admin.money :amount="$booking->price" /></td>
+                            <td><x-admin.status :value="$booking->status" /></td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </x-admin.table>
         @endif
-    </div>
-</x-backoffice.page>
+        <x-slot:footer>@if ($bookings->hasPages()){{ $bookings->links() }}@endif</x-slot:footer>
+    </x-admin.card>
+</x-admin.page>

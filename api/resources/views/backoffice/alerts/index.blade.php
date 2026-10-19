@@ -1,73 +1,61 @@
-<x-backoffice.page title="Alertes" pretitle="Supervision">
+<x-admin.page title="Alertes" description="Protocole d'urgence : prise en charge et compte rendu de chaque alerte.">
     <x-slot:actions>
-        <div class="btn-group" role="group" aria-label="Filtrer par état">
-            <a href="{{ route('backoffice.alerts.index') }}" @class(['btn', 'active' => ! $status])>En cours</a>
-            <a href="{{ route('backoffice.alerts.index', ['statut' => 'resolved']) }}" @class(['btn', 'active' => $status?->value === 'resolved'])>Résolues</a>
+        <div class="inline-flex rounded-lg bg-muted p-1 text-sm" role="tablist">
+            <a href="{{ route('backoffice.alerts.index') }}" @class(['rounded-md px-3 py-1.5 font-medium', 'bg-background shadow-xs' => ! $status, 'text-muted-foreground hover:text-foreground' => $status])>En cours</a>
+            <a href="{{ route('backoffice.alerts.index', ['statut' => 'resolved']) }}" @class(['rounded-md px-3 py-1.5 font-medium', 'bg-background shadow-xs' => $status?->value === 'resolved', 'text-muted-foreground hover:text-foreground' => $status?->value !== 'resolved'])>Résolues</a>
         </div>
     </x-slot:actions>
 
-    <div class="card" data-live-alerts>
+    <x-admin.card flush data-live-alerts>
         @if ($alerts->isEmpty())
-            <div class="card-body"><x-backoffice.empty icon="shield-check" title="Aucune alerte" subtitle="Les nouvelles alertes apparaissent ici en temps réel." /></div>
+            <x-admin.empty icon="shield-check" title="Aucune alerte" subtitle="Les nouvelles alertes apparaissent ici en temps réel." />
         @else
-            <div class="table-responsive">
-                <table class="table table-vcenter card-table">
-                    <thead>
-                        <tr><th>Niveau</th><th>Origine</th><th>Membre</th><th>Écoutant</th><th>État</th><th>Reçue</th><th class="w-1"></th></tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($alerts as $alert)
-                            <tr>
-                                <td><x-backoffice.status :value="$alert->level" /></td>
-                                <td>{{ $alert->source === 'sos' ? 'Bouton SOS' : 'Mots à risque' }}</td>
-                                <td>{{ $alert->member->pseudonym }}</td>
-                                <td>{{ $alert->conversation?->listener?->displayName() ?? 'En attente' }}</td>
-                                <td>
-                                    <x-backoffice.status :value="$alert->status" />
-                                    @if ($alert->handler)<div class="small text-secondary">{{ $alert->handler->displayName() }}</div>@endif
-                                </td>
-                                <td class="text-secondary">{{ $alert->created_at->diffForHumans() }}</td>
-                                <td>
-                                    <div class="btn-list flex-nowrap">
-                                        @if ($alert->conversation)
-                                            <a href="{{ route('backoffice.listening.show', $alert->conversation) }}" class="btn btn-sm">Ouvrir</a>
-                                        @endif
-                                        @if ($alert->status->value === 'open')
-                                            <form method="post" action="{{ route('backoffice.alerts.acknowledge', $alert) }}">@csrf<button class="btn btn-sm btn-primary">Prendre en charge</button></form>
-                                        @endif
-                                        @if ($alert->status->value !== 'resolved')
-                                            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#resolve-{{ $alert->id }}">Résoudre</button>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                            @if ($alert->status->value === 'resolved' && $alert->notes)
-                                <tr><td colspan="7" class="text-secondary small pt-0"><i class="ti ti-notes"></i> {{ $alert->notes }}</td></tr>
-                            @endif
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer">{{ $alerts->links() }}</div>
+            <x-admin.table>
+                <thead><tr><th>Niveau</th><th>Origine</th><th>Membre</th><th>Écoutant</th><th>État</th><th>Reçue</th><th class="text-end">Actions</th></tr></thead>
+                <tbody>
+                    @foreach ($alerts as $alert)
+                        <tr>
+                            <td><x-admin.status :value="$alert->level" /></td>
+                            <td>{{ $alert->source === 'sos' ? 'Bouton SOS' : 'Mots à risque' }}</td>
+                            <td class="font-medium">{{ $alert->member->pseudonym }}</td>
+                            <td class="text-muted-foreground">{{ $alert->conversation?->listener?->displayName() ?? 'En attente' }}</td>
+                            <td>
+                                <x-admin.status :value="$alert->status" />
+                                @if ($alert->handler)<p class="mt-1 text-xs text-muted-foreground">{{ $alert->handler->displayName() }}</p>@endif
+                                @if ($alert->notes)<p class="mt-1 max-w-xs text-xs text-muted-foreground">{{ $alert->notes }}</p>@endif
+                            </td>
+                            <td class="text-muted-foreground whitespace-nowrap">{{ $alert->created_at->diffForHumans() }}</td>
+                            <td>
+                                <div class="flex justify-end gap-2">
+                                    @if ($alert->conversation)
+                                        <x-admin.button :href="route('backoffice.listening.show', $alert->conversation)" variant="outline" size="sm">Ouvrir</x-admin.button>
+                                    @endif
+                                    @if ($alert->status->value === 'open')
+                                        <form method="post" action="{{ route('backoffice.alerts.acknowledge', $alert) }}">@csrf<x-admin.button size="sm">Prendre en charge</x-admin.button></form>
+                                    @endif
+                                    @if ($alert->status->value !== 'resolved')
+                                        <x-admin.button type="button" variant="success" size="sm" data-hs-overlay="#resolve-{{ $alert->id }}">Résoudre</x-admin.button>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </x-admin.table>
         @endif
-    </div>
+        <x-slot:footer>@if ($alerts->hasPages()){{ $alerts->links() }}@endif</x-slot:footer>
+    </x-admin.card>
 
     @foreach ($alerts->where('status.value', '!=', 'resolved') as $alert)
-        <div class="modal modal-blur fade" id="resolve-{{ $alert->id }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <form method="post" action="{{ route('backoffice.alerts.resolve', $alert) }}" class="modal-content">
-                    @csrf
-                    <div class="modal-header"><h2 class="modal-title h3">Résoudre l'alerte</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button></div>
-                    <div class="modal-body">
-                        <label class="form-label" for="notes-{{ $alert->id }}">Compte rendu</label>
-                        <textarea id="notes-{{ $alert->id }}" name="notes" rows="4" class="form-control" required placeholder="Actions menées, orientation proposée, suivi prévu…"></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-success">Marquer comme résolue</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <x-admin.modal :id="'resolve-'.$alert->id" title="Résoudre l'alerte" description="Le compte rendu est conservé pour la supervision clinique.">
+            <form method="post" action="{{ route('backoffice.alerts.resolve', $alert) }}" class="grid gap-4 px-6 py-6">
+                @csrf
+                <x-admin.textarea :id="'notes-'.$alert->id" name="notes" label="Compte rendu" required placeholder="Actions menées, orientation proposée, suivi prévu…" />
+                <div class="flex justify-end gap-2">
+                    <x-admin.button type="button" variant="outline" :data-hs-overlay="'#resolve-'.$alert->id">Annuler</x-admin.button>
+                    <x-admin.button variant="success">Marquer comme résolue</x-admin.button>
+                </div>
+            </form>
+        </x-admin.modal>
     @endforeach
-</x-backoffice.page>
+</x-admin.page>

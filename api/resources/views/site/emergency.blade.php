@@ -15,7 +15,7 @@
                                 <span class="block text-lg font-semibold">{{ $contact->label }}</span>
                                 @if ($contact->description)<span class="block mt-1 text-sm text-muted-foreground">{{ $contact->description }}</span>@endif
                             </span>
-                            <span class="inline-flex items-center gap-x-2 rounded-full bg-sos px-5 py-3 text-2xl font-semibold text-white"><x-site.icon name="phone-call" />{{ $contact->phone }}</span>
+                            <span class="inline-flex items-center gap-x-2 rounded-full bg-sos px-5 py-3 text-2xl font-semibold text-white"><x-icon name="phone-call" />{{ $contact->phone }}</span>
                         </a>
                     </li>
                 @endforeach

@@ -1,54 +1,49 @@
-<x-backoffice.page title="Signalements" pretitle="Modération">
+@php($resolutions = \App\Http\Controllers\Backoffice\ReportController::RESOLUTIONS)
+<x-admin.page title="Signalements" description="Modération des comportements signalés par les membres et les écoutants.">
     <x-slot:actions>
-        <div class="btn-group" role="group" aria-label="Filtrer par état">
+        <div class="inline-flex rounded-lg bg-muted p-1 text-sm">
             @foreach (\App\Domain\Listening\Enums\ReportStatus::cases() as $case)
-                <a href="{{ route('backoffice.reports.index', ['statut' => $case->value]) }}" @class(['btn', 'active' => $status === $case])>{{ $case->label() }}</a>
+                <a href="{{ route('backoffice.reports.index', ['statut' => $case->value]) }}" @class(['rounded-md px-3 py-1.5 font-medium', 'bg-background shadow-xs' => $status === $case, 'text-muted-foreground hover:text-foreground' => $status !== $case])>{{ $case->label() }}</a>
             @endforeach
         </div>
     </x-slot:actions>
 
-    <div class="card">
+    <x-admin.card flush>
         @if ($reports->isEmpty())
-            <div class="card-body"><x-backoffice.empty icon="flag" title="Aucun signalement {{ mb_strtolower($status->label()) }}" /></div>
+            <x-admin.empty icon="flag" :title="'Aucun signalement « '.mb_strtolower($status->label()).' »'" />
         @else
-            <div class="table-responsive">
-                <table class="table table-vcenter card-table">
-                    <thead><tr><th>Motif</th><th>Signalé par</th><th>Personne signalée</th><th>Message</th><th>Reçu</th><th class="w-1"></th></tr></thead>
-                    <tbody>
-                        @foreach ($reports as $report)
-                            <tr>
-                                <td>
-                                    <strong>{{ $report->reasonLabel() }}</strong>
-                                    @if ($report->details)<div class="small text-secondary">{{ $report->details }}</div>@endif
-                                </td>
-                                <td>{{ $report->reporter->displayName() }}</td>
-                                <td>
-                                    {{ $report->reportedUser?->displayName() ?? '—' }}
-                                    @if ($report->reportedUser?->isSuspended())<span class="badge bg-red-lt ms-1">Suspendu</span>@endif
-                                </td>
-                                <td class="text-secondary w-25"><div class="text-truncate">{{ $report->message?->body ?? '—' }}</div></td>
-                                <td class="text-secondary">{{ $report->created_at->diffForHumans() }}</td>
-                                <td>
-                                    @if ($report->status->value === 'pending')
-                                        <form method="post" action="{{ route('backoffice.reports.resolve', $report) }}" class="d-flex gap-2">
-                                            @csrf
-                                            <select name="resolution" class="form-select form-select-sm" aria-label="Décision">
-                                                @foreach (\App\Http\Controllers\Backoffice\ReportController::RESOLUTIONS as $value => $label)
-                                                    <option value="{{ $value }}">{{ $label }}</option>
-                                                @endforeach
-                                            </select>
-                                            <button class="btn btn-sm btn-primary">Valider</button>
-                                        </form>
-                                    @else
-                                        <span class="text-secondary small">{{ \App\Http\Controllers\Backoffice\ReportController::RESOLUTIONS[$report->resolution] ?? '' }} · {{ $report->moderator?->displayName() }}</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer">{{ $reports->links() }}</div>
+            <x-admin.table>
+                <thead><tr><th>Motif</th><th>Signalé par</th><th>Personne signalée</th><th>Message</th><th>Reçu</th><th class="text-end">Décision</th></tr></thead>
+                <tbody>
+                    @foreach ($reports as $report)
+                        <tr>
+                            <td>
+                                <p class="font-medium">{{ $report->reasonLabel() }}</p>
+                                @if ($report->details)<p class="mt-0.5 max-w-xs text-xs text-muted-foreground">{{ $report->details }}</p>@endif
+                            </td>
+                            <td>{{ $report->reporter->displayName() }}</td>
+                            <td>
+                                {{ $report->reportedUser?->displayName() ?? '—' }}
+                                @if ($report->reportedUser?->isSuspended())<x-admin.badge variant="destructive" class="ms-1">Suspendu</x-admin.badge>@endif
+                            </td>
+                            <td class="max-w-56"><p class="truncate text-muted-foreground">{{ $report->message?->body ?? '—' }}</p></td>
+                            <td class="text-muted-foreground whitespace-nowrap">{{ $report->created_at->diffForHumans() }}</td>
+                            <td>
+                                @if ($report->status->value === 'pending')
+                                    <form method="post" action="{{ route('backoffice.reports.resolve', $report) }}" class="flex justify-end gap-2">
+                                        @csrf
+                                        <x-admin.select name="resolution" :id="'resolution-'.$report->id" :options="$resolutions" class="h-8 w-52" aria-label="Décision" />
+                                        <x-admin.button size="sm">Valider</x-admin.button>
+                                    </form>
+                                @else
+                                    <p class="text-end text-xs text-muted-foreground">{{ $resolutions[$report->resolution] ?? '' }} · {{ $report->moderator?->displayName() }}</p>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </x-admin.table>
         @endif
-    </div>
-</x-backoffice.page>
+        <x-slot:footer>@if ($reports->hasPages()){{ $reports->links() }}@endif</x-slot:footer>
+    </x-admin.card>
+</x-admin.page>

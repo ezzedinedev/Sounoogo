@@ -1,4 +1,6 @@
-import '@tabler/core/dist/js/tabler.esm.js';
+import HSDropdown from 'preline/plugins/dropdown-non-auto';
+import HSOverlay from 'preline/plugins/overlay-non-auto';
+import HSCollapse from 'preline/plugins/collapse-non-auto';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
@@ -18,12 +20,45 @@ if (import.meta.env.VITE_REVERB_APP_KEY) {
 }
 
 /**
- * Comportements déclaratifs du back-office, branchés par attributs data-* :
- * - data-live-conversation="{id}" : ajoute les messages reçus en temps réel
- * - data-live-alerts : recharge la page à chaque nouvelle alerte superviseur
+ * Graphique en aires « à la shadcn » : data-area-chart='{"labels":[…],"series":[{"name":"…","data":[…]}]}'
+ */
+async function mountAreaCharts() {
+    const charts = document.querySelectorAll('[data-area-chart]');
+    if (charts.length === 0) {
+        return;
+    }
+
+    // Chargé à la demande : seules les pages avec un graphique paient son poids.
+    const { default: ApexCharts } = await import('apexcharts');
+    const css = getComputedStyle(document.documentElement);
+    const color = (name) => css.getPropertyValue(name).trim();
+
+    charts.forEach((el) => {
+        const { labels, series } = JSON.parse(el.dataset.areaChart);
+
+        new ApexCharts(el, {
+            chart: { type: 'area', height: 260, toolbar: { show: false }, zoom: { enabled: false }, fontFamily: 'inherit', parentHeightOffset: 0 },
+            series,
+            colors: [color('--chart-1'), color('--chart-2')],
+            stroke: { curve: 'smooth', width: 2 },
+            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.02, stops: [0, 95] } },
+            dataLabels: { enabled: false },
+            grid: { borderColor: color('--border'), strokeDashArray: 4, padding: { left: 8, right: 8 }, yaxis: { lines: { show: true } } },
+            xaxis: { type: 'category', categories: labels, tickAmount: 7, axisBorder: { show: false }, axisTicks: { show: false }, labels: { rotate: 0, hideOverlappingLabels: true, style: { colors: color('--muted-foreground'), fontSize: '12px' } }, tooltip: { enabled: false } },
+            yaxis: { show: false, min: 0 },
+            legend: { show: false },
+            tooltip: { theme: 'light', x: { show: true } },
+        }).render();
+    });
+}
+
+/**
+ * Comportements temps réel, branchés par attributs data-* :
+ * - data-live-conversation="{id}" : ajoute les messages reçus
+ * - data-live-alerts / data-live-queue : recharge la page à chaque événement
  * - data-autoscroll : garde le fil de discussion en bas
  */
-document.addEventListener('DOMContentLoaded', () => {
+function mountRealtime() {
     document.querySelectorAll('[data-autoscroll]').forEach((el) => {
         el.scrollTop = el.scrollHeight;
     });
@@ -33,10 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.querySelectorAll('[data-live-conversation]').forEach((thread) => {
-        const id = thread.dataset.liveConversation;
         const template = document.getElementById('message-template');
 
-        window.Echo.private(`conversation.${id}`).listen('.message.sent', ({ message }) => {
+        window.Echo.private(`conversation.${thread.dataset.liveConversation}`).listen('.message.sent', ({ message }) => {
             if (thread.querySelector(`[data-message-id="${message.id}"]`)) {
                 return;
             }
@@ -58,4 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('[data-live-queue]')) {
         window.Echo.private('listeners').listen('.conversation.updated', () => window.location.reload());
     }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    HSDropdown.autoInit();
+    HSOverlay.autoInit();
+    HSCollapse.autoInit();
+    mountAreaCharts();
+    mountRealtime();
 });

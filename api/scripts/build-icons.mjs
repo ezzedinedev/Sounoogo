@@ -11,6 +11,12 @@ const icons = [
     'message-circle', 'phone', 'phone-call', 'school', 'shield-check', 'sos', 'sparkles',
     'user-heart', 'users', 'video', 'x', 'brand-android', 'brand-apple', 'alert-triangle',
     'book', 'mood-smile', 'lifebuoy',
+    // Back-office
+    'layout-dashboard', 'messages', 'flag', 'calendar', 'stethoscope', 'receipt', 'tag', 'history',
+    'logout', 'external-link', 'trending-up', 'trending-down', 'send', 'circle-x', 'trash', 'plus',
+    'search', 'notes', 'arrow-left', 'layout-sidebar', 'headset', 'hourglass', 'dots-vertical',
+    'user', 'list', 'calendar-plus', 'settings', 'circle-plus', 'alert-circle', 'loader-2',
+    'selector', 'chevron-right', 'mail', 'pencil', 'player-pause', 'player-play', 'ban', 'circle-dot',
 ];
 
 const entries = icons.map((name) => {

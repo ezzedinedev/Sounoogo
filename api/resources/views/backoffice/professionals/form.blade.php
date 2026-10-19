@@ -1,77 +1,50 @@
 @php($editing = $professional->exists)
-<x-backoffice.page :title="$editing ? $professional->user->name : 'Nouveau profil professionnel'" pretitle="Professionnels">
-    <form method="post" action="{{ $editing ? route('backoffice.professionals.update', $professional) : route('backoffice.professionals.store') }}" class="card">
+<x-admin.page :title="$editing ? $professional->user->name : 'Nouveau profil professionnel'" description="Ces informations apparaissent dans l'annuaire une fois le profil vérifié.">
+    <form method="post" action="{{ $editing ? route('backoffice.professionals.update', $professional) : route('backoffice.professionals.store') }}" class="max-w-3xl">
         @csrf
         @if ($editing) @method('put') @endif
-        <div class="card-body">
-            <div class="row">
+        <x-admin.card>
+            <div class="grid gap-5">
                 @unless ($editing)
-                    <div class="col-12 mb-3">
-                        <label class="form-label required" for="user_id">Compte</label>
-                        @if ($candidates->isEmpty())
-                            <div class="alert alert-info mb-0">Aucun compte professionnel sans profil. <a href="{{ route('backoffice.users.create') }}">Crée d'abord le compte</a> avec le rôle Professionnel.</div>
-                        @else
-                            <select id="user_id" name="user_id" class="form-select" required>
-                                @foreach ($candidates as $candidate)
-                                    <option value="{{ $candidate->id }}" @selected(old('user_id', $professional->user_id) == $candidate->id)>{{ $candidate->name }} · {{ $candidate->email }}</option>
-                                @endforeach
-                            </select>
-                        @endif
-                    </div>
+                    @if ($candidates->isEmpty())
+                        <div class="rounded-lg border bg-muted/50 p-4 text-sm">Aucun compte professionnel sans profil. <a class="font-medium text-primary hover:underline" href="{{ route('backoffice.users.create') }}">Crée d'abord le compte</a> avec le rôle Professionnel.</div>
+                    @else
+                        <x-admin.select name="user_id" label="Compte" required :value="$professional->user_id" :options="$candidates->mapWithKeys(fn ($c) => [$c->id => $c->name.' · '.$c->email])" />
+                    @endif
                 @endunless
-                <div class="col-md-6 mb-3">
-                    <label class="form-label required" for="title">Titre</label>
-                    <input id="title" name="title" value="{{ old('title', $professional->title) }}" class="form-control" placeholder="Psychologue clinicienne" required>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <x-admin.input name="title" label="Titre" :value="$professional->title" placeholder="Psychologue clinicienne" required />
+                    <x-admin.input name="specialty" label="Spécialités" :value="$professional->specialty" placeholder="Anxiété, couple, deuil…" required />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label required" for="specialty">Spécialités</label>
-                    <input id="specialty" name="specialty" value="{{ old('specialty', $professional->specialty) }}" class="form-control" placeholder="Anxiété, couple, deuil…" required>
+                <x-admin.textarea name="bio" label="Présentation" :value="$professional->bio" />
+                <div class="grid gap-5 sm:grid-cols-3">
+                    <x-admin.input name="city" label="Ville" :value="$professional->city" />
+                    <x-admin.input name="license_number" label="N° d'agrément" :value="$professional->license_number" />
+                    <x-admin.input name="languages" label="Langues" :value="implode(', ', $professional->languages ?? [])" placeholder="Français, Mooré" />
                 </div>
-                <div class="col-12 mb-3">
-                    <label class="form-label" for="bio">Présentation</label>
-                    <textarea id="bio" name="bio" rows="4" class="form-control">{{ old('bio', $professional->bio) }}</textarea>
+                <div class="grid gap-5 sm:grid-cols-3">
+                    <x-admin.input name="session_price" type="number" min="0" step="500" label="Tarif (F CFA)" :value="$professional->session_price" required />
+                    <x-admin.input name="session_minutes" type="number" min="15" max="180" label="Durée (min)" :value="$professional->session_minutes" required />
+                    <fieldset>
+                        <legend class="mb-2 text-sm font-medium">Formats <span class="text-destructive">*</span></legend>
+                        <div class="grid gap-2">
+                            @foreach (\App\Domain\Consultation\Enums\ConsultationMode::cases() as $mode)
+                                <label class="flex items-center gap-2 text-sm">
+                                    <input type="checkbox" name="modes[]" value="{{ $mode->value }}" class="size-4 rounded border-input text-primary focus:ring-ring/40" @checked(in_array($mode->value, old('modes', $professional->modes ?? []), true))>
+                                    {{ $mode->label() }}
+                                </label>
+                            @endforeach
+                        </div>
+                    </fieldset>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label" for="city">Ville</label>
-                    <input id="city" name="city" value="{{ old('city', $professional->city) }}" class="form-control">
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label" for="license_number">N° d'agrément / ordre</label>
-                    <input id="license_number" name="license_number" value="{{ old('license_number', $professional->license_number) }}" class="form-control">
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label" for="languages">Langues</label>
-                    <input id="languages" name="languages" value="{{ old('languages', implode(', ', $professional->languages ?? [])) }}" class="form-control" placeholder="Français, Mooré, Dioula">
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label required" for="session_price">Tarif (F CFA)</label>
-                    <input type="number" id="session_price" name="session_price" min="0" step="500" value="{{ old('session_price', $professional->session_price) }}" class="form-control" required>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label required" for="session_minutes">Durée (min)</label>
-                    <input type="number" id="session_minutes" name="session_minutes" min="15" max="180" value="{{ old('session_minutes', $professional->session_minutes) }}" class="form-control" required>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="form-label required">Formats</div>
-                    @foreach (\App\Domain\Consultation\Enums\ConsultationMode::cases() as $mode)
-                        <label class="form-check form-check-inline">
-                            <input type="checkbox" name="modes[]" value="{{ $mode->value }}" class="form-check-input" @checked(in_array($mode->value, old('modes', $professional->modes ?? []), true))>
-                            <span class="form-check-label">{{ $mode->label() }}</span>
-                        </label>
-                    @endforeach
-                </div>
-                <div class="col-12">
-                    <label class="form-check form-switch">
-                        <input type="hidden" name="is_active" value="0">
-                        <input type="checkbox" name="is_active" value="1" class="form-check-input" @checked(old('is_active', $professional->is_active ?? true))>
-                        <span class="form-check-label">Profil actif (réservable une fois vérifié)</span>
-                    </label>
-                </div>
+                <x-admin.switch name="is_active" label="Profil actif" description="Réservable une fois vérifié." :checked="$professional->is_active ?? true" />
             </div>
-        </div>
-        <div class="card-footer text-end">
-            <a href="{{ route('backoffice.professionals.index') }}" class="btn">Annuler</a>
-            <button class="btn btn-primary" type="submit">Enregistrer</button>
-        </div>
+            <x-slot:footer>
+                <div class="ms-auto flex gap-2">
+                    <x-admin.button :href="route('backoffice.professionals.index')" variant="outline">Annuler</x-admin.button>
+                    <x-admin.button>Enregistrer</x-admin.button>
+                </div>
+            </x-slot:footer>
+        </x-admin.card>
     </form>
-</x-backoffice.page>
+</x-admin.page>

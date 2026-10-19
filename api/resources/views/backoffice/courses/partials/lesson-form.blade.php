@@ -1,31 +1,15 @@
 @php($key = $lesson->id ?? 'new')
-<form method="post" action="{{ $action }}">
+<form method="post" action="{{ $action }}" class="grid gap-4">
     @csrf
     @if ($method !== 'post') @method($method) @endif
-    <div class="row">
-        <div class="col-md-8 mb-3">
-            <label class="form-label required" for="title-{{ $key }}">Titre</label>
-            <input id="title-{{ $key }}" name="title" value="{{ $lesson->title }}" class="form-control" required>
-        </div>
-        <div class="col-md-4 mb-3">
-            <label class="form-label required" for="duration-{{ $key }}">Durée (min)</label>
-            <input type="number" id="duration-{{ $key }}" name="duration_minutes" min="1" value="{{ $lesson->duration_minutes }}" class="form-control" required>
-        </div>
+    <div class="grid gap-4 sm:grid-cols-4">
+        <div class="sm:col-span-3"><x-admin.input :id="'title-'.$key" name="title" label="Titre" :value="$lesson->title" required /></div>
+        <x-admin.input :id="'duration-'.$key" name="duration_minutes" type="number" min="1" label="Durée (min)" :value="$lesson->duration_minutes" required />
     </div>
-    <div class="mb-3">
-        <label class="form-label required" for="content-{{ $key }}">Contenu (Markdown)</label>
-        <textarea id="content-{{ $key }}" name="content" rows="6" class="form-control" required>{{ $lesson->content }}</textarea>
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="video-{{ $key }}">Vidéo (URL)</label>
-        <input type="url" id="video-{{ $key }}" name="video_url" value="{{ $lesson->video_url }}" class="form-control">
-    </div>
-    <div class="d-flex justify-content-between align-items-center">
-        <label class="form-check form-switch mb-0">
-            <input type="hidden" name="is_preview" value="0">
-            <input type="checkbox" name="is_preview" value="1" class="form-check-input" @checked($lesson->is_preview)>
-            <span class="form-check-label">Leçon d'aperçu (gratuite)</span>
-        </label>
-        <button class="btn btn-primary" type="submit">{{ $method === 'post' ? 'Ajouter' : 'Enregistrer' }}</button>
+    <x-admin.textarea :id="'content-'.$key" name="content" label="Contenu (Markdown)" :value="$lesson->content" rows="6" required />
+    <x-admin.input :id="'video-'.$key" name="video_url" type="url" label="Vidéo (URL)" :value="$lesson->video_url" />
+    <div class="flex items-center justify-between gap-4">
+        <x-admin.switch name="is_preview" label="Leçon d'aperçu (gratuite)" :checked="$lesson->is_preview" />
+        <x-admin.button>{{ $method === 'post' ? 'Ajouter' : 'Enregistrer' }}</x-admin.button>
     </div>
 </form>

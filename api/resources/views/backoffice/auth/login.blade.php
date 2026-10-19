@@ -9,39 +9,39 @@
     @fonts
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
 </head>
-<body class="d-flex flex-column">
-<div class="page page-center">
-    <div class="container container-tight py-4">
-        <div class="text-center mb-4">
-            <a href="{{ route('home') }}" class="navbar-brand gap-2">
-                <img src="{{ asset('favicon.svg') }}" alt="" width="36" height="36">
-                <span class="h2 mb-0">SUNOOGO</span>
-            </a>
-        </div>
-        <div class="card card-md">
-            <div class="card-body">
-                <h1 class="h2 text-center mb-2">Espace équipe</h1>
-                <p class="text-secondary text-center mb-4">Écoutants, superviseurs, professionnels et administrateurs.</p>
-                <form method="post" action="{{ route('backoffice.login.store') }}" autocomplete="off" novalidate>
+<body class="bg-background">
+<div class="grid min-h-dvh lg:grid-cols-2">
+    <div class="flex flex-col p-6 md:p-10">
+        <a href="{{ route('home') }}" class="flex items-center gap-2.5 font-semibold">
+            <img src="{{ asset('images/brand/logo-badge.svg') }}" alt="" class="size-8">SUNOOGO
+        </a>
+        <div class="flex flex-1 items-center justify-center">
+            <div class="w-full max-w-sm">
+                <div class="mb-8 text-center">
+                    <h1 class="text-2xl font-semibold tracking-tight">Espace équipe</h1>
+                    <p class="mt-2 text-sm text-muted-foreground">Écoutants, superviseurs, professionnels et administrateurs.</p>
+                </div>
+                <form method="post" action="{{ route('backoffice.login.store') }}" class="grid gap-5" novalidate>
                     @csrf
-                    <div class="mb-3">
-                        <label class="form-label" for="email">Adresse e-mail</label>
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" @class(['form-control', 'is-invalid' => $errors->has('email')]) autocomplete="username" required autofocus>
-                        @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="password">Mot de passe</label>
-                        <input type="password" id="password" name="password" class="form-control" autocomplete="current-password" required>
-                    </div>
-                    <label class="form-check mb-3">
-                        <input type="checkbox" name="remember" value="1" class="form-check-input">
-                        <span class="form-check-label">Rester connecté sur cet appareil</span>
+                    <x-admin.input name="email" type="email" label="Adresse e-mail" autocomplete="username" required autofocus placeholder="prenom@exemple.org" />
+                    <x-admin.input name="password" type="password" label="Mot de passe" autocomplete="current-password" required />
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="checkbox" name="remember" value="1" class="size-4 rounded border-input text-primary focus:ring-ring/40">
+                        Rester connecté sur cet appareil
                     </label>
-                    <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                    <x-admin.button class="w-full">Se connecter</x-admin.button>
                 </form>
+                <p class="mt-8 text-center text-xs text-muted-foreground">Accès réservé. Toutes les actions sont journalisées.</p>
             </div>
         </div>
-        <p class="text-center text-secondary mt-3 small">Accès réservé. Toutes les actions sont journalisées.</p>
+    </div>
+    <div class="relative hidden overflow-hidden bg-primary lg:block">
+        <img src="{{ asset('images/site/hero-lyra.webp') }}" alt="" class="absolute inset-0 size-full object-cover object-[70%_center] opacity-90">
+        <div class="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent"></div>
+        <blockquote class="absolute inset-x-10 bottom-10 text-white">
+            <p class="text-2xl font-medium leading-snug">« Écouter sans juger, c'est déjà aider. »</p>
+            <footer class="mt-3 text-sm text-white/75">Principe d'écoute SUNOOGO</footer>
+        </blockquote>
     </div>
 </div>
 </body>

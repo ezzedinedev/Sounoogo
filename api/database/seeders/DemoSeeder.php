@@ -6,6 +6,10 @@ use App\Domain\Consultation\Models\ProfessionalProfile;
 use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Models\Course;
+use App\Domain\Listening\Enums\AlertStatus;
+use App\Domain\Listening\Enums\ConversationStatus;
+use App\Domain\Listening\Enums\RiskLevel;
+use App\Domain\Listening\Models\Conversation;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -29,6 +33,48 @@ class DemoSeeder extends Seeder
 
         $this->professionals();
         $this->courses();
+        $this->history();
+    }
+
+    /** Historique d'activité sur 30 jours, pour que le tableau de bord de démo soit lisible. */
+    private function history(): void
+    {
+        if (Conversation::where('created_at', '<', now()->subDay())->exists()) {
+            return;
+        }
+
+        $listeners = User::role(Role::Listener->value)->pluck('id');
+
+        foreach (range(29, 1) as $daysAgo) {
+            foreach (range(1, random_int(1, 6)) as $i) {
+                $member = User::factory()->role(Role::Member)->anonymous()->create(['created_at' => now()->subDays($daysAgo)]);
+                $openedAt = now()->subDays($daysAgo)->setTime(random_int(8, 23), random_int(0, 59));
+
+                $conversation = Conversation::create([
+                    'member_id' => $member->id,
+                    'listener_id' => $listeners->random(),
+                    'status' => ConversationStatus::Closed,
+                    'risk_level' => random_int(1, 10) === 1 ? RiskLevel::High : RiskLevel::None,
+                    'assigned_at' => $openedAt->copy()->addMinutes(random_int(1, 8)),
+                    'closed_at' => $openedAt->copy()->addMinutes(random_int(15, 70)),
+                    'closed_reason' => 'member',
+                    'member_rating' => random_int(3, 5),
+                ]);
+                $conversation->forceFill(['created_at' => $openedAt, 'updated_at' => $openedAt])->saveQuietly();
+
+                if ($conversation->risk_level === RiskLevel::High) {
+                    $alert = $conversation->alerts()->create([
+                        'member_id' => $member->id,
+                        'source' => 'keyword',
+                        'level' => RiskLevel::High,
+                        'status' => AlertStatus::Resolved,
+                        'resolved_at' => $openedAt->copy()->addHour(),
+                        'notes' => 'Orientation vers le 18 proposée, membre rassuré. Suivi le lendemain.',
+                    ]);
+                    $alert->forceFill(['created_at' => $openedAt])->saveQuietly();
+                }
+            }
+        }
     }
 
     private function staff(string $email, string $name, Role $role): User

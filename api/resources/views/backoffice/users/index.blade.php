@@ -1,59 +1,55 @@
-<x-backoffice.page title="Utilisateurs" pretitle="Administration">
+@php use App\Domain\Identity\Enums\Role; @endphp
+<x-admin.page title="Utilisateurs" description="Membres et comptes de l'équipe. Les membres n'apparaissent que sous leur pseudonyme.">
     <x-slot:actions>
-        <a href="{{ route('backoffice.users.create') }}" class="btn btn-primary"><i class="ti ti-plus icon"></i>Compte équipe</a>
+        <x-admin.button :href="route('backoffice.users.create')" icon="plus">Compte équipe</x-admin.button>
     </x-slot:actions>
 
-    <div class="card">
-        <div class="card-body border-bottom py-3">
-            <form method="get" class="row g-2">
-                <div class="col-md-5"><input type="search" name="q" value="{{ request('q') }}" class="form-control" placeholder="Pseudonyme, nom ou e-mail" aria-label="Rechercher"></div>
-                <div class="col-md-4">
-                    <select name="role" class="form-select" aria-label="Rôle">
-                        <option value="">Tous les rôles</option>
-                        @foreach (\App\Domain\Identity\Enums\Role::cases() as $case)
-                            <option value="{{ $case->value }}" @selected($role === $case)>{{ $case->label() }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3"><button class="btn w-100" type="submit">Filtrer</button></div>
-            </form>
-        </div>
-        @if ($users->isEmpty())
-            <div class="card-body"><x-backoffice.empty icon="users" title="Aucun utilisateur trouvé" /></div>
-        @else
-            <div class="table-responsive">
-                <table class="table table-vcenter card-table">
-                    <thead><tr><th>Utilisateur</th><th>Rôle</th><th>Type de compte</th><th>Inscrit</th><th>Dernière activité</th><th class="w-1"></th></tr></thead>
-                    <tbody>
-                        @foreach ($users as $user)
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="avatar avatar-sm">{{ mb_substr($user->name ?? $user->pseudonym, 0, 1) }}</span>
-                                        <div>
-                                            <div>{{ $user->isOneOf(\App\Domain\Identity\Enums\Role::Member) ? $user->pseudonym : ($user->name ?? $user->pseudonym) }}</div>
-                                            @unless ($user->isOneOf(\App\Domain\Identity\Enums\Role::Member))<div class="small text-secondary">{{ $user->email }}</div>@endunless
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ $user->primaryRole()?->label() }}</td>
-                                <td>{{ $user->is_anonymous ? 'Anonyme' : 'Identifiants' }}</td>
-                                <td class="text-secondary">{{ $user->created_at->translatedFormat('j M Y') }}</td>
-                                <td class="text-secondary">{{ $user->last_seen_at?->diffForHumans() ?? '—' }}</td>
-                                <td>
-                                    @if (! $user->is(auth()->user()))
-                                        <form method="post" action="{{ route('backoffice.users.suspension', $user) }}" onsubmit="return confirm('{{ $user->isSuspended() ? 'Réactiver' : 'Suspendre' }} ce compte ?')">
-                                            @csrf
-                                            <button @class(['btn btn-sm', 'btn-outline-danger' => ! $user->isSuspended(), 'btn-outline-success' => $user->isSuspended()])>{{ $user->isSuspended() ? 'Réactiver' : 'Suspendre' }}</button>
-                                        </form>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <x-admin.card flush>
+        <form method="get" class="flex flex-col gap-2 border-b p-4 sm:flex-row">
+            <div class="relative flex-1">
+                <x-icon name="search" :size="16" class="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input type="search" name="q" value="{{ request('q') }}" placeholder="Pseudonyme, nom ou e-mail" aria-label="Rechercher" class="h-9 w-full rounded-md border border-input bg-background ps-9 pe-3 text-sm shadow-xs focus-visible:outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/40">
             </div>
-            <div class="card-footer">{{ $users->links() }}</div>
+            <x-admin.select name="role" :options="collect(Role::cases())->mapWithKeys(fn ($r) => [$r->value => $r->label()])" :value="$role?->value" placeholder="Tous les rôles" class="sm:w-48" aria-label="Rôle" />
+            <x-admin.button variant="outline">Filtrer</x-admin.button>
+        </form>
+        @if ($users->isEmpty())
+            <x-admin.empty icon="users" title="Aucun utilisateur trouvé" />
+        @else
+            <x-admin.table>
+                <thead><tr><th>Utilisateur</th><th>Rôle</th><th>Compte</th><th>Inscrit</th><th>Dernière activité</th><th></th></tr></thead>
+                <tbody>
+                    @foreach ($users as $user)
+                        @php($isMember = $user->isOneOf(Role::Member))
+                        <tr>
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <span class="inline-flex size-8 items-center justify-center rounded-full bg-muted text-xs font-semibold">{{ mb_substr($isMember ? $user->pseudonym : ($user->name ?? $user->pseudonym), 0, 1) }}</span>
+                                    <div>
+                                        <p class="font-medium">{{ $isMember ? $user->pseudonym : ($user->name ?? $user->pseudonym) }}</p>
+                                        @unless ($isMember)<p class="text-xs text-muted-foreground">{{ $user->email }}</p>@endunless
+                                    </div>
+                                </div>
+                            </td>
+                            <td><x-admin.badge variant="outline">{{ $user->primaryRole()?->label() }}</x-admin.badge></td>
+                            <td class="text-muted-foreground">{{ $user->is_anonymous ? 'Anonyme' : 'Identifiants' }}</td>
+                            <td class="text-muted-foreground whitespace-nowrap">{{ $user->created_at->translatedFormat('j M Y') }}</td>
+                            <td class="text-muted-foreground whitespace-nowrap">
+                                @if ($user->isSuspended())<x-admin.badge variant="destructive">Suspendu</x-admin.badge>@else{{ $user->last_seen_at?->diffForHumans() ?? '—' }}@endif
+                            </td>
+                            <td class="text-end">
+                                @unless ($user->is(auth()->user()))
+                                    <form method="post" action="{{ route('backoffice.users.suspension', $user) }}" onsubmit="return confirm('{{ $user->isSuspended() ? 'Réactiver' : 'Suspendre' }} ce compte ?')">
+                                        @csrf
+                                        <x-admin.button variant="outline" size="sm" :class="$user->isSuspended() ? '' : 'text-destructive'">{{ $user->isSuspended() ? 'Réactiver' : 'Suspendre' }}</x-admin.button>
+                                    </form>
+                                @endunless
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </x-admin.table>
         @endif
-    </div>
-</x-backoffice.page>
+        <x-slot:footer>@if ($users->hasPages()){{ $users->links() }}@endif</x-slot:footer>
+    </x-admin.card>
+</x-admin.page>

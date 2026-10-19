@@ -33,8 +33,8 @@
                             SUNOOGO
                         </a>
                         <button type="button" class="hs-collapse-toggle md:hidden inline-flex items-center justify-center size-10 rounded-full text-foreground hover:bg-primary-50" id="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Ouvrir le menu" data-hs-collapse="#nav-menu">
-                            <x-site.icon name="menu-2" class="hs-collapse-open:hidden" />
-                            <x-site.icon name="x" class="hidden hs-collapse-open:block" />
+                            <x-icon name="menu-2" class="hs-collapse-open:hidden" />
+                            <x-icon name="x" class="hidden hs-collapse-open:block" />
                         </button>
                     </div>
 
@@ -55,7 +55,7 @@
                             </div>
                             <div class="flex flex-col md:flex-row md:items-center gap-2 mt-2 md:mt-0">
                                 <a href="{{ route('login') }}" class="inline-flex items-center gap-x-2 px-3.5 py-2 text-[15px] font-medium text-primary-950/80 hover:text-primary-950">
-                                    Espace équipe <span class="inline-flex size-7 items-center justify-center rounded-full bg-white ring-1 ring-primary-100"><x-site.icon name="arrow-up-right" :size="14" /></span>
+                                    Espace équipe <span class="inline-flex size-7 items-center justify-center rounded-full bg-white ring-1 ring-primary-100"><x-icon name="arrow-up-right" :size="14" /></span>
                                 </a>
                                 <x-site.button :href="route('home').'#application'">Télécharger l'app</x-site.button>
                             </div>
@@ -97,8 +97,8 @@
             <div class="md:col-span-2">
                 <p class="text-sm text-muted-foreground">Application</p>
                 <ul class="mt-4 space-y-3 text-[15px] text-muted-foreground-1">
-                    <li class="inline-flex items-center gap-x-2"><x-site.icon name="brand-android" :size="18" />Android · bientôt</li>
-                    <li class="inline-flex items-center gap-x-2"><x-site.icon name="brand-apple" :size="18" />iPhone · bientôt</li>
+                    <li class="inline-flex items-center gap-x-2"><x-icon name="brand-android" :size="18" />Android · bientôt</li>
+                    <li class="inline-flex items-center gap-x-2"><x-icon name="brand-apple" :size="18" />iPhone · bientôt</li>
                 </ul>
             </div>
         </x-site.container>

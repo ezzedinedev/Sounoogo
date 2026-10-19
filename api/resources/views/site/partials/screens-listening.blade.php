@@ -21,7 +21,7 @@
         <div class="mt-4 rounded-full bg-white/10 px-3 py-2 text-[11px] text-primary-200">Écris ce que tu ressens…</div>
     </div>
     <div class="rounded-3xl bg-linear-to-b from-lilas-100 to-white ring-1 ring-primary-100 p-5 text-center">
-        <span class="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-white text-primary-700 shadow-sm"><x-site.icon name="lock" :size="22" /></span>
+        <span class="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-white text-primary-700 shadow-sm"><x-icon name="lock" :size="22" /></span>
         <p class="mt-3 text-sm font-medium">Ton code de récupération</p>
         <p class="mt-2 rounded-xl bg-white px-2 py-2 font-mono text-xs tracking-wider">K7QP-2M9X-R4TA</p>
         <p class="mt-2 text-[11px] text-muted-foreground">Toi seul·e le connais.</p>

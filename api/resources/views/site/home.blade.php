@@ -23,7 +23,7 @@
             </div>
 
             <a href="{{ route('emergency') }}" class="hidden md:flex absolute bottom-10 end-10 max-w-xs items-center gap-x-4 rounded-2xl bg-white/15 p-4 pe-5 backdrop-blur-md ring-1 ring-white/25 hover:bg-white/20">
-                <span class="inline-flex size-12 shrink-0 items-center justify-center rounded-xl bg-white text-sos"><x-site.icon name="lifebuoy" :size="24" /></span>
+                <span class="inline-flex size-12 shrink-0 items-center justify-center rounded-xl bg-white text-sos"><x-icon name="lifebuoy" :size="24" /></span>
                 <span class="text-sm leading-snug">
                     <span class="block font-semibold">En danger maintenant ?</span>
                     <span class="text-white/80">Police 17 · Pompiers 18. Le bouton SOS de l'app prévient un superviseur.</span>
@@ -44,7 +44,7 @@
                     ['shield-check', 'Supervisé', 'Un superviseur veille'],
                 ] as [$icon, $title, $text])
                     <li class="flex flex-col items-center text-center">
-                        <span class="inline-flex size-14 items-center justify-center rounded-2xl bg-primary-50 text-primary-700"><x-site.icon :name="$icon" :size="26" /></span>
+                        <span class="inline-flex size-14 items-center justify-center rounded-2xl bg-primary-50 text-primary-700"><x-icon :name="$icon" :size="26" /></span>
                         <span class="mt-4 text-lg font-medium">{{ $title }}</span>
                         <span class="mt-1 text-sm text-muted-foreground">{{ $text }}</span>
                     </li>
@@ -111,7 +111,7 @@
                                     <span class="size-2 rounded-full bg-primary-500 opacity-0 hs-accordion-active:opacity-100 transition-opacity"></span>
                                     {{ $title }}
                                 </span>
-                                <x-site.icon name="arrow-right" :size="22" class="transition-transform hs-accordion-active:rotate-90" />
+                                <x-icon name="arrow-right" :size="22" class="transition-transform hs-accordion-active:rotate-90" />
                             </button>
                             <div id="pour-{{ $index }}-content" @class(['hs-accordion-content w-full overflow-hidden transition-[height] duration-300', 'hidden' => $index !== 0]) role="region" aria-labelledby="pour-{{ $index }}">
                                 <p class="pb-7 ps-5 text-[17px] leading-relaxed text-muted-foreground-1">{{ $text }}</p>
@@ -205,7 +205,7 @@
                         </p>
                         <ul class="mt-8 space-y-3 text-[15px] flex-1">
                             @foreach ($offer['features'] as $feature)
-                                <li class="flex gap-x-2.5"><x-site.icon name="check" :size="18" @class(['mt-0.5', 'text-lilas-200' => $featured, 'text-primary-600' => ! $featured]) />{{ $feature }}</li>
+                                <li class="flex gap-x-2.5"><x-icon name="check" :size="18" @class(['mt-0.5', 'text-lilas-200' => $featured, 'text-primary-600' => ! $featured]) />{{ $feature }}</li>
                             @endforeach
                         </ul>
                         <x-site.button href="#application" :variant="$featured ? 'white' : 'primary'" class="mt-10">{{ $offer['price'] === 0 ? 'Commencer' : 'Choisir '.$offer['name'] }}</x-site.button>
@@ -225,7 +225,7 @@
                     <div class="hs-accordion border-b border-primary-200 last:border-b-0" id="faq-{{ $index }}">
                         <button type="button" class="hs-accordion-toggle w-full py-7 inline-flex items-center justify-between gap-x-6 text-start text-xl sm:text-2xl font-medium text-foreground" aria-expanded="false" aria-controls="faq-{{ $index }}-content">
                             {{ $question }}
-                            <x-site.icon name="x" :size="22" class="shrink-0 rotate-45 transition-transform hs-accordion-active:rotate-0" />
+                            <x-icon name="x" :size="22" class="shrink-0 rotate-45 transition-transform hs-accordion-active:rotate-0" />
                         </button>
                         <div id="faq-{{ $index }}-content" class="hs-accordion-content hidden w-full overflow-hidden transition-[height] duration-300" role="region" aria-labelledby="faq-{{ $index }}">
                             <p class="pb-7 pe-12 text-lg leading-relaxed text-muted-foreground-1">{{ $answer }}</p>
@@ -242,8 +242,8 @@
             <h2 class="text-4xl sm:text-5xl font-medium tracking-tight text-balance">Une écoute pensée pour <x-site.accent>la vraie vie</x-site.accent></h2>
             <p class="mt-5 text-lg text-muted-foreground-1">L'application SUNOOGO arrive sur Android et iPhone. Nous ouvrons le service en priorité au Burkina Faso.</p>
             <div class="mt-10 flex flex-col sm:flex-row justify-center gap-3">
-                <x-site.button size="lg" disabled aria-disabled="true"><x-site.icon name="brand-android" :size="20" />Android · bientôt</x-site.button>
-                <x-site.button variant="secondary" size="lg" disabled aria-disabled="true"><x-site.icon name="brand-apple" :size="20" />iPhone · bientôt</x-site.button>
+                <x-site.button size="lg" disabled aria-disabled="true"><x-icon name="brand-android" :size="20" />Android · bientôt</x-site.button>
+                <x-site.button variant="secondary" size="lg" disabled aria-disabled="true"><x-icon name="brand-apple" :size="20" />iPhone · bientôt</x-site.button>
             </div>
         </x-site.container>
     </section>

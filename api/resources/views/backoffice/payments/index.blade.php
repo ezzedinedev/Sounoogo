@@ -1,50 +1,37 @@
-<x-backoffice.page title="Paiements" pretitle="Administration">
-    <div class="row row-cards mb-3">
-        <div class="col-sm-6 col-lg-3">
-            <div class="card card-sm"><div class="card-body">
-                <div class="text-secondary">Encaissé ce mois-ci</div>
-                <div class="h2 mb-0"><x-backoffice.money :amount="$totalMonth" /></div>
-            </div></div>
-        </div>
+<x-admin.page title="Paiements" description="Wave, Orange Money et paiements de test.">
+    <div class="mb-4 grid gap-4 sm:grid-cols-3">
+        <x-admin.stat label="Encaissé ce mois-ci" :value="number_format($totalMonth, 0, ',', ' ').' F'" detail="Paiements confirmés par les prestataires" />
     </div>
 
-    <div class="card">
-        <div class="card-body border-bottom py-3">
-            <form method="get" class="row g-2">
-                <div class="col-md-5"><input type="search" name="q" value="{{ request('q') }}" class="form-control" placeholder="Référence SNG-…" aria-label="Référence"></div>
-                <div class="col-md-4">
-                    <select name="statut" class="form-select" aria-label="État">
-                        <option value="">Tous les états</option>
-                        @foreach (\App\Domain\Billing\Enums\PaymentStatus::cases() as $case)
-                            <option value="{{ $case->value }}" @selected($status === $case)>{{ $case->label() }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3"><button class="btn w-100" type="submit">Filtrer</button></div>
-            </form>
-        </div>
-        @if ($payments->isEmpty())
-            <div class="card-body"><x-backoffice.empty icon="receipt" title="Aucun paiement" /></div>
-        @else
-            <div class="table-responsive">
-                <table class="table table-vcenter card-table">
-                    <thead><tr><th>Référence</th><th>Objet</th><th>Membre</th><th>Moyen</th><th>Montant</th><th>État</th><th>Date</th></tr></thead>
-                    <tbody>
-                        @foreach ($payments as $payment)
-                            <tr>
-                                <td class="font-monospace">{{ $payment->reference }}</td>
-                                <td>{{ $payment->meta['label'] ?? '—' }}</td>
-                                <td>{{ $payment->user->pseudonym }}</td>
-                                <td>{{ $payment->provider->label() }}</td>
-                                <td><x-backoffice.money :amount="$payment->amount" /></td>
-                                <td><x-backoffice.status :value="$payment->status" /></td>
-                                <td class="text-secondary">{{ ($payment->paid_at ?? $payment->created_at)->translatedFormat('j M Y, H:i') }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <x-admin.card flush>
+        <form method="get" class="flex flex-col gap-2 border-b p-4 sm:flex-row">
+            <div class="relative flex-1">
+                <x-icon name="search" :size="16" class="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input type="search" name="q" value="{{ request('q') }}" placeholder="Référence SNG-…" aria-label="Référence" class="h-9 w-full rounded-md border border-input bg-background ps-9 pe-3 text-sm shadow-xs focus-visible:outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/40">
             </div>
-            <div class="card-footer">{{ $payments->links() }}</div>
+            <x-admin.select name="statut" :options="collect(\App\Domain\Billing\Enums\PaymentStatus::cases())->mapWithKeys(fn ($c) => [$c->value => $c->label()])" :value="$status?->value" placeholder="Tous les états" class="sm:w-48" aria-label="État" />
+            <x-admin.button variant="outline">Filtrer</x-admin.button>
+        </form>
+        @if ($payments->isEmpty())
+            <x-admin.empty icon="receipt" title="Aucun paiement" />
+        @else
+            <x-admin.table>
+                <thead><tr><th>Référence</th><th>Objet</th><th>Membre</th><th>Moyen</th><th class="text-end">Montant</th><th>État</th><th>Date</th></tr></thead>
+                <tbody>
+                    @foreach ($payments as $payment)
+                        <tr>
+                            <td class="font-mono text-xs">{{ $payment->reference }}</td>
+                            <td>{{ $payment->meta['label'] ?? '—' }}</td>
+                            <td>{{ $payment->user->pseudonym }}</td>
+                            <td><x-admin.badge variant="outline">{{ $payment->provider->label() }}</x-admin.badge></td>
+                            <td class="text-end font-medium"><x-admin.money :amount="$payment->amount" /></td>
+                            <td><x-admin.status :value="$payment->status" /></td>
+                            <td class="text-muted-foreground whitespace-nowrap">{{ ($payment->paid_at ?? $payment->created_at)->translatedFormat('j M Y, H:i') }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </x-admin.table>
         @endif
-    </div>
-</x-backoffice.page>
+        <x-slot:footer>@if ($payments->hasPages()){{ $payments->links() }}@endif</x-slot:footer>
+    </x-admin.card>
+</x-admin.page>

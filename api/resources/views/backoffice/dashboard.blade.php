@@ -1,108 +1,96 @@
-<x-backoffice.page title="Tableau de bord" :pretitle="now()->translatedFormat('l j F Y')">
-    <div class="row row-deck row-cards">
-        @php
-            $cards = [
-                ['En attente d\'écoute', $stats['waiting'], 'hourglass', $stats['waiting'] > 0 ? 'yellow' : 'secondary', route('backoffice.listening.index')],
-                ['Conversations en cours', $stats['active'], 'messages', 'blue', route('backoffice.listening.index')],
-                ['Alertes ouvertes', $stats['open_alerts'], 'alert-triangle', $stats['open_alerts'] > 0 ? 'red' : 'secondary', auth()->user()->can('alerts.manage') ? route('backoffice.alerts.index') : null],
-                ['Écoutants disponibles', $stats['listeners_online'], 'headset', 'green', null],
-            ];
-        @endphp
-        @foreach ($cards as [$label, $value, $icon, $tone, $link])
-            <div class="col-sm-6 col-lg-3">
-                <div class="card card-sm">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-auto"><span class="bg-{{ $tone }} text-white avatar"><i class="ti ti-{{ $icon }} icon"></i></span></div>
-                            <div class="col">
-                                <div class="h1 mb-0">{{ $value }}</div>
-                                <div class="text-secondary">@if ($link)<a href="{{ $link }}" class="text-reset">{{ $label }}</a>@else{{ $label }}@endif</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endforeach
+@php
+    use App\Support\Trend;
+    $conversationsTrend = new Trend($stats['conversations_week'], $stats['conversations_prev_week']);
+    $membersTrend = new Trend($stats['members_week'], $stats['members_prev_week']);
+    $revenueTrend = new Trend($stats['revenue_month'], $stats['revenue_prev_month']);
+@endphp
+<x-admin.page title="Tableau de bord" :description="ucfirst(now()->translatedFormat('l j F Y'))">
+    <x-slot:actions>
+        @can('conversations.listen')
+            <x-admin.button :href="route('backoffice.listening.index')" icon="messages">Ouvrir l'écoute</x-admin.button>
+        @endcan
+    </x-slot:actions>
 
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header"><h3 class="card-title">Conversations ouvertes · 14 derniers jours</h3></div>
-                <div class="card-body">
-                    @php($max = max(1, max($chart['values']->all())))
-                    <div class="d-flex align-items-end gap-1" style="height: 180px" role="img" aria-label="Nombre de conversations ouvertes par jour sur 14 jours">
-                        @foreach ($chart['values'] as $i => $value)
-                            <div class="flex-fill d-flex flex-column align-items-center justify-content-end h-100" title="{{ $chart['labels'][$i] }} : {{ $value }}">
-                                <div class="small text-secondary mb-1">{{ $value ?: '' }}</div>
-                                <div class="w-100 rounded-top bg-primary" style="height: {{ max(2, $value / $max * 100) }}%"></div>
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="d-flex justify-content-between small text-secondary mt-2">
-                        <span>{{ $chart['labels']->first() }}</span><span>{{ $chart['labels']->last() }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="datagrid">
-                        <div class="datagrid-item"><div class="datagrid-title">Nouveaux membres (7 j)</div><div class="datagrid-content">{{ $stats['members_week'] }}</div></div>
-                        <div class="datagrid-item"><div class="datagrid-title">Signalements à traiter</div><div class="datagrid-content">{{ $stats['pending_reports'] }}</div></div>
-                        <div class="datagrid-item"><div class="datagrid-title">Consultations confirmées</div><div class="datagrid-content">{{ $stats['bookings_upcoming'] }}</div></div>
-                        <div class="datagrid-item"><div class="datagrid-title">Revenus du mois</div><div class="datagrid-content"><x-backoffice.money :amount="$stats['revenue_month']" /></div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @if (auth()->user()->can('alerts.manage'))
-            <div class="col-lg-6">
-                <div class="card" data-live-alerts>
-                    <div class="card-header">
-                        <h3 class="card-title">Alertes en cours</h3>
-                        <div class="card-actions"><a href="{{ route('backoffice.alerts.index') }}">Tout voir</a></div>
-                    </div>
-                    @if ($alerts->isEmpty())
-                        <div class="card-body"><x-backoffice.empty icon="shield-check" title="Aucune alerte en cours" /></div>
-                    @else
-                        <div class="list-group list-group-flush">
-                            @foreach ($alerts as $alert)
-                                <a href="{{ $alert->conversation ? route('backoffice.listening.show', $alert->conversation) : route('backoffice.alerts.index') }}" class="list-group-item list-group-item-action">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <x-backoffice.status :value="$alert->level" />
-                                            <span class="ms-2">{{ $alert->source === 'sos' ? 'Bouton SOS' : 'Mots à risque détectés' }}</span>
-                                        </div>
-                                        <span class="text-secondary small">{{ $alert->created_at->diffForHumans() }}</span>
-                                    </div>
-                                </a>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
-        @endif
-
-        @if (auth()->user()->can('conversations.listen'))
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">Mes conversations</h3></div>
-                    @if ($myConversations->isEmpty())
-                        <div class="card-body"><x-backoffice.empty icon="message-circle" title="Aucune conversation en cours" subtitle="Passe en « Disponible » pour recevoir la prochaine conversation." /></div>
-                    @else
-                        <div class="list-group list-group-flush">
-                            @foreach ($myConversations as $conversation)
-                                <a href="{{ route('backoffice.listening.show', $conversation) }}" class="list-group-item list-group-item-action">
-                                    <div class="text-truncate">{{ $conversation->latestMessage?->body }}</div>
-                                    <div class="small text-secondary">{{ $conversation->updated_at->diffForHumans() }}</div>
-                                </a>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
-        @endif
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <x-admin.stat label="En attente d'écoute" :value="$stats['waiting']"
+            :badge="$stats['waiting'] > 0 ? 'À prendre' : 'À jour'" :badge-variant="$stats['waiting'] > 0 ? 'warning' : 'success'"
+            :hint="$stats['active'].' conversation'.($stats['active'] > 1 ? 's' : '').' en cours'"
+            :detail="$stats['listeners_online'].' écoutant'.($stats['listeners_online'] > 1 ? 's' : '').' disponible'.($stats['listeners_online'] > 1 ? 's' : '')"
+            :href="auth()->user()->can('conversations.listen') ? route('backoffice.listening.index') : null" />
+        <x-admin.stat label="Alertes ouvertes" :value="$stats['open_alerts']"
+            :badge="$stats['open_alerts'] > 0 ? 'Prioritaire' : 'Aucune'" :badge-variant="$stats['open_alerts'] > 0 ? 'destructive' : 'success'"
+            :badge-icon="$stats['open_alerts'] > 0 ? 'alert-triangle' : 'shield-check'"
+            :hint="$stats['pending_reports'].' signalement'.($stats['pending_reports'] > 1 ? 's' : '').' à traiter'" detail="Protocole d'urgence actif"
+            :href="auth()->user()->can('alerts.manage') ? route('backoffice.alerts.index') : null" />
+        <x-admin.stat label="Conversations · 7 j" :value="$stats['conversations_week']"
+            :badge="$conversationsTrend->label()" :badge-icon="$conversationsTrend->icon()"
+            :hint="$stats['members_week'].' nouveau'.($stats['members_week'] > 1 ? 'x' : '').' membre'.($stats['members_week'] > 1 ? 's' : '')" :detail="'Inscriptions : '.$membersTrend->label().' sur 7 jours'" />
+        <x-admin.stat label="Revenus du mois" :value="number_format($stats['revenue_month'], 0, ',', ' ').' F'"
+            :badge="$revenueTrend->label()" :badge-icon="$revenueTrend->icon()"
+            :hint="$stats['bookings_upcoming'].' consultation'.($stats['bookings_upcoming'] > 1 ? 's' : '').' confirmée'.($stats['bookings_upcoming'] > 1 ? 's' : '')" detail="Consultations, formations et abonnements" />
     </div>
-</x-backoffice.page>
+
+    <x-admin.card class="mt-4" title="Activité" description="Conversations ouvertes et alertes, 30 derniers jours">
+        <x-slot:actions>
+            <div class="flex items-center gap-4 text-xs text-muted-foreground">
+                <span class="inline-flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-chart-1"></span>Conversations</span>
+                <span class="inline-flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-chart-2"></span>Alertes</span>
+            </div>
+        </x-slot:actions>
+        <div data-area-chart='@json($chart)' class="-mx-2 h-[260px]" role="img" aria-label="Évolution des conversations et des alertes sur 30 jours"></div>
+    </x-admin.card>
+
+    <div class="mt-4 grid gap-4 lg:grid-cols-2">
+        @can('alerts.manage')
+            <x-admin.card title="Alertes en cours" description="Les plus urgentes en premier" flush data-live-alerts>
+                <x-slot:actions><x-admin.button :href="route('backoffice.alerts.index')" variant="outline" size="sm">Tout voir</x-admin.button></x-slot:actions>
+                @if ($alerts->isEmpty())
+                    <x-admin.empty icon="shield-check" title="Aucune alerte en cours" subtitle="Les nouvelles alertes apparaissent ici en temps réel." />
+                @else
+                    <x-admin.table>
+                        <thead><tr><th>Niveau</th><th>Origine</th><th>Membre</th><th class="text-end">Reçue</th></tr></thead>
+                        <tbody>
+                            @foreach ($alerts as $alert)
+                                <tr>
+                                    <td><x-admin.status :value="$alert->level" /></td>
+                                    <td>{{ $alert->source === 'sos' ? 'Bouton SOS' : 'Mots à risque' }}</td>
+                                    <td>
+                                        @if ($alert->conversation)
+                                            <a href="{{ route('backoffice.listening.show', $alert->conversation) }}" class="font-medium hover:underline">{{ $alert->member->pseudonym }}</a>
+                                        @else
+                                            {{ $alert->member->pseudonym }}
+                                        @endif
+                                    </td>
+                                    <td class="text-end text-muted-foreground">{{ $alert->created_at->diffForHumans() }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </x-admin.table>
+                @endif
+            </x-admin.card>
+        @endcan
+
+        @can('conversations.listen')
+            <x-admin.card title="Mes conversations" description="Celles que tu accompagnes en ce moment" flush>
+                @if ($myConversations->isEmpty())
+                    <x-admin.empty icon="message-circle" title="Aucune conversation en cours" subtitle="Passe en « Disponible » pour recevoir la prochaine conversation." />
+                @else
+                    <ul class="divide-y">
+                        @foreach ($myConversations as $conversation)
+                            <li>
+                                <a href="{{ route('backoffice.listening.show', $conversation) }}" class="flex items-center gap-3 px-6 py-3 hover:bg-muted/40">
+                                    <span class="inline-flex size-9 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary">{{ mb_substr($conversation->member->pseudonym, 0, 1) }}</span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block text-sm font-medium">{{ $conversation->member->pseudonym }}</span>
+                                        <span class="block truncate text-sm text-muted-foreground">{{ $conversation->latestMessage?->body }}</span>
+                                    </span>
+                                    <span class="text-xs text-muted-foreground">{{ $conversation->updated_at->diffForHumans(short: true) }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </x-admin.card>
+        @endcan
+    </div>
+</x-admin.page>

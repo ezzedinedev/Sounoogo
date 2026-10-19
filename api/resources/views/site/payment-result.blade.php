@@ -6,7 +6,7 @@
                 'bg-primary-50 text-primary-700' => $succeeded,
                 'bg-sos-soft text-sos' => ! $succeeded,
             ])>
-                <x-site.icon :name="$succeeded ? 'circle-check' : 'alert-triangle'" :size="32" />
+                <x-icon :name="$succeeded ? 'circle-check' : 'alert-triangle'" :size="32" />
             </span>
             <h1 class="mt-6 text-3xl font-medium tracking-tight">{{ $succeeded ? 'Merci, ton paiement est en cours de validation' : 'Le paiement n\'a pas abouti' }}</h1>
             <p class="mt-4 text-muted-foreground-1 leading-relaxed">
