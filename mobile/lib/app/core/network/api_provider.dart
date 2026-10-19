@@ -3,17 +3,17 @@ import 'package:dio/dio.dart';
 import '../constants/api_constants.dart';
 import 'api_exception.dart';
 
-/// Client HTTP unique de l'app. Les repositories le reçoivent par constructeur.
+/// Client HTTP unique de l'app. Les data sources le reçoivent par constructeur.
 class ApiProvider {
   ApiProvider({required Future<String?> Function() tokenReader, this.onUnauthorized})
-      :         _dio = Dio(
-          BaseOptions(
-            baseUrl: ApiConstants.baseUrl,
-            connectTimeout: const Duration(seconds: 15),
-            receiveTimeout: const Duration(seconds: 20),
-            headers: {'Accept': 'application/json'},
-          ),
-        ) {
+    : _dio = Dio(
+        BaseOptions(
+          baseUrl: ApiConstants.baseUrl,
+          connectTimeout: const Duration(seconds: 15),
+          receiveTimeout: const Duration(seconds: 20),
+          headers: {'Accept': 'application/json'},
+        ),
+      ) {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -28,6 +28,7 @@ class ApiProvider {
   }
 
   final Dio _dio;
+
   /// Appelé quand le jeton n'est plus valide (session expirée ou compte suspendu).
   final Future<void> Function()? onUnauthorized;
 
@@ -62,8 +63,9 @@ class ApiProvider {
     }
 
     final body = response.data is Map<String, dynamic> ? response.data as Map<String, dynamic> : const <String, dynamic>{};
-    final errors = (body['errors'] as Map<String, dynamic>? ?? const {})
-        .map((field, messages) => MapEntry(field, (messages as List).map((m) => m.toString()).toList()));
+    final errors = (body['errors'] as Map<String, dynamic>? ?? const {}).map(
+      (field, messages) => MapEntry(field, (messages as List).map((m) => m.toString()).toList()),
+    );
 
     final message = switch (response.statusCode) {
       422 => errors.values.firstOrNull?.firstOrNull ?? 'Certaines informations sont invalides.',

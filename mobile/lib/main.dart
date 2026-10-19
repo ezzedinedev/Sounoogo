@@ -4,9 +4,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'app/core/services/realtime_service.dart';
-import 'app/core/services/session_service.dart';
 import 'app/core/theme/app_theme.dart';
+import 'app/di/app_binding.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 
@@ -14,10 +13,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('fr_FR');
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
-  Get
-    ..put(SessionService(), permanent: true)
-    ..put(RealtimeService(), permanent: true);
 
   runApp(const SunoogoApp());
 }
@@ -34,6 +29,7 @@ class SunoogoApp extends StatelessWidget {
       locale: const Locale('fr', 'FR'),
       supportedLocales: const [Locale('fr', 'FR')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      initialBinding: AppBinding(),
       initialRoute: AppRoutes.splash,
       getPages: AppPages.pages,
       defaultTransition: Transition.cupertino,

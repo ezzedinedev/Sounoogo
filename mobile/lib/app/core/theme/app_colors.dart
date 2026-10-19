@@ -33,9 +33,5 @@ abstract final class AppColors {
   static const sos = Color(0xFFC81E1E);
   static const sosSoft = Color(0xFFFDEDED);
 
-  static const brandGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [violet500, violet800],
-  );
+  static const brandGradient = LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [violet500, violet800]);
 }

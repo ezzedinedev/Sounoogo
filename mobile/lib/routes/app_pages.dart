@@ -1,25 +1,25 @@
 import 'package:get/get.dart';
 
-import '../app/modules/auth/bindings/auth_binding.dart';
-import '../app/modules/auth/screens/recover_screen.dart';
-import '../app/modules/auth/screens/recovery_code_screen.dart';
-import '../app/modules/auth/screens/welcome_screen.dart';
-import '../app/modules/bookings/bindings/bookings_binding.dart';
-import '../app/modules/bookings/screens/bookings_screen.dart';
-import '../app/modules/courses/bindings/courses_binding.dart';
-import '../app/modules/courses/screens/course_detail_screen.dart';
-import '../app/modules/courses/screens/lesson_screen.dart';
-import '../app/modules/home/bindings/home_binding.dart';
-import '../app/modules/home/screens/home_screen.dart';
-import '../app/modules/listening/screens/conversation_screen.dart';
-import '../app/modules/payments/screens/payment_status_screen.dart';
-import '../app/modules/professionals/bindings/professionals_binding.dart';
-import '../app/modules/professionals/screens/professional_detail_screen.dart';
-import '../app/modules/profile/screens/upgrade_screen.dart';
-import '../app/modules/splash/bindings/splash_binding.dart';
-import '../app/modules/splash/screens/splash_screen.dart';
-import '../app/modules/subscription/bindings/subscription_binding.dart';
-import '../app/modules/subscription/screens/subscription_screen.dart';
+import '../app/modules/auth/presentation/bindings/auth_binding.dart';
+import '../app/modules/auth/presentation/screens/recover_screen.dart';
+import '../app/modules/auth/presentation/screens/recovery_code_screen.dart';
+import '../app/modules/auth/presentation/screens/welcome_screen.dart';
+import '../app/modules/bookings/presentation/bindings/bookings_binding.dart';
+import '../app/modules/bookings/presentation/screens/bookings_screen.dart';
+import '../app/modules/courses/presentation/bindings/courses_binding.dart';
+import '../app/modules/courses/presentation/screens/course_detail_screen.dart';
+import '../app/modules/courses/presentation/screens/lesson_screen.dart';
+import '../app/modules/home/presentation/bindings/home_binding.dart';
+import '../app/modules/home/presentation/screens/home_screen.dart';
+import '../app/modules/listening/presentation/screens/conversation_screen.dart';
+import '../app/modules/payments/presentation/screens/payment_status_screen.dart';
+import '../app/modules/professionals/presentation/bindings/professionals_binding.dart';
+import '../app/modules/professionals/presentation/screens/professional_detail_screen.dart';
+import '../app/modules/profile/presentation/screens/upgrade_screen.dart';
+import '../app/modules/splash/presentation/bindings/splash_binding.dart';
+import '../app/modules/splash/presentation/screens/splash_screen.dart';
+import '../app/modules/subscription/presentation/bindings/subscription_binding.dart';
+import '../app/modules/subscription/presentation/screens/subscription_screen.dart';
 import 'app_routes.dart';
 
 abstract final class AppPages {

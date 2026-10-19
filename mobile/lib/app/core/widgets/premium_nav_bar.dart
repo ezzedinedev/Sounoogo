@@ -30,11 +30,13 @@ class PremiumNavBar extends StatelessWidget {
         height: 68,
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [AppColors.violet800, AppColors.violet950], begin: Alignment.topLeft, end: Alignment.bottomRight),
+          gradient: const LinearGradient(
+            colors: [AppColors.violet800, AppColors.violet950],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-          boxShadow: [
-            BoxShadow(color: AppColors.violet950.withValues(alpha: 0.28), blurRadius: 24, offset: const Offset(0, 10)),
-          ],
+          boxShadow: [BoxShadow(color: AppColors.violet950.withValues(alpha: 0.28), blurRadius: 24, offset: const Offset(0, 10))],
         ),
         child: Row(
           children: [

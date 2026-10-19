@@ -10,9 +10,9 @@ class BrandMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SvgPicture.asset(
-        inverse ? 'assets/images/logo-mark-inverse.svg' : 'assets/images/logo-badge.svg',
-        width: size,
-        height: size,
-        semanticsLabel: 'SUNOOGO',
-      );
+    inverse ? 'assets/images/logo-mark-inverse.svg' : 'assets/images/logo-badge.svg',
+    width: size,
+    height: size,
+    semanticsLabel: 'SUNOOGO',
+  );
 }

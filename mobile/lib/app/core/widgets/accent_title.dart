@@ -25,7 +25,10 @@ class AccentTitle extends StatelessWidget {
           TextSpan(text: text),
           if (accent != null) ...[
             const TextSpan(text: ' '),
-            TextSpan(text: accent, style: accentStyle.copyWith(color: inverse ? Colors.white.withValues(alpha: 0.85) : null)),
+            TextSpan(
+              text: accent,
+              style: accentStyle.copyWith(color: inverse ? Colors.white.withValues(alpha: 0.85) : null),
+            ),
           ],
         ],
       ),
