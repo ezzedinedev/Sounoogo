@@ -1,11 +1,14 @@
 <x-layouts.site title="Professionnels" description="Psychologues, conseillers et coachs vérifiés, en cabinet, par téléphone ou en visio.">
-    <section class="py-16 md:py-20">
-        <x-site.container>
-            <x-site.section-header align="start" eyebrow="Consultations" title="Trouver un professionnel">
-                Tous les professionnels sont vérifiés par notre équipe. La réservation et le paiement se font dans l'application, et tu peux rester anonyme.
-            </x-site.section-header>
+    <x-slot:hero>
+        <x-site.page-hero eyebrow="Consultations" title="Trouver un professionnel" accent="qui te correspond">
+            Tous les professionnels sont vérifiés par notre équipe. La réservation et le paiement se font dans l'application, et tu peux rester anonyme.
+        </x-site.page-hero>
+    </x-slot:hero>
 
-            <form method="get" class="mt-10 flex flex-col sm:flex-row gap-3" role="search">
+    <section class="py-12 md:py-16">
+        <x-site.container>
+
+            <form method="get" class="flex flex-col sm:flex-row gap-3" role="search">
                 <label class="sr-only" for="specialty">Spécialité</label>
                 <input id="specialty" name="specialite" value="{{ request('specialite') }}" placeholder="Anxiété, couple, confiance…" class="py-3 px-4 block w-full sm:max-w-sm rounded-full border border-layer-line bg-layer text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary">
                 <label class="sr-only" for="mode">Format</label>

@@ -1,11 +1,13 @@
 <x-layouts.site title="Numéros d'urgence" description="Les numéros à appeler en cas de danger immédiat au Burkina Faso.">
-    <section class="py-16 md:py-24">
-        <x-site.container class="max-w-3xl">
-            <p class="inline-flex items-center gap-x-2 rounded-full bg-sos-soft px-3 py-1 text-sm font-semibold text-sos-strong"><x-site.icon name="sos" :size="18" />Urgence</p>
-            <h1 class="mt-5 font-display text-4xl sm:text-5xl font-semibold tracking-tight text-balance">Si toi ou quelqu'un est en danger, appelle maintenant.</h1>
-            <p class="mt-5 text-lg text-muted-foreground-1 leading-relaxed">Ces services sont gratuits et joignables à toute heure. SUNOOGO ne remplace pas les secours.</p>
+    <x-slot:hero>
+        <x-site.page-hero eyebrow="Urgence" title="En danger ?" accent="Appelle maintenant.">
+            Ces services sont gratuits et joignables à toute heure. SUNOOGO ne remplace pas les secours.
+        </x-site.page-hero>
+    </x-slot:hero>
 
-            <ul class="mt-10 grid gap-4">
+    <section class="py-12 md:py-16">
+        <x-site.container class="max-w-3xl">
+            <ul class="grid gap-4">
                 @foreach ($emergencyContacts as $contact)
                     <li>
                         <a href="tel:{{ $contact->phone }}" class="flex items-center justify-between gap-6 rounded-3xl bg-card border border-card-line p-6 hover:border-sos">
@@ -13,7 +15,7 @@
                                 <span class="block text-lg font-semibold">{{ $contact->label }}</span>
                                 @if ($contact->description)<span class="block mt-1 text-sm text-muted-foreground">{{ $contact->description }}</span>@endif
                             </span>
-                            <span class="inline-flex items-center gap-x-2 rounded-full bg-sos px-5 py-3 font-display text-2xl font-semibold text-white"><x-site.icon name="phone-call" />{{ $contact->phone }}</span>
+                            <span class="inline-flex items-center gap-x-2 rounded-full bg-sos px-5 py-3 text-2xl font-semibold text-white"><x-site.icon name="phone-call" />{{ $contact->phone }}</span>
                         </a>
                     </li>
                 @endforeach

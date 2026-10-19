@@ -1,9 +1,13 @@
 <x-layouts.site title="Confidentialité" description="Comment SUNOOGO protège ton anonymat et tes données.">
-    <section class="py-16 md:py-24">
+    <x-slot:hero>
+        <x-site.page-hero eyebrow="Confidentialité" title="Ton anonymat," accent="pour de vrai">
+            Ce que nous demandons, ce que nous conservons, et ce que nous ne ferons jamais.
+        </x-site.page-hero>
+    </x-slot:hero>
+
+    <section class="py-12 md:py-16">
         <x-site.container class="max-w-3xl">
-            <h1 class="font-display text-4xl sm:text-5xl font-semibold tracking-tight">Confidentialité</h1>
-            <p class="mt-4 text-muted-foreground">Dernière mise à jour : {{ now()->translatedFormat('j F Y') }}</p>
-            <div class="mt-10 prose prose-lg max-w-none prose-headings:font-display prose-headings:font-semibold prose-a:text-primary-700">
+            <div class="prose prose-lg max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-a:text-primary-700">
                 <h2>Ce que nous ne demandons pas</h2>
                 <p>Pour parler à un écoutant, tu n'as besoin ni de ton nom, ni de ton numéro de téléphone, ni de ton adresse e-mail. Nous te générons un pseudonyme et un code de récupération que toi seul·e connais.</p>
                 <h2>Ce que nous conservons</h2>

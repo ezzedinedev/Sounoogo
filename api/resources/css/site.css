@@ -8,6 +8,7 @@
 @source '../views/site/**/*.blade.php';
 @source '../views/components/site/**/*.blade.php';
 @source '../../node_modules/preline/dist/*.js';
+@source '../js/site.js';
 
 @import '../../node_modules/preline/variants.css';
 @import '../../node_modules/preline/css/themes/theme.css';
@@ -16,8 +17,9 @@
 @plugin '@tailwindcss/typography';
 
 @theme {
-    --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Fraunces', ui-serif, Georgia, serif;
+    /* Inspiration Lyra Health : sans géométrique + accents en serif italique. */
+    --font-sans: 'Rethink Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Instrument Serif', ui-serif, Georgia, serif;
 }
 
 @layer base {

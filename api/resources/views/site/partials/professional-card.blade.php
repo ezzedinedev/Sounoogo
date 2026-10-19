@@ -1,20 +1,19 @@
-<article class="flex flex-col rounded-3xl bg-card border border-card-line p-6">
+<article class="flex flex-col rounded-[1.75rem] bg-white p-7 ring-1 ring-line-2 shadow-sm">
     <div class="flex items-center gap-x-4">
         <x-site.initials :name="$professional->user->name" />
         <div>
-            <h3 class="font-semibold">{{ $professional->user->name }}</h3>
+            <h3 class="text-lg font-medium">{{ $professional->user->name }}</h3>
             <p class="text-sm text-muted-foreground">{{ $professional->title }}</p>
         </div>
     </div>
-    <p class="mt-4 text-sm text-muted-foreground-1 leading-relaxed">{{ $professional->specialty }}</p>
-    <dl class="mt-5 space-y-2 text-sm flex-1">
-        @if ($professional->city)
-            <div class="flex items-center gap-x-2"><dt><x-site.icon name="map-pin" :size="16" class="text-muted-foreground" /><span class="sr-only">Ville</span></dt><dd>{{ $professional->city }}</dd></div>
-        @endif
-        <div class="flex items-center gap-x-2"><dt><x-site.icon name="clock" :size="16" class="text-muted-foreground" /><span class="sr-only">Durée</span></dt><dd>{{ $professional->session_minutes }} min · {{ collect($professional->modes)->map(fn ($mode) => \App\Domain\Consultation\Enums\ConsultationMode::from($mode)->label())->join(', ', ' ou ') }}</dd></div>
-    </dl>
-    <div class="mt-6 pt-5 border-t border-card-divider flex items-center justify-between">
-        <x-site.price :amount="$professional->session_price" class="font-semibold" />
-        <span class="text-xs text-muted-foreground">par séance</span>
+    <p class="mt-5 text-[15px] text-muted-foreground-1 leading-relaxed">{{ $professional->specialty }}</p>
+    <div class="mt-5 flex flex-wrap gap-2 text-xs">
+        @if ($professional->city)<span class="inline-flex items-center gap-x-1 rounded-full bg-background-2 px-2.5 py-1"><x-site.icon name="map-pin" :size="14" />{{ $professional->city }}</span>@endif
+        @foreach ($professional->modes ?? [] as $mode)
+            <span class="rounded-full bg-primary-50 px-2.5 py-1 text-primary-800">{{ \App\Domain\Consultation\Enums\ConsultationMode::from($mode)->label() }}</span>
+        @endforeach
+    </div>
+    <div class="mt-auto pt-7 flex items-end justify-between">
+        <p><span class="font-display italic text-3xl">{{ number_format($professional->session_price, 0, ',', ' ') }} F</span> <span class="text-sm text-muted-foreground">/ {{ $professional->session_minutes }} min</span></p>
     </div>
 </article>

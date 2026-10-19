@@ -14,8 +14,9 @@ export default defineConfig({
             ],
             refresh: true,
             fonts: [
+                bunny('Rethink Sans', { weights: [400, 500, 600, 700] }),
+                bunny('Instrument Serif', { weights: [400], styles: ['normal', 'italic'] }),
                 bunny('Figtree', { weights: [400, 500, 600, 700] }),
-                bunny('Fraunces', { weights: [500, 600], styles: ['normal', 'italic'] }),
             ],
         }),
         tailwindcss(),
