@@ -77,6 +77,8 @@ class ProfileTab extends GetView<ProfileController> {
             _Section(
               children: [
                 _Tile(icon: Icons.event_note_outlined, label: 'Mes consultations', onTap: () => Get.toNamed(AppRoutes.bookings)),
+                _Tile(icon: Icons.insights_outlined, label: 'Mon journal d\'humeur', onTap: () => Get.toNamed(AppRoutes.mood)),
+                _Tile(icon: Icons.shield_moon_outlined, label: 'Mon plan de sécurité', onTap: () => Get.toNamed(AppRoutes.safetyPlan)),
                 _Tile(
                   icon: Icons.workspace_premium_outlined,
                   label: 'Abonnement',

@@ -26,6 +26,8 @@ abstract final class ApiConstants {
   static const String subscription = '/subscription';
   static const String payments = '/payments';
   static const String broadcastingAuth = '/broadcasting/auth';
+  static const String safetyPlan = '/safety-plan';
+  static const String moods = '/moods';
 
   static String conversation(int id) => '$conversations/$id';
   static String conversationMessages(int id) => '$conversations/$id/messages';

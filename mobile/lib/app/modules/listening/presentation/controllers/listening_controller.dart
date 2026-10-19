@@ -18,6 +18,7 @@ import '../../domain/usecases/rate_conversation.dart';
 import '../../domain/usecases/report_conversation.dart';
 import '../../domain/usecases/send_message.dart';
 import '../../domain/usecases/watch_conversation.dart';
+import '../../../../core/widgets/app_toast.dart';
 
 class ListeningController extends GetxController {
   ListeningController({
@@ -125,14 +126,14 @@ class ListeningController extends GetxController {
     conversation.value = null;
     messages.clear();
     Get.back<void>();
-    Get.snackbar('Merci', 'Prends soin de toi. Tu peux revenir quand tu veux.', snackPosition: SnackPosition.BOTTOM);
+    AppToast.show('Merci', 'Prends soin de toi. Tu peux revenir quand tu veux.');
   });
 
   Future<void> report(String reason) => _guard(() async {
     final current = conversation.value;
     if (current != null) {
       await _reportConversation(current.id, reason);
-      Get.snackbar('Signalement envoyé', "L'équipe de modération va examiner la conversation.", snackPosition: SnackPosition.BOTTOM);
+      AppToast.show('Signalement envoyé', "L'équipe de modération va examiner la conversation.");
     }
   });
 

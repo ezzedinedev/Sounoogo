@@ -2,14 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../routes/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/app_sheet.dart';
 import '../controllers/emergency_controller.dart';
 
 /// Panneau d'urgence : prévient un superviseur et affiche les numéros locaux.
 /// Toujours accessible, même hors ligne (numéros par défaut).
 abstract final class EmergencySheet {
+  /// Ferme le panneau puis ouvre l'écran demandé (plan de sécurité, respiration).
+  static void _leaveTo(String route) {
+    Get.back<void>();
+    Get.toNamed(route);
+  }
+
   static Future<void> show({bool alertSupervisor = true}) async {
     final controller = Get.find<EmergencyController>();
     final alerted = alertSupervisor && controller.canAlertSupervisor;
@@ -17,7 +25,7 @@ abstract final class EmergencySheet {
       controller.alertSupervisor();
     }
 
-    await Get.bottomSheet<void>(
+    await AppSheet.show<void>(
       SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(AppSpacing.page, 0, AppSpacing.page, AppSpacing.xl),
@@ -75,12 +83,33 @@ abstract final class EmergencySheet {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                 ],
+                if (controller.canAlertSupervisor) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _leaveTo(AppRoutes.safetyPlan),
+                          icon: const Icon(Icons.shield_moon_outlined, size: 18),
+                          label: const Text('Mon plan'),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _leaveTo(AppRoutes.breathing),
+                          icon: const Icon(Icons.air_rounded, size: 18),
+                          label: const Text('Respirer'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
         ),
       ),
-      isScrollControlled: true,
     );
   }
 }

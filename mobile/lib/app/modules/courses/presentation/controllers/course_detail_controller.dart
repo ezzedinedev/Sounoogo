@@ -11,6 +11,7 @@ import '../../domain/usecases/enroll_in_course.dart';
 import '../../domain/usecases/get_course.dart';
 import '../../domain/usecases/get_enrollments.dart';
 import 'courses_controller.dart';
+import '../../../../core/widgets/app_toast.dart';
 
 class CourseDetailController extends GetxController {
   CourseDetailController({required this._getCourse, required this._getEnrollments, required this._enrollInCourse});
@@ -55,7 +56,7 @@ class CourseDetailController extends GetxController {
     } on PaymentRequiredFailure {
       await _offerPurchase();
     } on Failure catch (failure) {
-      Get.snackbar('Inscription impossible', failure.message, snackPosition: SnackPosition.BOTTOM);
+      AppToast.show('Inscription impossible', failure.message);
     } finally {
       isEnrolling.value = false;
     }

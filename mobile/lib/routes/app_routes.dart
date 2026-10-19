@@ -13,6 +13,10 @@ abstract final class AppRoutes {
   static const subscription = '/subscription';
   static const paymentStatus = '/payments/:reference';
   static const upgrade = '/profile/upgrade';
+  static const safetyPlan = '/safety-plan';
+  static const safetyPlanEdit = '/safety-plan/edit';
+  static const mood = '/mood';
+  static const breathing = '/exercises/breathing';
 
   static String professional(int id) => '/professionals/$id';
   static String course(String slug) => '/courses/$slug';

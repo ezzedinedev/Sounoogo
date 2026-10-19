@@ -6,16 +6,15 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/app_sheet.dart';
 import '../../../../shared/domain/entities/payment_provider.dart';
 import '../../../../shared/presentation/session_service.dart';
 import '../../domain/entities/payment_method.dart';
 
 /// Choix du moyen de paiement. Pour le Mobile Money, demande aussi le numéro à débiter.
 abstract final class PaymentProviderSheet {
-  static Future<PaymentMethod?> show({required String label, required int amount}) => Get.bottomSheet<PaymentMethod>(
-    _PaymentSheet(label: label, amount: amount, providers: Get.find<SessionService>().paymentProviders),
-    isScrollControlled: true,
-  );
+  static Future<PaymentMethod?> show({required String label, required int amount}) =>
+      AppSheet.show<PaymentMethod>(_PaymentSheet(label: label, amount: amount, providers: Get.find<SessionService>().paymentProviders));
 }
 
 class _PaymentSheet extends StatefulWidget {

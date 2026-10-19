@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../courses/presentation/bindings/courses_binding.dart';
 import '../../../listening/presentation/bindings/listening_binding.dart';
+import '../../../mood/presentation/bindings/mood_binding.dart';
 import '../../../payments/presentation/bindings/payment_binding.dart';
 import '../../../professionals/presentation/bindings/professionals_binding.dart';
 import '../../../profile/presentation/bindings/profile_binding.dart';
@@ -13,6 +14,7 @@ class HomeBinding extends Bindings {
   void dependencies() {
     Get.lazyPut(HomeController.new);
     ListeningBinding().dependencies();
+    MoodBinding().dependencies();
     ProfessionalsBinding().dependencies();
     CoursesBinding().dependencies();
     ProfileBinding().dependencies();

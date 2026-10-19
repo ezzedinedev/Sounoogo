@@ -6,6 +6,7 @@ import '../../../payments/presentation/controllers/payment_controller.dart';
 import '../../domain/entities/booking.dart';
 import '../../domain/usecases/cancel_booking.dart';
 import '../../domain/usecases/get_bookings.dart';
+import '../../../../core/widgets/app_toast.dart';
 
 class BookingsController extends GetxController {
   BookingsController({required this._getBookings, required this._cancelBooking});
@@ -52,7 +53,7 @@ class BookingsController extends GetxController {
       await _cancelBooking(booking.id);
       await load();
     } on Failure catch (failure) {
-      Get.snackbar('Annulation impossible', failure.message, snackPosition: SnackPosition.BOTTOM);
+      AppToast.show('Annulation impossible', failure.message);
     }
   }
 }

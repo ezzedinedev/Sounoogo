@@ -8,6 +8,7 @@ import '../../../payments/presentation/controllers/payment_controller.dart';
 import '../../domain/entities/professional.dart';
 import '../../domain/entities/slot.dart';
 import '../../domain/usecases/get_professional.dart';
+import '../../../../core/widgets/app_toast.dart';
 
 class ProfessionalDetailController extends GetxController {
   ProfessionalDetailController({required this._getProfessional, required this._bookConsultation});
@@ -69,12 +70,12 @@ class ProfessionalDetailController extends GetxController {
       final booking = await _bookConsultation(slotId: slot.id, mode: mode, keepAnonymous: keepAnonymous.value);
       final paid = await _payments.checkout(BookingPayment(booking.id), label: 'Consultation avec ${pro.name}', amount: booking.price);
       if (!paid) {
-        Get.snackbar('Réservation enregistrée', 'Tu pourras la payer depuis « Mes consultations ».', snackPosition: SnackPosition.BOTTOM);
+        AppToast.show('Réservation enregistrée', 'Tu pourras la payer depuis « Mes consultations ».');
       }
       selectedSlot.value = null;
       await load();
     } on Failure catch (failure) {
-      Get.snackbar('Réservation impossible', failure.message, snackPosition: SnackPosition.BOTTOM);
+      AppToast.show('Réservation impossible', failure.message);
       await load();
     } finally {
       isBooking.value = false;

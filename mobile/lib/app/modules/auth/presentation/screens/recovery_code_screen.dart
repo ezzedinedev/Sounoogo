@@ -7,6 +7,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/accent_title.dart';
 import '../controllers/auth_controller.dart';
+import '../../../../core/widgets/app_toast.dart';
 
 /// Montre une seule fois le pseudonyme et le code de récupération.
 class RecoveryCodeScreen extends GetView<AuthController> {
@@ -89,13 +90,7 @@ class _Field extends StatelessWidget {
             tooltip: 'Copier',
             onPressed: () {
               Clipboard.setData(ClipboardData(text: value));
-              Get.snackbar(
-                'Copié',
-                label,
-                snackPosition: SnackPosition.BOTTOM,
-                colorText: AppColors.white,
-                backgroundColor: AppColors.violet950,
-              );
+              AppToast.show('Copié', label);
             },
             icon: const Icon(Icons.copy_rounded, color: AppColors.violet700),
           ),

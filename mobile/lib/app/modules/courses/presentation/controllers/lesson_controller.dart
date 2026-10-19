@@ -4,6 +4,7 @@ import '../../../../core/error/failure.dart';
 import '../../domain/entities/lesson.dart';
 import '../../domain/usecases/complete_lesson.dart';
 import '../../domain/usecases/get_lesson.dart';
+import '../../../../core/widgets/app_toast.dart';
 
 class LessonController extends GetxController {
   LessonController({required this._getLesson, required this._completeLesson});
@@ -42,13 +43,9 @@ class LessonController extends GetxController {
     try {
       final enrollment = await _completeLesson(slug, id);
       Get.back<void>();
-      Get.snackbar(
-        enrollment.isCompleted ? 'Parcours terminé, bravo !' : 'Leçon terminée',
-        'Progression : ${enrollment.progress} %',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppToast.show(enrollment.isCompleted ? 'Parcours terminé, bravo !' : 'Leçon terminée', 'Progression : ${enrollment.progress} %');
     } on Failure catch (failure) {
-      Get.snackbar('Oups', failure.message, snackPosition: SnackPosition.BOTTOM);
+      AppToast.show('Oups', failure.message);
     } finally {
       isCompleting.value = false;
     }

@@ -7,10 +7,12 @@ use App\Http\Controllers\Api\V1\CourseController;
 use App\Http\Controllers\Api\V1\EmergencyController;
 use App\Http\Controllers\Api\V1\ListenerController;
 use App\Http\Controllers\Api\V1\MetaController;
+use App\Http\Controllers\Api\V1\MoodController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\ProfessionalAgendaController;
 use App\Http\Controllers\Api\V1\ProfessionalController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\SafetyPlanController;
 use App\Http\Controllers\Api\V1\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +64,13 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('queue', 'queue')->name('queue');
             Route::post('queue/{conversation}/take', 'take')->name('take');
         });
+
+        // Bien-être — plan de sécurité et journal d'humeur
+        Route::get('safety-plan', [SafetyPlanController::class, 'show'])->name('safety-plan.show');
+        Route::put('safety-plan', [SafetyPlanController::class, 'update'])->name('safety-plan.update');
+        Route::delete('safety-plan', [SafetyPlanController::class, 'destroy'])->name('safety-plan.destroy');
+        Route::get('moods', [MoodController::class, 'index'])->name('moods.index');
+        Route::post('moods', [MoodController::class, 'store'])->name('moods.store');
 
         // Niveau 2 — consultations
         Route::prefix('bookings')->name('bookings.')->controller(BookingController::class)->group(function () {

@@ -38,6 +38,9 @@ class ApiProvider {
   Future<Map<String, dynamic>> post(String path, {Map<String, dynamic>? data}) =>
       _send(() => _dio.post<Map<String, dynamic>>(path, data: data));
 
+  Future<Map<String, dynamic>> put(String path, {Map<String, dynamic>? data}) =>
+      _send(() => _dio.put<Map<String, dynamic>>(path, data: data));
+
   Future<Map<String, dynamic>> patch(String path, {Map<String, dynamic>? data}) =>
       _send(() => _dio.patch<Map<String, dynamic>>(path, data: data));
 

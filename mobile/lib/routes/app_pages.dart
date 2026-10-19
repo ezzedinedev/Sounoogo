@@ -20,6 +20,12 @@ import '../app/modules/splash/presentation/bindings/splash_binding.dart';
 import '../app/modules/splash/presentation/screens/splash_screen.dart';
 import '../app/modules/subscription/presentation/bindings/subscription_binding.dart';
 import '../app/modules/subscription/presentation/screens/subscription_screen.dart';
+import '../app/modules/exercises/presentation/screens/breathing_screen.dart';
+import '../app/modules/mood/presentation/bindings/mood_binding.dart';
+import '../app/modules/mood/presentation/screens/mood_screen.dart';
+import '../app/modules/safety_plan/presentation/bindings/safety_plan_binding.dart';
+import '../app/modules/safety_plan/presentation/screens/safety_plan_edit_screen.dart';
+import '../app/modules/safety_plan/presentation/screens/safety_plan_screen.dart';
 import 'app_routes.dart';
 
 abstract final class AppPages {
@@ -38,5 +44,9 @@ abstract final class AppPages {
     GetPage(name: AppRoutes.subscription, page: SubscriptionScreen.new, binding: SubscriptionBinding()),
     GetPage(name: AppRoutes.paymentStatus, page: PaymentStatusScreen.new),
     GetPage(name: AppRoutes.upgrade, page: UpgradeScreen.new),
+    GetPage(name: AppRoutes.safetyPlan, page: SafetyPlanScreen.new, binding: SafetyPlanBinding()),
+    GetPage(name: AppRoutes.safetyPlanEdit, page: SafetyPlanEditScreen.new, binding: SafetyPlanBinding()),
+    GetPage(name: AppRoutes.mood, page: MoodScreen.new, binding: MoodBinding()),
+    GetPage(name: AppRoutes.breathing, page: BreathingScreen.new),
   ];
 }

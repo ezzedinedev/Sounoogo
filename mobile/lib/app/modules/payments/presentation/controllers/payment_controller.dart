@@ -11,6 +11,7 @@ import '../../domain/entities/payment_target.dart';
 import '../../domain/usecases/get_payment.dart';
 import '../../domain/usecases/start_payment.dart';
 import '../widgets/payment_provider_sheet.dart';
+import '../../../../core/widgets/app_toast.dart';
 
 /// Parcours de paiement : choix du moyen, ouverture de la page Wave / Orange Money,
 /// puis suivi de l'état jusqu'à la confirmation du prestataire.
@@ -50,7 +51,7 @@ class PaymentController extends GetxController {
       _watch(started.reference);
     } on Failure catch (failure) {
       errorMessage.value = failure.message;
-      Get.snackbar('Paiement impossible', failure.message, snackPosition: SnackPosition.BOTTOM);
+      AppToast.show('Paiement impossible', failure.message);
     } finally {
       isLoading.value = false;
     }

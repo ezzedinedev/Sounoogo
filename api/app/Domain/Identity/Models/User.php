@@ -9,6 +9,8 @@ use App\Domain\Consultation\Models\ProfessionalProfile;
 use App\Domain\Identity\Enums\Role;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Listening\Models\Conversation;
+use App\Domain\Wellbeing\Models\MoodEntry;
+use App\Domain\Wellbeing\Models\SafetyPlan;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -129,6 +131,18 @@ class User extends Authenticatable
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
+    }
+
+    /** @return HasOne<SafetyPlan, $this> */
+    public function safetyPlan(): HasOne
+    {
+        return $this->hasOne(SafetyPlan::class);
+    }
+
+    /** @return HasMany<MoodEntry, $this> */
+    public function moodEntries(): HasMany
+    {
+        return $this->hasMany(MoodEntry::class);
     }
 
     /** @return HasMany<Subscription, $this> */

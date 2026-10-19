@@ -6,7 +6,9 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/brand_mark.dart';
 import '../../../emergency/presentation/widgets/emergency_sheet.dart';
+import '../../../../../routes/app_routes.dart';
 import '../../../listening/presentation/controllers/listening_controller.dart';
+import '../../../mood/presentation/widgets/mood_check_in_card.dart';
 import '../controllers/home_controller.dart';
 
 class HomeTab extends GetView<HomeController> {
@@ -33,8 +35,10 @@ class HomeTab extends GetView<HomeController> {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            const Text('Comment te sens-tu aujourd\'hui ? Ici, tu peux tout dire.', style: AppTextStyles.bodySecondary),
+            const Text('Ici, tu peux tout dire.', style: AppTextStyles.bodySecondary),
             const SizedBox(height: AppSpacing.xl),
+            MoodCheckInCard(onTalk: () => controller.goTo(HomeController.listening)),
+            const SizedBox(height: AppSpacing.lg),
             Obx(() {
               final current = listening.conversation.value;
               final active = current != null && !current.isClosed;
@@ -69,6 +73,17 @@ class HomeTab extends GetView<HomeController> {
             const SizedBox(height: AppSpacing.xl),
             const _Commitments(),
             const SizedBox(height: AppSpacing.lg),
+            Card(
+              child: ListTile(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
+                onTap: () => Get.toNamed(AppRoutes.safetyPlan),
+                leading: const Icon(Icons.shield_moon_outlined, color: AppColors.violet700),
+                title: const Text('Mon plan de sécurité', style: AppTextStyles.label),
+                subtitle: const Text('Prêt pour les moments difficiles, même hors ligne', style: AppTextStyles.caption),
+                trailing: const Icon(Icons.chevron_right_rounded),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
             Material(
               color: AppColors.sosSoft,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
