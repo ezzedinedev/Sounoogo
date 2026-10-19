@@ -1,45 +1,29 @@
 # Contribuer à SUNOOGO
 
-Merci de contribuer. Ce projet applique une discipline **anti-vibecoding** : les specs précèdent le code.
+## Principes
 
-## Démarrage
+- **Le métier d'abord** : une règle métier vit dans `app/Domain/<Domaine>` (actions, services, enums) côté API,
+  et dans `domain/` (cas d'usage) côté app. Les contrôleurs et les écrans restent minces.
+- **Pas de faux contenu** : aucun témoignage, chiffre ou partenaire inventé. Les contenus cliniques (exercices,
+  guides, formations) sont relus par l'équipe clinique avant publication.
+- **La vie privée par défaut** : pas de donnée personnelle sans nécessité, chiffrement des contenus sensibles,
+  textes neutres dans les notifications, rien de sensible dans les journaux ni dans Sentry.
+- **Accessibilité** : libellés pour les lecteurs d'écran, contrastes, animations désactivables.
 
-1. Lire **[docs/ANTI-VIBECODING.md](docs/ANTI-VIBECODING.md)** — règles formelles du projet.
-2. Lire **[docs/PRD.md](docs/PRD.md)** pour les user stories et critères d'acceptation.
-3. Lire **[docs/domain-model.md](docs/domain-model.md)** pour le modèle métier.
+## Avant d'ouvrir une pull request
 
-## Workflow feature
+```bash
+# API
+cd api && vendor/bin/pint && composer analyse && php artisan test --parallel
 
+# Mobile
+cd mobile && dart format lib test && flutter analyze && flutter test
 ```
-User story (PRD) → domain-model → openapi.yaml → code → tests → PR
-```
 
-| Étape | Action |
-|-------|--------|
-| Spec | User story + critères Given/When/Then dans `docs/PRD.md` |
-| Domaine | Entités / règles dans `docs/domain-model.md` si impact métier |
-| API | Modifier `docs/api/openapi.yaml` **avant** les routes FastAPI |
-| Architecture | ADR dans `docs/adr/` si décision structurante |
-| Code | Tranche verticale courante (S1→S4) — stack FastAPI + React Native |
-| PR | Checklist dans ANTI-VIBECODING §5 |
+Chaque nouvelle règle métier arrive avec ses tests (Pest côté API, `flutter_test` côté app).
+Les messages de commit suivent [Conventional Commits](https://www.conventionalcommits.org/fr/) : `feat(listening): …`.
 
-## Stack
+## Textes et traductions
 
-- **API** : FastAPI (Python) — pas Laravel
-- **Mobile** : React Native (Expo)
-- **Admin** : React + Vite
-- **BDD** : PostgreSQL · **Cache** : Redis
-
-## Interdit
-
-- Code métier avant Phase 0 complète (PRD, domain-model, OpenAPI, ADR)
-- Endpoints sans mise à jour OpenAPI
-- Écrans sans user story PRD
-- Styles ad hoc (utiliser les design tokens)
-- Lancement public avant S6 (beta fermée)
-
-## Cursor
-
-Les agents IA du projet chargent `.cursor/rules/sunoogo-anti-vibecoding.mdc` automatiquement.
-
-Questions process : ouvrir une issue ou discuter en PR avant d'implémenter une feature non spécifiée.
+Les textes de l'app passent progressivement par `lib/l10n/app_fr.arb` (voir [docs/TRADUCTIONS.md](docs/TRADUCTIONS.md)).
+Les traductions en mooré et en dioula sont confiées à des locuteurs natifs, jamais à une traduction automatique.

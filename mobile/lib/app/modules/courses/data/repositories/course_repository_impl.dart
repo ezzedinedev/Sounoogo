@@ -39,8 +39,7 @@ class CourseRepositoryImpl implements CourseRepository {
   Future<LearningProgress> progress() => guardApi(_remote.progress);
 
   @override
-  Future<Certificate> issueCertificate(String slug, String holderName) =>
-      guardApi(() => _remote.issueCertificate(slug, holderName));
+  Future<Certificate> issueCertificate(String slug, String holderName) => guardApi(() => _remote.issueCertificate(slug, holderName));
 
   @override
   Future<String> certificateFile(Certificate certificate) async {

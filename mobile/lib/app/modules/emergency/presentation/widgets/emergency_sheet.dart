@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../routes/app_routes.dart';
+import '../../../../core/l10n/app_locales.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -25,6 +26,7 @@ abstract final class EmergencySheet {
       controller.alertSupervisor();
     }
 
+    final l10n = Get.context!.l10n;
     await AppSheet.show<void>(
       SafeArea(
         child: Padding(
@@ -42,16 +44,11 @@ abstract final class EmergencySheet {
                       child: const Icon(Icons.health_and_safety_rounded, color: AppColors.sos),
                     ),
                     const SizedBox(width: AppSpacing.md),
-                    const Expanded(child: Text("Tu n'es pas seul·e", style: AppTextStyles.title)),
+                    Expanded(child: Text(l10n.emergencyTitle, style: AppTextStyles.title)),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.md),
-                Text(
-                  alerted
-                      ? 'Un superviseur SUNOOGO vient d\'être prévenu. Si tu es en danger immédiat, appelle maintenant :'
-                      : 'Si tu es en danger immédiat, appelle maintenant :',
-                  style: AppTextStyles.bodySecondary,
-                ),
+                Text(alerted ? l10n.emergencySupervisorAlerted : l10n.emergencyCallNow, style: AppTextStyles.bodySecondary),
                 const SizedBox(height: AppSpacing.lg),
                 for (final contact in controller.contacts) ...[
                   Material(
@@ -91,7 +88,7 @@ abstract final class EmergencySheet {
                         child: OutlinedButton.icon(
                           onPressed: () => _leaveTo(AppRoutes.safetyPlan),
                           icon: const Icon(Icons.shield_moon_outlined, size: 18),
-                          label: const Text('Mon plan'),
+                          label: Text(l10n.emergencyMyPlan),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
@@ -99,7 +96,7 @@ abstract final class EmergencySheet {
                         child: OutlinedButton.icon(
                           onPressed: () => _leaveTo(AppRoutes.breathing),
                           icon: const Icon(Icons.air_rounded, size: 18),
-                          label: const Text('Respirer'),
+                          label: Text(l10n.emergencyBreathe),
                         ),
                       ),
                     ],
@@ -131,7 +128,7 @@ class SosButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           textStyle: AppTextStyles.label.copyWith(letterSpacing: 0.8),
         ),
-        child: const Text('SOS'),
+        child: Text(context.l10n.sosButton),
       ),
     );
   }

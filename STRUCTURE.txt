@@ -1,23 +1,30 @@
-# SUNOOGO — structure du monorepo
+SUNOOGO — structure du dépôt
 
-```
-SUNOOGO/
-├── api/              # Backend FastAPI (Python)
-├── mobile/           # Application Expo / React Native
-├── admin/            # Back-office React + Vite
-├── web/              # Site vitrine Next.js (App Router)
-├── packages/
-│   └── shared/       # Design tokens & utilitaires partagés
-├── docs/             # PRD, OpenAPI, ADR, design system
-└── docker-compose.yml
-```
+api/                          Laravel 13 (API, back-office, site vitrine)
+├── app/Domain/               Métier, par domaine
+│   ├── Identity/             Comptes anonymes ou nominatifs, rôles, appareils
+│   ├── Listening/            Écoute : conversations, file, alertes, messages vocaux
+│   ├── Consultation/         Professionnels, créneaux, réservations, visio, versements
+│   ├── Learning/             Formations, leçons, jalons, attestations
+│   ├── Billing/              Paiements (MoneyFusion), abonnements
+│   ├── Wellbeing/            Plan de sécurité, journal d'humeur
+│   ├── Content/              Exercices, guides, ressources de proximité
+│   └── Reporting/            Rapport d'impact anonymisé
+├── app/Infrastructure/       Adaptateurs : paiements, IA (Claude), push (FCM), visio (Jitsi)
+├── app/Http/                 Contrôleurs API / back-office / site, ressources JSON, requêtes
+├── resources/views/          Back-office (backoffice/), site (site/), PDF (pdf/)
+├── tests/                    Pest (Feature)
+├── docker/                   nginx, PHP-FPM, point d'entrée
+└── Dockerfile
 
-## Commandes (depuis la racine)
+mobile/                       Flutter
+├── lib/app/core/             Thème, réseau, erreurs, stockage, widgets, l10n, suivi d'erreurs
+├── lib/app/shared/           Session et entités partagées
+├── lib/app/modules/<module>/ data/ (sources, modèles, dépôts) · domain/ (entités, contrats, cas d'usage) · presentation/
+├── lib/l10n/                 Traductions (ARB) — français de référence
+└── test/                     Tests unitaires et règles d'architecture
 
-| Cible | Commande |
-|-------|----------|
-| API | `cd api` puis uvicorn |
-| Admin | `npm run admin:dev` |
-| Mobile | `npm run mobile:start` |
-| Web | `npm run web:dev` |
-| Tests API | `npm run api:test` |
+brand/                        Identité visuelle
+docs/                         Lancement, traductions
+.github/workflows/            Intégration continue
+docker-compose.yml            Déploiement

@@ -17,7 +17,13 @@ class _MockCourseRepository extends Mock implements CourseRepository {}
 
 class _MockBookingRepository extends Mock implements BookingRepository {}
 
-const _badge = {'code': 'first_lesson', 'label': 'Premier pas', 'description': '…', 'earned': true, 'awarded_at': '2026-10-19T10:00:00+00:00'};
+const _badge = {
+  'code': 'first_lesson',
+  'label': 'Premier pas',
+  'description': '…',
+  'earned': true,
+  'awarded_at': '2026-10-19T10:00:00+00:00',
+};
 const _certificate = {
   'code': 'ABCD-EFGH-JKLM',
   'holder_name': 'Awa Ouédraogo',
@@ -36,7 +42,10 @@ void main() {
         'current_streak': 2,
         'best_streak': 3,
         'active_today': true,
-        'badges': [_badge, {..._badge, 'code': 'streak_7', 'earned': false, 'awarded_at': null}],
+        'badges': [
+          _badge,
+          {..._badge, 'code': 'streak_7', 'earned': false, 'awarded_at': null},
+        ],
         'certificates': [_certificate],
       });
 
@@ -50,7 +59,11 @@ void main() {
       final api = _MockApiProvider();
       when(() => api.post('/courses/confiance/lessons/3/complete')).thenAnswer(
         (_) async => {
-          'data': {'progress': 100, 'completed_lesson_ids': [1, 3], 'course': {'slug': 'confiance'}},
+          'data': {
+            'progress': 100,
+            'completed_lesson_ids': [1, 3],
+            'course': {'slug': 'confiance'},
+          },
           'new_badges': [_badge],
         },
       );

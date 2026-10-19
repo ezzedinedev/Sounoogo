@@ -27,7 +27,14 @@ void main() {
   group('SendVoiceMessage', () {
     late _MockListeningRepository repository;
     final sent = SentMessage(
-      message: Message(id: 1, kind: 'audio', body: 'Message vocal (0:42)', createdAt: DateTime(2026), audioUrl: 'https://api/a', audioDuration: 42),
+      message: Message(
+        id: 1,
+        kind: 'audio',
+        body: 'Message vocal (0:42)',
+        createdAt: DateTime(2026),
+        audioUrl: 'https://api/a',
+        audioDuration: 42,
+      ),
       riskLevel: RiskLevel.none,
     );
 
@@ -100,9 +107,17 @@ void main() {
 
       final saved = await repository.reminder();
       expect((saved.enabled, saved.hour, saved.minute), (true, 21, 30));
-      final body = verify(
-        () => local.scheduleDaily(hour: 21, minute: 30, title: any(named: 'title'), body: captureAny(named: 'body'), data: {'type': 'checkin'}),
-      ).captured.single as String;
+      final body =
+          verify(
+                () => local.scheduleDaily(
+                  hour: 21,
+                  minute: 30,
+                  title: any(named: 'title'),
+                  body: captureAny(named: 'body'),
+                  data: {'type': 'checkin'},
+                ),
+              ).captured.single
+              as String;
       expect(body.toLowerCase(), isNot(contains('humeur')));
     });
   });

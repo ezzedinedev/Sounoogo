@@ -22,7 +22,11 @@ class CertificateCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [AppColors.violet800, AppColors.violet950], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        gradient: const LinearGradient(
+          colors: [AppColors.violet800, AppColors.violet950],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
       ),
       child: Column(
@@ -81,7 +85,12 @@ class _CertificateNameSheetState extends State<CertificateNameSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(AppSpacing.page, AppSpacing.md, AppSpacing.page, AppSpacing.xl + MediaQuery.viewInsetsOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.page,
+        AppSpacing.md,
+        AppSpacing.page,
+        AppSpacing.xl + MediaQuery.viewInsetsOf(context).bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -106,10 +115,8 @@ class _CertificateNameSheetState extends State<CertificateNameSheet> {
           const SizedBox(height: AppSpacing.md),
           ValueListenableBuilder(
             valueListenable: _name,
-            builder: (_, value, _) => FilledButton(
-              onPressed: value.text.trim().length < 2 ? null : _submit,
-              child: const Text('Obtenir l\'attestation'),
-            ),
+            builder: (_, value, _) =>
+                FilledButton(onPressed: value.text.trim().length < 2 ? null : _submit, child: const Text('Obtenir l\'attestation')),
           ),
         ],
       ),

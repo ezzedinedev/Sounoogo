@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+import 'app/core/monitoring/error_reporting.dart';
+import 'app/core/l10n/app_locales.dart';
 import 'app/core/theme/app_theme.dart';
 import 'app/di/app_binding.dart';
 import 'app/modules/settings/presentation/widgets/app_frame.dart';
@@ -15,7 +16,7 @@ Future<void> main() async {
   await initializeDateFormatting('fr_FR');
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  runApp(const SunoogoApp());
+  await ErrorReporting.run(() => runApp(const SunoogoApp()));
 }
 
 class SunoogoApp extends StatelessWidget {
@@ -27,9 +28,10 @@ class SunoogoApp extends StatelessWidget {
       title: 'SUNOOGO',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      locale: const Locale('fr', 'FR'),
-      supportedLocales: const [Locale('fr', 'FR')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      locale: AppLocales.fallback,
+      fallbackLocale: AppLocales.fallback,
+      supportedLocales: AppLocales.supported,
+      localizationsDelegates: AppLocales.delegates,
       initialBinding: AppBinding(),
       builder: (context, child) => AppFrame(child: child ?? const SizedBox.shrink()),
       initialRoute: AppRoutes.splash,

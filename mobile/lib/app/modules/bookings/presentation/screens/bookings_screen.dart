@@ -134,9 +134,7 @@ class _VideoAccess extends GetView<BookingsController> {
           children: [
             const Icon(Icons.videocam_outlined, size: 18, color: AppColors.violet700),
             const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Text('La salle de visio ouvrira ${Formatters.dayTime(room.opensAt)}.', style: AppTextStyles.caption),
-            ),
+            Expanded(child: Text('La salle de visio ouvrira ${Formatters.dayTime(room.opensAt)}.', style: AppTextStyles.caption)),
           ],
         );
       }

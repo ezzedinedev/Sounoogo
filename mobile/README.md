@@ -14,6 +14,16 @@ flutter run \
 
 Les valeurs par défaut visent l'API locale vue depuis l'émulateur Android.
 
+Options de build (`--dart-define`) :
+
+| Clé | Rôle |
+|---|---|
+| `API_BASE_URL`, `REVERB_HOST`, `REVERB_APP_KEY` | API et temps réel |
+| `FIREBASE_API_KEY`, `FIREBASE_APP_ID`, `FIREBASE_SENDER_ID`, `FIREBASE_PROJECT_ID` | Notifications push (désactivées sans) |
+| `SENTRY_DSN`, `SENTRY_ENVIRONMENT` | Suivi des plantages, sans donnée personnelle (désactivé sans) |
+
+Textes et traductions : `lib/l10n/app_fr.arb`, voir [../docs/TRADUCTIONS.md](../docs/TRADUCTIONS.md).
+
 ## Qualité
 
 ```bash

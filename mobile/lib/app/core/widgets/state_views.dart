@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import '../l10n/app_locales.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text_styles.dart';
 
@@ -52,12 +53,12 @@ class ErrorState extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmptyState(
       icon: Icons.wifi_off_rounded,
-      title: 'Oups',
+      title: context.l10n.errorTitle,
       message: message,
       action: OutlinedButton.icon(
         onPressed: onRetry,
         icon: const Icon(Icons.refresh_rounded),
-        label: const Text('Réessayer'),
+        label: Text(context.l10n.actionRetry),
         style: OutlinedButton.styleFrom(minimumSize: const Size(180, 48)),
       ),
     );

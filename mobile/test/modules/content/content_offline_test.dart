@@ -78,7 +78,8 @@ void main() {
   test('un guide déjà ouvert reste lisible hors ligne', () async {
     final remote = _MockGuideRemote();
     final repository = GuideRepositoryImpl(remote, _MemoryJsonCache());
-    when(() => remote.find('ecouter')).thenAnswer((_) async => {'slug': 'ecouter', 'title': 'Écouter', 'summary': '…', 'reading_minutes': 2, 'body': '## Écouter'});
+    when(() => remote.find('ecouter'))
+        .thenAnswer((_) async => {'slug': 'ecouter', 'title': 'Écouter', 'summary': '…', 'reading_minutes': 2, 'body': '## Écouter'});
     await repository.read('ecouter');
 
     when(() => remote.find('ecouter')).thenThrow(const ApiException('hors ligne'));
@@ -89,7 +90,15 @@ void main() {
   test('l\'annuaire distingue les ressources placées sur la carte', () {
     final directory = ResourceDirectoryModel.fromJson({
       'data': [
-        {'id': 1, 'name': 'Centre A', 'category': 'health_center', 'category_label': 'Centre de santé', 'city': 'Ouagadougou', 'latitude': 12.37, 'longitude': -1.52},
+        {
+          'id': 1,
+          'name': 'Centre A',
+          'category': 'health_center',
+          'category_label': 'Centre de santé',
+          'city': 'Ouagadougou',
+          'latitude': 12.37,
+          'longitude': -1.52,
+        },
         {'id': 2, 'name': 'Association B', 'category': 'association', 'category_label': 'Association', 'city': 'Ouagadougou'},
       ],
       'cities': ['Ouagadougou'],

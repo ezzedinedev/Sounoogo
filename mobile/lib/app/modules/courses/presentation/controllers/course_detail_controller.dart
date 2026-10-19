@@ -122,7 +122,10 @@ class CourseDetailController extends GetxController {
     try {
       final path = await _getCertificateFile(current);
       await SharePlus.instance.share(
-        ShareParams(files: [XFile(path, mimeType: 'application/pdf')], subject: 'Attestation SUNOOGO — ${current.courseTitle}'),
+        ShareParams(
+          files: [XFile(path, mimeType: 'application/pdf')],
+          subject: 'Attestation SUNOOGO — ${current.courseTitle}',
+        ),
       );
     } on Failure catch (failure) {
       AppToast.show('Téléchargement impossible', failure.message);

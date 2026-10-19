@@ -102,3 +102,11 @@ it('refuse un nom d\'attestation fantaisiste', function () {
     $this->postJson("/api/v1/courses/{$course->slug}/certificate", ['holder_name' => '<script>'])->assertJsonValidationErrors('holder_name');
     expect(Certificate::count())->toBe(0);
 });
+
+it('renvoie des erreurs de validation en français', function () {
+    actingAsRole(Role::Member);
+    $course = completedCourse();
+
+    $this->postJson("/api/v1/courses/{$course->slug}/certificate")
+        ->assertJsonPath('errors.holder_name.0', 'Le champ nom est obligatoire.');
+});

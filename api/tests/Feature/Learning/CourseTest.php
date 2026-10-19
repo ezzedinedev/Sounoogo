@@ -2,23 +2,6 @@
 
 use App\Domain\Billing\Models\Plan;
 use App\Domain\Identity\Enums\Role;
-use App\Domain\Learning\Models\Course;
-
-function course(array $attributes = []): Course
-{
-    $course = Course::create([
-        'slug' => 'test-'.uniqid(),
-        'title' => 'Formation test',
-        'summary' => 'Résumé',
-        'price' => 0,
-        'published_at' => now()->subDay(),
-        ...$attributes,
-    ]);
-    $course->lessons()->create(['title' => 'Intro', 'content' => 'Contenu 1', 'position' => 1, 'is_preview' => true]);
-    $course->lessons()->create(['title' => 'Suite', 'content' => 'Contenu 2', 'position' => 2]);
-
-    return $course;
-}
 
 it('n\'affiche que les formations publiées', function () {
     course();

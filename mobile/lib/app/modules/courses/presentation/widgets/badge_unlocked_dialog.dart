@@ -12,10 +12,8 @@ import 'badge_medallion.dart';
 /// Célébration d'un ou plusieurs jalons : la médaille se pose, des rayons de soleil tournent
 /// lentement derrière elle et quelques éclats s'envolent. Sobre si les animations sont réduites.
 abstract final class BadgeUnlockedDialog {
-  static Future<void> show(List<LearningBadge> badges) => Get.dialog<void>(
-    _BadgeUnlocked(badges: badges),
-    barrierColor: AppColors.violet950.withValues(alpha: 0.55),
-  );
+  static Future<void> show(List<LearningBadge> badges) =>
+      Get.dialog<void>(_BadgeUnlocked(badges: badges), barrierColor: AppColors.violet950.withValues(alpha: 0.55));
 }
 
 class _BadgeUnlocked extends StatefulWidget {
@@ -63,8 +61,14 @@ class _BadgeUnlockedState extends State<_BadgeUnlocked> with TickerProviderState
 
   @override
   Widget build(BuildContext context) {
-    final medal = CurvedAnimation(parent: _entrance, curve: const Interval(0, 0.7, curve: Curves.elasticOut));
-    final text = CurvedAnimation(parent: _entrance, curve: const Interval(0.35, 1, curve: Curves.easeOutCubic));
+    final medal = CurvedAnimation(
+      parent: _entrance,
+      curve: const Interval(0, 0.7, curve: Curves.elasticOut),
+    );
+    final text = CurvedAnimation(
+      parent: _entrance,
+      curve: const Interval(0.35, 1, curve: Curves.easeOutCubic),
+    );
 
     return Center(
       child: Material(
@@ -77,7 +81,10 @@ class _BadgeUnlockedState extends State<_BadgeUnlocked> with TickerProviderState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('NOUVEAU JALON', style: AppTextStyles.caption.copyWith(color: AppColors.violet700, fontWeight: FontWeight.w700, letterSpacing: 1.4)),
+              Text(
+                'NOUVEAU JALON',
+                style: AppTextStyles.caption.copyWith(color: AppColors.violet700, fontWeight: FontWeight.w700, letterSpacing: 1.4),
+              ),
               const SizedBox(height: AppSpacing.md),
               SizedBox.square(
                 dimension: 168,
@@ -114,10 +121,7 @@ class _BadgeUnlockedState extends State<_BadgeUnlocked> with TickerProviderState
               const SizedBox(height: AppSpacing.xl),
               SizedBox(
                 width: double.infinity,
-                child: FilledButton(
-                  onPressed: _next,
-                  child: Text(_index < widget.badges.length - 1 ? 'Jalon suivant' : 'Merci !'),
-                ),
+                child: FilledButton(onPressed: _next, child: Text(_index < widget.badges.length - 1 ? 'Jalon suivant' : 'Merci !')),
               ),
             ],
           ),
@@ -147,7 +151,9 @@ class _CelebrationPainter extends CustomPainter {
     canvas.drawCircle(
       center,
       radius * 0.82,
-      Paint()..shader = RadialGradient(colors: [AppColors.violet100, AppColors.violet100.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: center, radius: radius * 0.82)),
+      Paint()
+        ..shader = RadialGradient(colors: [AppColors.violet100, AppColors.violet100.withValues(alpha: 0)])
+            .createShader(Rect.fromCircle(center: center, radius: radius * 0.82)),
     );
 
     // Rayons de soleil
