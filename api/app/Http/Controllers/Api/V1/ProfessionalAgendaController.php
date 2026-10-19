@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\Consultation\Actions\CompleteBooking;
 use App\Domain\Consultation\Enums\BookingStatus;
 use App\Domain\Consultation\Models\AvailabilitySlot;
 use App\Domain\Consultation\Models\Booking;
@@ -57,14 +58,11 @@ class ProfessionalAgendaController extends Controller
         );
     }
 
-    public function complete(Booking $booking): BookingResource
+    public function complete(Booking $booking, CompleteBooking $complete): BookingResource
     {
         $this->authorize('complete', $booking);
-        abort_unless($booking->status === BookingStatus::Confirmed, 409, 'Seule une consultation confirmée peut être terminée.');
 
-        $booking->update(['status' => BookingStatus::Completed, 'completed_at' => now()]);
-
-        return new BookingResource($booking->load(['slot', 'member']));
+        return new BookingResource($complete($booking)->load(['slot', 'member']));
     }
 
     private function profile(Request $request): ProfessionalProfile

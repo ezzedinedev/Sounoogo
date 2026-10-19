@@ -7,6 +7,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../controllers/course_detail_controller.dart';
+import '../widgets/certificate_card.dart';
 import '../widgets/course_cover.dart';
 import '../../../../core/widgets/fade_slide_in.dart';
 
@@ -70,6 +71,17 @@ class CourseDetailScreen extends GetView<CourseDetailController> {
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text('${enrollment.progress} % terminé', style: AppTextStyles.caption),
+                  ],
+                  if (enrollment?.isCompleted ?? false) ...[
+                    const SizedBox(height: AppSpacing.xl),
+                    FadeSlideIn(
+                      child: CertificateCard(
+                        certificate: controller.certificate.value,
+                        busy: controller.isCertificateBusy.value,
+                        onRequest: controller.requestCertificate,
+                        onShare: controller.shareCertificate,
+                      ),
+                    ),
                   ],
                   const SizedBox(height: AppSpacing.xl),
                   const Text('Leçons', style: AppTextStyles.subtitle),

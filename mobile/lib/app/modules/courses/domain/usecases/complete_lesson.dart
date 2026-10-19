@@ -1,4 +1,4 @@
-import '../entities/enrollment.dart';
+import '../entities/lesson_completion.dart';
 import '../repositories/course_repository.dart';
 
 final class CompleteLesson {
@@ -6,5 +6,5 @@ final class CompleteLesson {
 
   final CourseRepository _repository;
 
-  Future<Enrollment> call(String slug, int lessonId) => _repository.completeLesson(slug, lessonId);
+  Future<LessonCompletion> call(String slug, int lessonId) => _repository.completeLesson(slug, lessonId);
 }

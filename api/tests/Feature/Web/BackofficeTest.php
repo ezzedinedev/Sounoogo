@@ -33,7 +33,8 @@ it('ouvre toutes les pages d\'administration', function (string $uri) {
     '/admin', '/admin/ecoute', '/admin/alertes', '/admin/signalements', '/admin/utilisateurs',
     '/admin/utilisateurs/create', '/admin/professionnels', '/admin/professionnels/create',
     '/admin/reservations', '/admin/paiements', '/admin/formations', '/admin/formations/create',
-    '/admin/offres', '/admin/numeros-urgence', '/admin/journal',
+    '/admin/offres', '/admin/numeros-urgence', '/admin/journal', '/admin/versements', '/admin/impact',
+    '/admin/impact?periode=12-mois',
 ]);
 
 it('limite l\'écoutant à son périmètre', function () {

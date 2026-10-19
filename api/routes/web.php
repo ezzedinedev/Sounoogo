@@ -10,6 +10,7 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('formations', 'courses')->name('courses');
     Route::get('urgence', 'emergency')->name('emergency');
     Route::get('confidentialite', 'privacy')->name('privacy');
+    Route::get('attestations/{certificate}', 'certificate')->name('certificates.verify');
     Route::get('paiement/{result}', 'paymentResult')->whereIn('result', ['succes', 'echec'])->name('payment.result');
 });
 

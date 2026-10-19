@@ -1,5 +1,8 @@
+import '../../domain/entities/certificate.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/entities/enrollment.dart';
+import '../../domain/entities/learning_badge.dart';
+import '../../domain/entities/learning_progress.dart';
 import '../../domain/entities/lesson.dart';
 
 abstract final class LessonModel {
@@ -35,5 +38,44 @@ abstract final class EnrollmentModel {
     courseSlug: (json['course'] as Map<String, dynamic>)['slug'] as String,
     progress: json['progress'] as int,
     completedLessonIds: (json['completed_lesson_ids'] as List).cast<int>(),
+  );
+}
+
+abstract final class LearningBadgeModel {
+  static LearningBadge fromJson(Map<String, dynamic> json) => LearningBadge(
+    code: json['code'] as String,
+    label: json['label'] as String,
+    description: json['description'] as String,
+    earned: json['earned'] as bool,
+    awardedAt: DateTime.tryParse(json['awarded_at'] as String? ?? '')?.toLocal(),
+  );
+}
+
+abstract final class CertificateModel {
+  static Certificate fromJson(Map<String, dynamic> json) {
+    final course = json['course'] as Map<String, dynamic>;
+    return Certificate(
+      code: json['code'] as String,
+      holderName: json['holder_name'] as String,
+      issuedAt: DateTime.parse(json['issued_at'] as String).toLocal(),
+      courseSlug: course['slug'] as String,
+      courseTitle: course['title'] as String,
+      pdfUrl: json['pdf_url'] as String,
+      verificationUrl: json['verification_url'] as String,
+    );
+  }
+}
+
+abstract final class LearningProgressModel {
+  static LearningProgress fromJson(Map<String, dynamic> json) => LearningProgress(
+    lessons: json['lessons'] as int,
+    courses: json['courses'] as int,
+    currentStreak: json['current_streak'] as int,
+    bestStreak: json['best_streak'] as int,
+    activeToday: json['active_today'] as bool,
+    badges: (json['badges'] as List).map((badge) => LearningBadgeModel.fromJson(badge as Map<String, dynamic>)).toList(),
+    certificates: (json['certificates'] as List)
+        .map((certificate) => CertificateModel.fromJson(certificate as Map<String, dynamic>))
+        .toList(),
   );
 }

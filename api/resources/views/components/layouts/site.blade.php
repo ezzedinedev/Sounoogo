@@ -1,4 +1,4 @@
-@props(['title' => null, 'description' => null, 'heroClass' => 'bg-linear-to-b from-primary-100 via-primary-50 to-white'])
+@props(['title' => null, 'description' => null, 'noindex' => false, 'heroClass' => 'bg-linear-to-b from-primary-100 via-primary-50 to-white'])
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="theme-sunoogo">
 <head>
@@ -7,6 +7,7 @@
     <title>{{ $title ? "{$title} · SUNOOGO" : 'SUNOOGO — Parle librement, quelqu\'un t\'écoute' }}</title>
     <meta name="description" content="{{ $description ?? 'Écoute anonyme et gratuite, consultations avec des professionnels et parcours de confiance en soi. Au Burkina Faso.' }}">
     <meta name="theme-color" content="#602fb8">
+    @if ($noindex)<meta name="robots" content="noindex, nofollow">@endif
     <meta property="og:title" content="{{ $title ?? 'SUNOOGO' }}">
     <meta property="og:description" content="{{ $description ?? 'Écoute anonyme et gratuite, consultations et formations pour la santé mentale.' }}">
     <meta property="og:image" content="{{ asset('images/brand/og-default.png') }}">

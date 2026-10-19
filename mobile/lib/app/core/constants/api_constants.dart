@@ -23,6 +23,7 @@ abstract final class ApiConstants {
   static const String bookings = '/bookings';
   static const String courses = '/courses';
   static const String enrollments = '/enrollments';
+  static const String learningProgress = '/me/progress';
   static const String subscription = '/subscription';
   static const String payments = '/payments';
   static const String broadcastingAuth = '/broadcasting/auth';
@@ -45,10 +46,12 @@ abstract final class ApiConstants {
   static String booking(int id) => '$bookings/$id';
   static String bookingPay(int id) => '$bookings/$id/pay';
   static String bookingCancel(int id) => '$bookings/$id/cancel';
+  static String bookingVideo(int id) => '$bookings/$id/video';
   static String course(String slug) => '$courses/$slug';
   static String courseEnroll(String slug) => '$courses/$slug/enroll';
   static String coursePurchase(String slug) => '$courses/$slug/purchase';
   static String lesson(String slug, int id) => '$courses/$slug/lessons/$id';
   static String lessonComplete(String slug, int id) => '$courses/$slug/lessons/$id/complete';
+  static String courseCertificate(String slug) => '$courses/$slug/certificate';
   static String payment(String reference) => '$payments/$reference';
 }

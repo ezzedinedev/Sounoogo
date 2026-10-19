@@ -18,6 +18,7 @@ const icons = [
     'user', 'list', 'calendar-plus', 'settings', 'circle-plus', 'alert-circle', 'loader-2',
     'selector', 'chevron-right', 'mail', 'pencil', 'player-pause', 'player-play', 'ban', 'circle-dot',
     'radar', 'user-off', 'bulb', 'file-text', 'copy',
+    'wallet', 'chart-bar', 'download', 'cash', 'repeat', 'printer',
 ];
 
 const entries = icons.map((name) => {

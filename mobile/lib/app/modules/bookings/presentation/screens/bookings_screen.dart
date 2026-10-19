@@ -82,6 +82,10 @@ class _BookingCard extends GetView<BookingsController> {
               '${booking.startsAt == null ? '' : Formatters.dayTime(booking.startsAt!)} · ${booking.modeLabel} · ${Formatters.money(booking.price)}',
               style: AppTextStyles.bodySecondary,
             ),
+            if (booking.status == 'confirmed' && booking.video != null) ...[
+              const SizedBox(height: AppSpacing.md),
+              _VideoAccess(booking: booking),
+            ],
             if (booking.isCancellable) ...[
               const SizedBox(height: AppSpacing.md),
               Row(
@@ -106,6 +110,89 @@ class _BookingCard extends GetView<BookingsController> {
               ),
             ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Accès à la salle de visio : bouton actif pendant la fenêtre d'ouverture, horaire sinon.
+class _VideoAccess extends GetView<BookingsController> {
+  const _VideoAccess({required this.booking});
+
+  final Booking booking;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final room = booking.video!;
+      final now = controller.now.value;
+
+      if (room.isOverAt(now)) return const SizedBox.shrink();
+      if (!room.isOpenAt(now)) {
+        return Row(
+          children: [
+            const Icon(Icons.videocam_outlined, size: 18, color: AppColors.violet700),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text('La salle de visio ouvrira ${Formatters.dayTime(room.opensAt)}.', style: AppTextStyles.caption),
+            ),
+          ],
+        );
+      }
+
+      final joining = controller.isJoining.value == booking.id;
+      return FilledButton.icon(
+        onPressed: joining ? null : () => controller.joinVideo(booking),
+        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        icon: joining
+            ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
+            : const _LiveDot(),
+        label: const Text('Rejoindre la visio'),
+      );
+    });
+  }
+}
+
+/// Point « en direct » qui pulse doucement (fixe si les animations sont réduites).
+class _LiveDot extends StatefulWidget {
+  const _LiveDot();
+
+  @override
+  State<_LiveDot> createState() => _LiveDotState();
+}
+
+class _LiveDotState extends State<_LiveDot> with SingleTickerProviderStateMixin {
+  late final _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _pulse.stop();
+    } else if (!_pulse.isAnimating) {
+      _pulse.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: 18,
+      child: Center(
+        child: FadeTransition(
+          opacity: Tween<double>(begin: 1, end: 0.35).animate(_pulse),
+          child: Container(
+            width: 10,
+            height: 10,
+            decoration: const BoxDecoration(color: AppColors.lilac200, shape: BoxShape.circle),
+          ),
         ),
       ),
     );

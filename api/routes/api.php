@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\CourseController;
 use App\Http\Controllers\Api\V1\DeviceController;
 use App\Http\Controllers\Api\V1\EmergencyController;
+use App\Http\Controllers\Api\V1\LearningProgressController;
 use App\Http\Controllers\Api\V1\ListenerController;
 use App\Http\Controllers\Api\V1\MetaController;
 use App\Http\Controllers\Api\V1\MoodController;
@@ -96,6 +97,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('{booking}', 'show')->name('show');
             Route::post('{booking}/pay', 'pay')->name('pay');
             Route::post('{booking}/cancel', 'cancel')->name('cancel');
+            Route::get('{booking}/video', 'video')->name('video');
         });
 
         Route::prefix('pro')->name('pro.')->middleware('role:professional')->controller(ProfessionalAgendaController::class)->group(function () {
@@ -108,6 +110,9 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
         // Niveau 3 — formations et abonnements
         Route::get('enrollments', [CourseController::class, 'enrollments'])->name('enrollments.index');
+        Route::get('me/progress', [LearningProgressController::class, 'show'])->name('me.progress');
+        Route::post('courses/{course}/certificate', [LearningProgressController::class, 'issue'])->name('courses.certificate');
+        Route::get('certificates/{certificate}/pdf', [LearningProgressController::class, 'pdf'])->name('certificates.pdf');
         Route::prefix('courses/{course}')->name('courses.')->controller(CourseController::class)->group(function () {
             Route::post('enroll', 'enroll')->name('enroll');
             Route::post('purchase', 'purchase')->name('purchase');

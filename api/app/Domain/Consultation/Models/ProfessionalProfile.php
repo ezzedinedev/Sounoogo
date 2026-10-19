@@ -67,6 +67,12 @@ class ProfessionalProfile extends Model
         return $this->hasMany(Booking::class);
     }
 
+    /** @return HasMany<Payout, $this> */
+    public function payouts(): HasMany
+    {
+        return $this->hasMany(Payout::class);
+    }
+
     public function photoUrl(): ?string
     {
         if ($this->photo_path === null) {

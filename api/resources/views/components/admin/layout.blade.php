@@ -14,12 +14,15 @@
             ['backoffice.alerts.index', 'Alertes', 'alert-triangle', 'alerts.manage', 'backoffice.alerts.*'],
             ['backoffice.reports.index', 'Signalements', 'flag', 'reports.moderate', 'backoffice.reports.*'],
             ['backoffice.agenda.index', 'Mon agenda', 'calendar', null, 'backoffice.agenda.*'],
+            ['backoffice.earnings.index', 'Mes revenus', 'wallet', null, 'backoffice.earnings.*'],
         ],
         'Gestion' => [
             ['backoffice.users.index', 'Utilisateurs', 'users', 'users.manage', 'backoffice.users.*'],
             ['backoffice.professionals.index', 'Professionnels', 'stethoscope', 'professionals.manage', 'backoffice.professionals.*'],
             ['backoffice.bookings.index', 'Réservations', 'calendar-event', 'bookings.manage', 'backoffice.bookings.*'],
             ['backoffice.payments.index', 'Paiements', 'receipt', 'payments.view', 'backoffice.payments.*'],
+            ['backoffice.payouts.index', 'Versements', 'cash', 'payouts.manage', 'backoffice.payouts.*'],
+            ['backoffice.impact.index', 'Rapport d\'impact', 'chart-bar', 'impact.view', 'backoffice.impact.*'],
         ],
         'Contenus' => [
             ['backoffice.courses.index', 'Formations', 'school', 'courses.manage', 'backoffice.courses.*'],

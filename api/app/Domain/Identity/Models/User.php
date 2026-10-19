@@ -7,7 +7,9 @@ use App\Domain\Billing\Models\Subscription;
 use App\Domain\Consultation\Models\Booking;
 use App\Domain\Consultation\Models\ProfessionalProfile;
 use App\Domain\Identity\Enums\Role;
+use App\Domain\Learning\Models\Certificate;
 use App\Domain\Learning\Models\Enrollment;
+use App\Domain\Learning\Models\UserBadge;
 use App\Domain\Listening\Models\Conversation;
 use App\Domain\Listening\Models\Message;
 use App\Domain\Listening\Services\VoiceNotes;
@@ -173,6 +175,18 @@ class User extends Authenticatable
     public function moodEntries(): HasMany
     {
         return $this->hasMany(MoodEntry::class);
+    }
+
+    /** @return HasMany<UserBadge, $this> */
+    public function badges(): HasMany
+    {
+        return $this->hasMany(UserBadge::class);
+    }
+
+    /** @return HasMany<Certificate, $this> */
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
     }
 
     /** @return HasMany<Subscription, $this> */

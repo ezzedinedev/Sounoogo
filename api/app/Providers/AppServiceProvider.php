@@ -5,13 +5,16 @@ namespace App\Providers;
 use App\Domain\Billing\Models\Payment;
 use App\Domain\Billing\Models\Plan;
 use App\Domain\Billing\Models\Subscription;
+use App\Domain\Consultation\Contracts\VideoConferencing;
 use App\Domain\Consultation\Models\Booking;
+use App\Domain\Consultation\Models\Payout;
 use App\Domain\Consultation\Models\ProfessionalProfile;
 use App\Domain\Content\Models\Exercise;
 use App\Domain\Content\Models\Guide;
 use App\Domain\Content\Models\SupportResource;
 use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
+use App\Domain\Learning\Models\Certificate;
 use App\Domain\Learning\Models\Course;
 use App\Domain\Learning\Models\Lesson;
 use App\Domain\Listening\Contracts\ListenerCopilot;
@@ -27,6 +30,7 @@ use App\Infrastructure\AI\ClaudeListenerCopilot;
 use App\Infrastructure\AI\ClaudeRiskClassifier;
 use App\Infrastructure\AI\DisabledListenerCopilot;
 use App\Infrastructure\AI\DisabledRiskClassifier;
+use App\Infrastructure\Video\JitsiMeet;
 use App\Policies\BookingPolicy;
 use App\Policies\ConversationPolicy;
 use Dedoc\Scramble\Scramble;
@@ -52,6 +56,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ListenerCopilot::class, fn ($app) => config('sunoogo.ai.enabled')
             ? $app->make(ClaudeListenerCopilot::class)
             : new DisabledListenerCopilot);
+
+        // Téléconsultation : Jitsi Meet auto-hébergé, désactivé tant que JITSI_URL n'est pas renseigné.
+        $this->app->bind(VideoConferencing::class, fn () => new JitsiMeet(
+            (string) config('sunoogo.video.base_url'),
+            config('sunoogo.video.app_id'),
+            config('sunoogo.video.app_secret'),
+        ));
     }
 
     public function boot(): void
@@ -77,6 +88,8 @@ class AppServiceProvider extends ServiceProvider
             'support_resource' => SupportResource::class,
             'safety_plan' => SafetyPlan::class,
             'mood_entry' => MoodEntry::class,
+            'certificate' => Certificate::class,
+            'payout' => Payout::class,
         ]);
 
         Gate::policy(Conversation::class, ConversationPolicy::class);

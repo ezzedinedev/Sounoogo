@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Site;
 
 use App\Domain\Billing\Models\Plan;
 use App\Domain\Consultation\Models\ProfessionalProfile;
+use App\Domain\Learning\Models\Certificate;
 use App\Domain\Learning\Models\Course;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -55,6 +56,12 @@ class SiteController extends Controller
     public function privacy(): View
     {
         return view('site.privacy');
+    }
+
+    /** Vérification publique d'une attestation par son code. */
+    public function certificate(Certificate $certificate): View
+    {
+        return view('site.certificate', ['certificate' => $certificate->load('course')]);
     }
 
     public function paymentResult(Request $request, string $result): View

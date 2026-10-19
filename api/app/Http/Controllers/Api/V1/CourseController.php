@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api\V1;
 use App\Domain\Billing\Actions\InitiatePayment;
 use App\Domain\Learning\Actions\CompleteLesson;
 use App\Domain\Learning\Actions\EnrollInCourse;
+use App\Domain\Learning\Enums\Badge;
 use App\Domain\Learning\Models\Course;
 use App\Domain\Learning\Models\Lesson;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Billing\PayRequest;
+use App\Http\Resources\BadgeResource;
 use App\Http\Resources\CourseResource;
 use App\Http\Resources\EnrollmentResource;
 use App\Http\Resources\LessonResource;
@@ -77,11 +79,15 @@ class CourseController extends Controller
         return (new LessonResource($lesson))->withContent();
     }
 
+    /** Marquer une leçon comme terminée. `new_badges` liste les jalons obtenus à cette occasion. */
     public function completeLesson(Request $request, Course $course, Lesson $lesson, CompleteLesson $complete): EnrollmentResource
     {
         $enrollment = $request->user()->enrollments()->where('course_id', $course->id)->firstOrFail();
+        [$enrollment, $badges] = $complete($enrollment, $lesson);
 
-        return new EnrollmentResource($complete($enrollment, $lesson)->load('course'));
+        return (new EnrollmentResource($enrollment->load('course')))->additional([
+            'new_badges' => array_map(fn (Badge $badge) => BadgeResource::of($badge, now()), $badges),
+        ]);
     }
 
     /** Mes formations et ma progression. */

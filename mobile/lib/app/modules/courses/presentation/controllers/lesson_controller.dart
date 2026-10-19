@@ -5,6 +5,8 @@ import '../../domain/entities/lesson.dart';
 import '../../domain/usecases/complete_lesson.dart';
 import '../../domain/usecases/get_lesson.dart';
 import '../../../../core/widgets/app_toast.dart';
+import '../widgets/badge_unlocked_dialog.dart';
+import 'courses_controller.dart';
 
 class LessonController extends GetxController {
   LessonController({required this._getLesson, required this._completeLesson});
@@ -41,8 +43,13 @@ class LessonController extends GetxController {
   Future<void> complete() async {
     isCompleting.value = true;
     try {
-      final enrollment = await _completeLesson(slug, id);
+      final completion = await _completeLesson(slug, id);
+      final enrollment = completion.enrollment;
       Get.back<void>();
+      if (Get.isRegistered<CoursesController>()) Get.find<CoursesController>().load();
+      if (completion.newBadges.isNotEmpty) {
+        await BadgeUnlockedDialog.show(completion.newBadges);
+      }
       AppToast.show(enrollment.isCompleted ? 'Parcours terminé, bravo !' : 'Leçon terminée', 'Progression : ${enrollment.progress} %');
     } on Failure catch (failure) {
       AppToast.show('Oups', failure.message);

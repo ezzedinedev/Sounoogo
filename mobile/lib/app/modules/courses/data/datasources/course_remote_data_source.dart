@@ -1,8 +1,11 @@
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/api_provider.dart';
+import '../../domain/entities/certificate.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/entities/enrollment.dart';
+import '../../domain/entities/learning_progress.dart';
 import '../../domain/entities/lesson.dart';
+import '../../domain/entities/lesson_completion.dart';
 import '../models/course_model.dart';
 
 class CourseRemoteDataSource {
@@ -20,8 +23,22 @@ class CourseRemoteDataSource {
 
   Future<Lesson> lesson(String slug, int id) async => LessonModel.fromJson(_data(await _api.get(ApiConstants.lesson(slug, id))));
 
-  Future<Enrollment> complete(String slug, int id) async =>
-      EnrollmentModel.fromJson(_data(await _api.post(ApiConstants.lessonComplete(slug, id))));
+  Future<LessonCompletion> complete(String slug, int id) async {
+    final response = await _api.post(ApiConstants.lessonComplete(slug, id));
+    return LessonCompletion(
+      enrollment: EnrollmentModel.fromJson(_data(response)),
+      newBadges: (response['new_badges'] as List? ?? const [])
+          .map((badge) => LearningBadgeModel.fromJson(badge as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  Future<LearningProgress> progress() async => LearningProgressModel.fromJson(_data(await _api.get(ApiConstants.learningProgress)));
+
+  Future<Certificate> issueCertificate(String slug, String holderName) async =>
+      CertificateModel.fromJson(_data(await _api.post(ApiConstants.courseCertificate(slug), data: {'holder_name': holderName})));
+
+  Future<void> download(String url, String savePath) => _api.download(url, savePath);
 
   Map<String, dynamic> _data(Map<String, dynamic> response) => response['data'] as Map<String, dynamic>;
 

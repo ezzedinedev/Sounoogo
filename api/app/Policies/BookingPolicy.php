@@ -22,6 +22,12 @@ class BookingPolicy
         return $this->isMember($user, $booking) || $this->isProfessional($user, $booking) || $user->can('bookings.manage');
     }
 
+    /** Seuls les deux participants entrent dans la salle de visio. */
+    public function join(User $user, Booking $booking): bool
+    {
+        return $this->isMember($user, $booking) || $this->isProfessional($user, $booking);
+    }
+
     public function complete(User $user, Booking $booking): bool
     {
         return $this->isProfessional($user, $booking);

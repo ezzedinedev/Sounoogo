@@ -9,11 +9,13 @@ use App\Domain\Consultation\Enums\BookingStatus;
 use App\Domain\Consultation\Enums\ConsultationMode;
 use App\Domain\Consultation\Models\AvailabilitySlot;
 use App\Domain\Consultation\Models\Booking;
+use App\Domain\Consultation\Services\VideoRooms;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Billing\PayRequest;
 use App\Http\Requests\Consultation\BookConsultationRequest;
 use App\Http\Resources\BookingResource;
 use App\Http\Resources\PaymentResource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -61,6 +63,23 @@ class BookingController extends Controller
         abort_unless($booking->status === BookingStatus::PendingPayment, 409, 'Cette réservation n\'est pas en attente de paiement.');
 
         return new PaymentResource($initiate($request->user(), $booking, $booking->price, $request->provider(), $request->phone()));
+    }
+
+    /**
+     * Rejoindre la téléconsultation. Lien personnel, valable de 10 minutes avant le rendez-vous
+     * à 30 minutes après sa fin.
+     */
+    public function video(Request $request, Booking $booking, VideoRooms $rooms): JsonResponse
+    {
+        $this->authorize('join', $booking);
+
+        $access = $rooms->join($booking->load(['slot', 'professional.user', 'member']), $request->user());
+
+        return response()->json(['data' => [
+            'url' => $access->url,
+            'opens_at' => $access->opensAt->toIso8601String(),
+            'closes_at' => $access->closesAt->toIso8601String(),
+        ]]);
     }
 
     public function cancel(Booking $booking, CancelBooking $cancel): BookingResource

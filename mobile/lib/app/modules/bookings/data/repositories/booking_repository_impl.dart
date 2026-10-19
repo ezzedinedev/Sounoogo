@@ -17,4 +17,7 @@ class BookingRepositoryImpl implements BookingRepository {
 
   @override
   Future<void> cancel(int bookingId) => guardApi(() => _remote.cancel(bookingId));
+
+  @override
+  Future<Uri> videoLink(int bookingId) => guardApi(() => _remote.videoLink(bookingId));
 }

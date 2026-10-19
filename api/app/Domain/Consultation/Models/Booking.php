@@ -21,6 +21,8 @@ use Illuminate\Support\Carbon;
  * @property ConsultationMode $mode
  * @property BookingStatus $status
  * @property int $price
+ * @property int|null $professional_share
+ * @property string|null $video_room
  * @property bool $keep_anonymous
  * @property string|null $member_note
  * @property Carbon|null $confirmed_at
@@ -32,7 +34,7 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable([
     'member_id', 'professional_profile_id', 'availability_slot_id', 'mode', 'status',
-    'price', 'keep_anonymous', 'member_note', 'confirmed_at', 'reminded_at', 'cancelled_at', 'completed_at',
+    'price', 'professional_share', 'keep_anonymous', 'member_note', 'video_room', 'confirmed_at', 'reminded_at', 'cancelled_at', 'completed_at',
 ])]
 class Booking extends Model implements Payable
 {

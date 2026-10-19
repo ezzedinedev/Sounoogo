@@ -70,4 +70,35 @@ return [
             'status_url' => env('MONEYFUSION_STATUS_URL', 'https://pay.moneyfusion.net/paiementNotif'),
         ],
     ],
+
+    /*
+     * Téléconsultation vidéo sur un serveur Jitsi Meet auto-hébergé. Les salles ont un nom aléatoire
+     * et ne s'ouvrent qu'autour de l'heure du rendez-vous. Si JITSI_APP_ID et JITSI_APP_SECRET sont
+     * renseignés (authentification JWT de Jitsi), chaque participant reçoit un jeton nominatif.
+     */
+    'video' => [
+        'enabled' => (bool) env('JITSI_URL'),
+        'base_url' => rtrim((string) env('JITSI_URL', ''), '/'),
+        'app_id' => env('JITSI_APP_ID'),
+        'app_secret' => env('JITSI_APP_SECRET'),
+        'opens_before_minutes' => 10,
+        'closes_after_minutes' => 30,
+    ],
+
+    /*
+     * Rémunération des professionnels. La commission de la plateforme (en %) est une décision
+     * commerciale : elle vaut 0 tant qu'elle n'est pas fixée dans l'environnement.
+     */
+    'payouts' => [
+        'commission_percent' => (int) env('SUNOOGO_COMMISSION_PERCENT', 0),
+        'minimum_amount' => (int) env('SUNOOGO_PAYOUT_MINIMUM', 5000),
+    ],
+
+    /*
+     * Rapports d'impact : toute valeur inférieure à ce seuil est masquée (« < 5 ») pour qu'aucune
+     * personne ne puisse être reconnue à partir d'un petit effectif.
+     */
+    'impact' => [
+        'min_cell_size' => 5,
+    ],
 ];

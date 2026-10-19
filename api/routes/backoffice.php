@@ -53,8 +53,14 @@ Route::prefix('admin')->name('backoffice.')->group(function () {
         Route::middleware('role:professional')->prefix('agenda')->name('agenda.')->controller(Backoffice\AgendaController::class)->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('creneaux', 'storeSlot')->name('slots.store');
+            Route::post('creneaux/serie', 'storeSeries')->name('slots.series');
             Route::delete('creneaux/{slot}', 'destroySlot')->name('slots.destroy');
             Route::post('consultations/{booking}/terminer', 'complete')->name('bookings.complete');
+            Route::get('consultations/{booking}/visio', 'video')->name('bookings.video');
+        });
+        Route::middleware('role:professional')->prefix('revenus')->name('earnings.')->controller(Backoffice\EarningsController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('versements', 'store')->middleware('throttle:6,1')->name('payouts.store');
         });
 
         // Administration
@@ -70,6 +76,10 @@ Route::prefix('admin')->name('backoffice.')->group(function () {
 
         Route::get('reservations', Backoffice\BookingController::class)->middleware('permission:bookings.manage')->name('bookings.index');
         Route::get('paiements', Backoffice\PaymentController::class)->middleware('permission:payments.view')->name('payments.index');
+        Route::middleware('permission:payouts.manage')->prefix('versements')->name('payouts.')->controller(Backoffice\PayoutController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::patch('{payout}', 'update')->name('update');
+        });
 
         Route::middleware('permission:courses.manage')->group(function () {
             Route::resource('formations', Backoffice\CourseController::class)->except(['show'])->parameters(['formations' => 'course'])->names('courses');
@@ -94,6 +104,12 @@ Route::prefix('admin')->name('backoffice.')->group(function () {
             Route::post('/', 'store')->name('store');
             Route::put('{contact}', 'update')->name('update');
             Route::delete('{contact}', 'destroy')->name('destroy');
+        });
+
+        Route::middleware('permission:impact.view')->prefix('impact')->name('impact.')->controller(Backoffice\ImpactController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('export.csv', 'csv')->name('csv');
+            Route::get('export.pdf', 'pdf')->name('pdf');
         });
 
         Route::get('journal', Backoffice\ActivityController::class)->middleware('permission:activity.view')->name('activity.index');

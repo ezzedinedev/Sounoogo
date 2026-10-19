@@ -12,6 +12,7 @@ import '../controllers/courses_controller.dart';
 import '../../domain/entities/course.dart';
 import '../../domain/entities/enrollment.dart';
 import '../widgets/course_cover.dart';
+import '../widgets/learning_progress_card.dart';
 import '../../../../core/widgets/fade_slide_in.dart';
 import '../../../../core/widgets/scale_on_press.dart';
 
@@ -46,6 +47,10 @@ class CoursesTab extends GetView<CoursesController> {
                 'Quelques minutes par jour, des exercices simples. La première leçon est toujours offerte.',
                 style: AppTextStyles.bodySecondary,
               ),
+              if (controller.progress.value case final progress?) ...[
+                const SizedBox(height: AppSpacing.xl),
+                FadeSlideIn(child: LearningProgressCard(progress: progress)),
+              ],
               const SizedBox(height: AppSpacing.xl),
               if (controller.items.isEmpty)
                 const EmptyState(

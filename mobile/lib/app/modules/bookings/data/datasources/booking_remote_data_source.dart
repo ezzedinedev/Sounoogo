@@ -22,4 +22,9 @@ class BookingRemoteDataSource {
   }
 
   Future<void> cancel(int id) => _api.post(ApiConstants.bookingCancel(id));
+
+  Future<Uri> videoLink(int id) async {
+    final response = await _api.get(ApiConstants.bookingVideo(id));
+    return Uri.parse((response['data'] as Map<String, dynamic>)['url'] as String);
+  }
 }

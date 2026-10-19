@@ -53,6 +53,40 @@ async function mountAreaCharts() {
 }
 
 /**
+ * Histogramme : data-bar-chart='{"labels":[…],"series":[{"name":"…","data":[…]}],"unit":" F"}'.
+ * Plusieurs séries s'empilent (ex. répartition par thème et par mois).
+ */
+async function mountBarCharts() {
+    const charts = document.querySelectorAll('[data-bar-chart]');
+    if (charts.length === 0) {
+        return;
+    }
+
+    const { default: ApexCharts } = await import('apexcharts');
+    const css = getComputedStyle(document.documentElement);
+    const color = (name) => css.getPropertyValue(name).trim();
+    const format = new Intl.NumberFormat('fr-FR');
+
+    charts.forEach((el) => {
+        const { labels, series, unit = '' } = JSON.parse(el.dataset.barChart);
+
+        new ApexCharts(el, {
+            chart: { type: 'bar', height: el.clientHeight || 240, stacked: series.length > 1, toolbar: { show: false }, zoom: { enabled: false }, fontFamily: 'inherit', parentHeightOffset: 0, animations: { speed: 500 } },
+            series,
+            colors: [1, 2, 3, 4, 5].map((n) => color(`--chart-${n}`)),
+            plotOptions: { bar: { borderRadius: 4, borderRadiusApplication: 'end', columnWidth: '52%' } },
+            dataLabels: { enabled: false },
+            grid: { borderColor: color('--border'), strokeDashArray: 4, padding: { left: 8, right: 8 } },
+            xaxis: { categories: labels, axisBorder: { show: false }, axisTicks: { show: false }, labels: { style: { colors: color('--muted-foreground'), fontSize: '12px' } } },
+            yaxis: { show: false, min: 0 },
+            legend: { show: series.length > 1, position: 'bottom', fontSize: '12px', markers: { size: 5 } },
+            tooltip: { theme: 'light', y: { formatter: (value) => `${format.format(value)}${unit}` } },
+            states: { hover: { filter: { type: 'darken', value: 0.92 } } },
+        }).render();
+    });
+}
+
+/**
  * Comportements temps réel, branchés par attributs data-* :
  * - data-live-conversation="{id}" : ajoute les messages reçus
  * - data-live-alerts / data-live-queue : recharge la page à chaque événement
@@ -211,6 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     HSOverlay.autoInit();
     HSCollapse.autoInit();
     mountAreaCharts();
+    mountBarCharts();
     mountRealtime();
     mountSupervision();
     mountCopilot();

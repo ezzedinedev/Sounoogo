@@ -2,9 +2,9 @@
 @props(['value'])
 @php
     $variant = match ($value->value) {
-        'active', 'confirmed', 'succeeded', 'resolved' => 'success',
-        'waiting', 'pending', 'pending_payment', 'acknowledged', 'medium' => 'warning',
-        'open', 'failed', 'high' => 'destructive',
+        'active', 'confirmed', 'succeeded', 'resolved', 'paid' => 'success',
+        'waiting', 'pending', 'pending_payment', 'acknowledged', 'medium', 'requested' => 'warning',
+        'open', 'failed', 'high', 'rejected' => 'destructive',
         'cancelled', 'closed', 'dismissed', 'expired', 'completed', 'none' => 'secondary',
         default => 'primary',
     };
