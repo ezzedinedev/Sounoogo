@@ -1,0 +1,45 @@
+/*
+ * Back-office — Tabler (MIT), utilisé tel quel. On ne surcharge que les variables
+ * du thème pour l'aligner sur l'identité SUNOOGO ; aucun composant sur mesure.
+ */
+@import '@tabler/core/dist/css/tabler.min.css';
+@import '@tabler/icons-webfont/dist/tabler-icons.min.css';
+
+:root,
+[data-bs-theme='light'] {
+    --tblr-font-sans-serif: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* Charte SUNOOGO : violet premium et blanc. */
+    --tblr-primary: #602fb8;
+    --tblr-primary-rgb: 96, 47, 184;
+    --tblr-primary-darken: #4c2494;
+    --tblr-primary-lt: #f8f5ff;
+    --tblr-primary-lt-rgb: 248, 245, 255;
+    --tblr-primary-text-emphasis: #4c2494;
+    --tblr-link-color: #602fb8;
+    --tblr-link-color-rgb: 96, 47, 184;
+    --tblr-link-hover-color: #4c2494;
+    --tblr-link-hover-color-rgb: 76, 36, 148;
+}
+
+/* Barre latérale violet nuit, cohérente avec le site. */
+.navbar-vertical[data-bs-theme='dark'] {
+    --tblr-navbar-bg: #210e40;
+    --tblr-navbar-border-color: #210e40;
+    background-color: #210e40;
+}
+
+/* Bulles de conversation : seul composant propre au métier. */
+.chat-bubble-system {
+    font-size: 0.8125rem;
+    color: var(--tblr-secondary);
+    text-align: center;
+}
+
+.chat-thread {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.chat-bubble-body p {
+    white-space: pre-line;
+}

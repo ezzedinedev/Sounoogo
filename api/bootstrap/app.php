@@ -28,7 +28,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => EnsureAccountIsActive::class,
         ]);
 
-        $middleware->redirectGuestsTo(fn (Request $request) => $request->is('api/*') ? null : route('login'));
+        $middleware->redirectGuestsTo(fn (Request $request) => $request->is('api/*') ? null : route('backoffice.login'));
+        $middleware->redirectUsersTo('/admin');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

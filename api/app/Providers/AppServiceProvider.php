@@ -8,6 +8,7 @@ use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Models\Course;
 use App\Domain\Listening\Models\Conversation;
+use App\Http\View\EmergencyContactsComposer;
 use App\Policies\BookingPolicy;
 use App\Policies\ConversationPolicy;
 use Dedoc\Scramble\Scramble;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -45,6 +47,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Les administrateurs ont toutes les permissions.
         Gate::before(fn (User $user) => $user->hasRole(Role::Admin->value) ? true : null);
+
+        View::composer(['components.layouts.site', 'site.*'], EmergencyContactsComposer::class);
 
         $this->configureRateLimiting();
         $this->configureApiDocumentation();
