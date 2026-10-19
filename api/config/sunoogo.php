@@ -1,0 +1,104 @@
+<?php
+
+return [
+
+    /*
+    | Pays de lancement : Burkina Faso. Les numéros d'urgence sont en base
+    | (table emergency_contacts) et modifiables depuis le back-office.
+    */
+    'default_country' => env('SUNOOGO_COUNTRY', 'BF'),
+
+    'currency' => 'XOF',
+
+    /*
+    | Détection de détresse dans les messages des membres. Une correspondance
+    | "high" déclenche immédiatement une alerte superviseur et l'affichage des
+    | numéros d'urgence. Liste à faire valider par un clinicien.
+    */
+    'risk_keywords' => [
+        'high' => [
+            'suicide', 'me suicider', 'me tuer', 'mettre fin à mes jours', 'en finir',
+            'plus envie de vivre', 'mourir', 'me pendre', 'me faire du mal',
+            'je veux disparaître', 'tuer quelqu\'un',
+        ],
+        'medium' => [
+            'désespoir', 'désespéré', 'désespérée', 'je n\'en peux plus', 'à bout',
+            'personne ne m\'aime', 'je suis un fardeau', 'automutilation', 'scarification',
+            'il me frappe', 'elle me frappe', 'violence',
+        ],
+    ],
+
+    /*
+     * Intelligence artificielle (Claude, Anthropic). Désactivée par défaut : l'activer revient à confier
+     * le texte des conversations, sans pseudonyme ni identité, à un sous-traitant. À déclarer dans la
+     * politique de confidentialité. L'IA ne parle jamais aux membres : elle alerte les superviseurs
+     * et propose des formulations aux écoutants, qui décident.
+     */
+    'ai' => [
+        // Actif seulement si la clé d'API est aussi fournie.
+        'enabled' => (bool) env('SUNOOGO_AI_ENABLED', false) && (bool) env('ANTHROPIC_API_KEY'),
+        'api_key' => env('ANTHROPIC_API_KEY'),
+        'base_url' => env('ANTHROPIC_BASE_URL', 'https://api.anthropic.com'),
+        // Classement du risque : rapide et économique, appelé à chaque message de membre.
+        'risk_model' => env('SUNOOGO_AI_RISK_MODEL', 'claude-haiku-5-5'),
+        // Copilote des écoutants : qualité de formulation.
+        'copilot_model' => env('SUNOOGO_AI_COPILOT_MODEL', 'claude-sonnet-5-5'),
+        // Nombre de messages récents transmis comme contexte.
+        'context_messages' => 30,
+        'timeout' => 25,
+    ],
+
+    /*
+     * Notifications push (Firebase Cloud Messaging, API HTTP v1). FIREBASE_CREDENTIALS : chemin du fichier
+     * JSON du compte de service, ou son contenu encodé en base64. Les textes restent neutres : aucun
+     * contenu de conversation n'apparaît sur l'écran verrouillé.
+     */
+    'push' => [
+        'credentials' => env('FIREBASE_CREDENTIALS'),
+    ],
+
+    'payments' => [
+        // mock | moneyfusion | paypal
+        'default' => env('PAYMENT_PROVIDER', 'mock'),
+
+        'success_url' => env('PAYMENT_SUCCESS_URL', env('APP_URL').'/paiement/succes'),
+        'error_url' => env('PAYMENT_ERROR_URL', env('APP_URL').'/paiement/echec'),
+
+        // MoneyFusion : « lien API » de l'application, généré dans le tableau de bord marchand.
+        'moneyfusion' => [
+            'api_url' => env('MONEYFUSION_API_URL'),
+            'status_url' => env('MONEYFUSION_STATUS_URL', 'https://pay.moneyfusion.net/paiementNotif'),
+        ],
+    ],
+
+    /*
+     * Téléconsultation vidéo sur un serveur Jitsi Meet auto-hébergé. Les salles ont un nom aléatoire
+     * et ne s'ouvrent qu'autour de l'heure du rendez-vous. Si JITSI_APP_ID et JITSI_APP_SECRET sont
+     * renseignés (authentification JWT de Jitsi), chaque participant reçoit un jeton nominatif.
+     */
+    'video' => [
+        'enabled' => (bool) env('JITSI_URL'),
+        'base_url' => rtrim((string) env('JITSI_URL', ''), '/'),
+        'app_id' => env('JITSI_APP_ID'),
+        'app_secret' => env('JITSI_APP_SECRET'),
+        'opens_before_minutes' => 10,
+        'closes_after_minutes' => 30,
+    ],
+
+    /*
+     * Rémunération des professionnels. La commission de la plateforme (en %) est une décision
+     * commerciale : elle vaut 0 tant qu'elle n'est pas fixée dans l'environnement.
+     */
+    'payouts' => [
+        'commission_percent' => (int) env('SUNOOGO_COMMISSION_PERCENT', 0),
+        'minimum_amount' => (int) env('SUNOOGO_PAYOUT_MINIMUM', 5000),
+    ],
+
+    /*
+     * Rapports d'impact : toute valeur inférieure à ce seuil est masquée (« < 5 ») pour qu'aucune
+     * personne ne puisse être reconnue à partir d'un petit effectif.
+     */
+    'impact' => [
+        'min_cell_size' => 5,
+    ],
+];

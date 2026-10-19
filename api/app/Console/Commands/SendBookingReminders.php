@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Domain\Consultation\Enums\BookingStatus;
+use App\Domain\Consultation\Models\Booking;
+use App\Domain\Consultation\Notifications\BookingReminder;
+use App\Domain\Consultation\Notifications\ProfessionalBookingReminder;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
+use Illuminate\Console\Command;
+
+#[Signature('bookings:send-reminders')]
+#[Description('Rappelle sa consultation au membre (push) et au professionnel (e-mail), une heure avant.')]
+class SendBookingReminders extends Command
+{
+    public function handle(): int
+    {
+        $bookings = Booking::query()
+            ->where('status', BookingStatus::Confirmed)
+            ->whereNull('reminded_at')
+            ->whereHas('slot', fn ($q) => $q->whereBetween('starts_at', [now(), now()->addHour()]))
+            ->with(['member', 'slot', 'professional.user'])
+            ->get();
+
+        foreach ($bookings as $booking) {
+            $booking->member->notify(new BookingReminder($booking));
+            $booking->professional->user->notify(new ProfessionalBookingReminder($booking));
+            $booking->update(['reminded_at' => now()]);
+        }
+
+        $this->info("{$bookings->count()} rappel(s) envoyé(s).");
+
+        return self::SUCCESS;
+    }
+}

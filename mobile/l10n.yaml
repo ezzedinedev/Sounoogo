@@ -1,0 +1,9 @@
+# Traductions de l'app (flutter gen-l10n). Langue de référence : français.
+# Ajouter une langue : copier lib/l10n/app_fr.arb en app_<code>.arb (mos = mooré, dyu = dioula),
+# faire traduire par des locuteurs natifs, puis l'ajouter à AppLocales.supported.
+arb-dir: lib/l10n
+template-arb-file: app_fr.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
+format: true

@@ -1,0 +1,41 @@
+/*
+ * Site vitrine — Tailwind CSS v4 + Preline UI (MIT).
+ * Les couleurs passent exclusivement par les tokens sémantiques Preline
+ * (bg-primary, text-foreground, bg-layer, border-line-2…) redéfinis dans le thème SUNOOGO.
+ */
+@import 'tailwindcss';
+
+@source '../views/site/**/*.blade.php';
+@source '../views/components/site/**/*.blade.php';
+@source '../../node_modules/preline/dist/*.js';
+@source '../js/site.js';
+
+@import '../../node_modules/preline/variants.css';
+@import '../../node_modules/preline/css/themes/theme.css';
+@import './site/theme-sunoogo.css';
+
+@plugin '@tailwindcss/typography';
+
+@theme {
+    /* Inspiration Lyra Health : sans géométrique + accents en serif italique. */
+    --font-sans: 'Rethink Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Instrument Serif', ui-serif, Georgia, serif;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+  "@@locale": "fr",
+
+  "navHome": "Accueil",
+  "@navHome": {"description": "Onglet de la barre de navigation."},
+  "navListening": "Écoute",
+  "navProfessionals": "Pros",
+  "navCourses": "Parcours",
+  "navMe": "Moi",
+
+  "actionRetry": "Réessayer",
+  "actionCancel": "Annuler",
+  "actionContinue": "Continuer",
+  "errorTitle": "Oups",
+
+  "sosButton": "SOS",
+  "@sosButton": {"description": "Bouton d'urgence, présent sur tous les écrans. Garder court."},
+  "emergencyTitle": "Tu n'es pas seul·e",
+  "emergencySupervisorAlerted": "Un superviseur SUNOOGO vient d'être prévenu. Si tu es en danger immédiat, appelle maintenant :",
+  "emergencyCallNow": "Si tu es en danger immédiat, appelle maintenant :",
+  "emergencyMyPlan": "Mon plan",
+  "emergencyBreathe": "Respirer"
+}

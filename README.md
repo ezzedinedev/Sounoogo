@@ -1,143 +1,58 @@
 # SUNOOGO
 
-Plateforme de santé mentale — monorepo (FastAPI + React Native + Admin).
+Plateforme de santé mentale lancée au Burkina Faso : **écoute anonyme et gratuite**, consultations avec des
+professionnels partenaires, parcours de confiance en soi, et outils de bien-être (plan de sécurité, journal
+d'humeur, exercices guidés, ressources de proximité).
 
-## Structure
+| Dossier | Contenu | Pile |
+|---|---|---|
+| [`api/`](api/README.md) | API REST `/api/v1`, back-office de l'équipe (`/admin`) et site vitrine | Laravel 13, PHP 8.4, Reverb |
+| [`mobile/`](mobile/README.md) | Application Android / iOS | Flutter 3.47, GetX, clean architecture |
+| [`brand/`](brand/README.md) | Logo, icônes, couleurs | SVG / PNG |
 
-```
-api/       → Backend FastAPI
-mobile/    → Application Expo
-admin/     → Back-office React
-web/       → Site vitrine
-packages/  → Code partagé (tokens)
-docs/      → Specs & design
-```
-
-Voir [STRUCTURE.txt](STRUCTURE.txt) pour le détail.
-
-| App | Stack | Port |
-|-----|-------|------|
-| API | FastAPI | 8002 |
-| Admin | React + Vite | 5173 |
-| Web | Next.js 15 | 5174 |
-| Mobile | Expo | 8081 |
-| Postgres | Docker | 5432 |
-| Redis | Docker | 6380 → 6379 |
-| MinIO | Docker | 9000 / 9001 |
-
-## Prérequis
-
-- **Python 3.12** (asyncpg incompatible Python 3.14+)
-- Node.js 20+
-- Docker Desktop
-
-## Démarrage rapide
-
-### 0. Dépendances JS (monorepo)
+## Démarrer en local
 
 ```bash
-npm run install:core          # admin + web + shared
-npm run admin:dev             # http://localhost:5173
-npm run web:dev               # http://localhost:5174
-```
-
-Mobile (Expo, installer séparément si besoin) :
-
-```bash
-npm run install:mobile        # ou : cd mobile && npm install
-npm run mobile:start
-```
-
-> **Windows** : `npm install` à la racine peut échouer sur React Native (`TAR_ENTRY_ERROR`). Utiliser `npm run install:core` pour l’admin ; installer le mobile séparément.
-
-### 1. Infrastructure
-
-```bash
-docker compose up -d
-```
-
-### 2. API (FastAPI)
-
-```bash
+# API, back-office et site
 cd api
-python -m venv .venv
-.venv\Scripts\activate          # Windows
-pip install -r requirements.txt
-copy .env.example .env
-alembic upgrade head
-python -m app.seed
-uvicorn app.main:app --reload --port 8002
-```
+composer install && npm ci && npm run build
+cp .env.example .env && php artisan key:generate
+php artisan migrate --seed          # données de démonstration hors production
+composer run dev                    # serveur, file d'attente et Vite
+php artisan reverb:start            # temps réel (autre terminal)
 
-- Health : http://localhost:8002/health
-- OpenAPI : http://localhost:8002/docs
-- Base API : `http://localhost:8002/v1`
-
-**Alternative Docker** :
-
-```bash
-docker compose up -d api
-```
-
-### 3. Tests API
-
-```bash
-cd api
-.venv\Scripts\activate
-pytest -v
-# ou depuis la racine :
-npm run api:test
-```
-
-### 4. Admin
-
-```bash
-cd admin
-npm install
-copy .env.example .env
-npm run dev
-```
-
-### 5. Mobile
-
-```bash
+# Application (émulateur Android)
 cd mobile
-npm install
-copy .env.example .env
-npx expo start
+flutter pub get
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1
 ```
 
-## Comptes seed (après `python -m app.seed`)
+Comptes de démonstration (mot de passe `password`) : `admin@`, `supervisor@`, `listener@`, `pro@sunoogo.local`.
 
-| Rôle | Email | Mot de passe |
-|------|-------|--------------|
-| Admin | admin@sunoogo.local | admin12345 |
-| Superviseur | supervisor@sunoogo.local | super12345 |
-| Écoutant | listener@sunoogo.local | listen12345 |
-| Pro | pro@sunoogo.local | pro12345 |
+## Déployer avec Docker
 
-## Fonctionnalités implémentées
+```bash
+cp .env.example .env              # mot de passe PostgreSQL
+cp api/.env.example api/.env      # APP_KEY, APP_URL, mail, MoneyFusion, Firebase…
+docker compose up -d --build
+```
 
-| Niveau | Fonctionnalités |
-|--------|-----------------|
-| **S1** | Auth anonyme, register/login, rôles, health |
-| **S2** | Chat WebSocket, file écoutants, urgence, modération |
-| **S3** | Booking pros, paiements Wave/Mock, back-office |
-| **S4** | Formations, leçons, enrollments, abonnements |
+Services : `web` (nginx), `app` (PHP-FPM, applique les migrations), `queue`, `scheduler`, `reverb`, PostgreSQL et
+Redis. Le serveur de visio [Jitsi Meet](https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker)
+se déploie à part (`JITSI_URL`). La liste des points à vérifier avant l'ouverture est dans
+[docs/LANCEMENT.md](docs/LANCEMENT.md).
 
-## Documentation
+## Qualité
 
-- [PRD](docs/PRD.md)
-- [Modèle de domaine](docs/domain-model.md)
-- [OpenAPI](docs/api/openapi.yaml)
-- [Anti-vibecoding](docs/ANTI-VIBECODING.md)
-- [Design system](docs/design/DESIGN-SYSTEM.md)
-- [UX flows](docs/design/UX-FLOWS.md)
-- [Composants UI](docs/design/COMPONENTS.md)
-- [ADR-001 Stack FastAPI](docs/adr/001-stack.md)
-- [ADR-002 Anonymat](docs/adr/002-anonymat-donnees.md)
-- [Legal Sénégal](docs/legal/senegal-checklist.md)
+Chaque pull request passe par GitHub Actions ([`.github/workflows`](.github/workflows)) :
 
-## Workflow contributeur
+- **API** : Pint, Larastan (niveau 5), Pest en parallèle, construction de l'image Docker ;
+- **Mobile** : `dart format`, `flutter analyze`, `flutter test` (dont les règles d'architecture), build Android.
 
-Voir [CONTRIBUTING.md](CONTRIBUTING.md) — OpenAPI first, specs before code.
+## Confidentialité
+
+- Aucune donnée personnelle n'est nécessaire pour être écouté·e : pseudonyme et code de récupération.
+- Messages, notes d'humeur, plan de sécurité et messages vocaux sont **chiffrés** dans la base ou sur le disque.
+- Notifications au texte neutre (rien sur l'écran verrouillé), mode discret et verrou de l'app.
+- Rapports d'impact uniquement agrégés, petits effectifs masqués.
+- Suivi des erreurs (Sentry) sans corps de requête ni donnée personnelle.

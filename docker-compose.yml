@@ -1,61 +1,108 @@
+# SUNOOGO — API, back-office et site (Laravel), avec PostgreSQL, Redis et Reverb.
+#
+#   cp api/.env.example api/.env    # puis renseigner APP_KEY, APP_URL, mots de passe…
+#   docker compose up -d --build
+#
+# Le conteneur « app » applique les migrations au démarrage ; « queue », « scheduler » et
+# « reverb » utilisent la même image. Le serveur Jitsi Meet (visio) se déploie à part :
+# https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-docker
+
+x-app: &app
+  build:
+    context: ./api
+    target: runtime
+  image: sunoogo/api:latest
+  restart: unless-stopped
+  env_file: ./api/.env
+  environment: &app-env
+    DB_CONNECTION: pgsql
+    DB_HOST: postgres
+    DB_PORT: 5432
+    DB_DATABASE: ${DB_DATABASE:-sunoogo}
+    DB_USERNAME: ${DB_USERNAME:-sunoogo}
+    DB_PASSWORD: ${DB_PASSWORD:?Définir DB_PASSWORD dans .env à la racine}
+    REDIS_HOST: redis
+    CACHE_STORE: redis
+    QUEUE_CONNECTION: redis
+    SESSION_DRIVER: redis
+    LOG_CHANNEL: stderr
+  volumes:
+    - storage:/var/www/html/storage/app
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
 services:
+  app:
+    <<: *app
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "true"
+
+  web:
+    build:
+      context: ./api
+      target: web
+    image: sunoogo/web:latest
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8000}:80"
+    volumes:
+      - storage:/var/www/html/storage/app:ro
+    depends_on:
+      app:
+        condition: service_healthy
+
+  queue:
+    <<: *app
+    command: ["php", "artisan", "queue:work", "--sleep=1", "--tries=3", "--max-time=3600"]
+    healthcheck:
+      disable: true
+
+  scheduler:
+    <<: *app
+    command: ["php", "artisan", "schedule:work"]
+    healthcheck:
+      disable: true
+
+  reverb:
+    <<: *app
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    ports:
+      - "${REVERB_PORT:-8080}:8080"
+    healthcheck:
+      disable: true
+
   postgres:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: sunoogo
-      POSTGRES_PASSWORD: sunoogo
-      POSTGRES_DB: sunoogo
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${DB_DATABASE:-sunoogo}
+      POSTGRES_USER: ${DB_USERNAME:-sunoogo}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Définir DB_PASSWORD dans .env à la racine}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sunoogo"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6380:6379"
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - redis_data:/data
+      - redis:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
-      retries: 5
-
-  minio:
-    image: minio/minio:latest
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      - minio_data:/data
-
-  api:
-    build: ./api
-    ports:
-      - "8002:8000"
-    environment:
-      DATABASE_URL: postgresql+asyncpg://sunoogo:sunoogo@postgres:5432/sunoogo
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: dev-secret-change-in-production-32chars
-      ENCRYPTION_KEY: dGVzdC1lbmNyeXB0aW9uLWtleS0zMmJ5dGVzIQ==
-      CORS_ORIGINS: http://localhost:5173,http://localhost:8081
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      retries: 10
 
 volumes:
-  postgres_data:
-  redis_data:
-  minio_data:
+  storage:
+  postgres:
+  redis:
