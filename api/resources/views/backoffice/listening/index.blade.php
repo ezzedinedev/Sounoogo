@@ -1,4 +1,3 @@
-@php($topics = ['stress' => 'Stress', 'anxiety' => 'Anxiété', 'sadness' => 'Tristesse', 'relationship' => 'Relation', 'family' => 'Famille', 'grief' => 'Deuil', 'violence' => 'Violence', 'self_esteem' => 'Estime de soi', 'other' => 'Autre'])
 <x-admin.page title="Écoute" description="File d'attente en temps réel, les conversations à risque en premier.">
     <div class="grid gap-4 lg:grid-cols-5" data-live-queue>
         <x-admin.card class="lg:col-span-3" title="File d'attente" :description="$queue->count().' personne'.($queue->count() > 1 ? 's' : '').' attend'.($queue->count() > 1 ? 'ent' : '')" flush>
@@ -11,7 +10,7 @@
                         @foreach ($queue as $conversation)
                             <tr>
                                 <td class="font-medium">{{ $conversation->member->pseudonym }}</td>
-                                <td>@if ($conversation->topic)<x-admin.badge variant="outline">{{ $topics[$conversation->topic] ?? $conversation->topic }}</x-admin.badge>@else<span class="text-muted-foreground">—</span>@endif</td>
+                                <td>@if ($conversation->topic)<x-admin.badge variant="outline">{{ $conversation->topicLabel() }}</x-admin.badge>@else<span class="text-muted-foreground">—</span>@endif</td>
                                 <td><x-admin.status :value="$conversation->risk_level" /></td>
                                 <td class="tabular-nums text-muted-foreground">{{ $conversation->created_at->diffForHumans(syntax: \Carbon\CarbonInterface::DIFF_ABSOLUTE, short: true) }}</td>
                                 <td class="text-end">

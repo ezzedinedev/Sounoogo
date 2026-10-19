@@ -5,6 +5,7 @@ namespace App\Domain\Listening\Models;
 use App\Domain\Identity\Models\User;
 use App\Domain\Listening\Enums\ConversationStatus;
 use App\Domain\Listening\Enums\RiskLevel;
+use App\Domain\Listening\Enums\Topic;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $topic
  * @property RiskLevel $risk_level
  * @property Carbon|null $assigned_at
+ * @property Carbon|null $first_response_at
  * @property Carbon|null $closed_at
  * @property string|null $closed_reason
  * @property int|null $member_rating
@@ -29,7 +31,7 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable([
     'member_id', 'listener_id', 'status', 'channel', 'topic', 'risk_level',
-    'assigned_at', 'closed_at', 'closed_reason', 'member_rating',
+    'assigned_at', 'first_response_at', 'closed_at', 'closed_reason', 'member_rating',
 ])]
 class Conversation extends Model
 {
@@ -45,6 +47,7 @@ class Conversation extends Model
             'status' => ConversationStatus::class,
             'risk_level' => RiskLevel::class,
             'assigned_at' => 'datetime',
+            'first_response_at' => 'datetime',
             'closed_at' => 'datetime',
         ];
     }
@@ -87,5 +90,10 @@ class Conversation extends Model
     public function isOpen(): bool
     {
         return $this->status !== ConversationStatus::Closed;
+    }
+
+    public function topicLabel(): ?string
+    {
+        return $this->topic === null ? null : (Topic::tryFrom($this->topic)?->label() ?? $this->topic);
     }
 }

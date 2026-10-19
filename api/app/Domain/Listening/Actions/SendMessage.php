@@ -6,6 +6,7 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Listening\Enums\RiskLevel;
 use App\Domain\Listening\Events\MessageSent;
 use App\Domain\Listening\Exceptions\ConversationClosed;
+use App\Domain\Listening\Jobs\AssessMessageRisk;
 use App\Domain\Listening\Models\Conversation;
 use App\Domain\Listening\Models\Message;
 use App\Domain\Listening\Services\EmergencyService;
@@ -25,9 +26,8 @@ final class SendMessage
             throw new ConversationClosed;
         }
 
-        $risk = $sender->id === $conversation->member_id
-            ? $this->detector->assess($body)
-            : RiskLevel::None;
+        $fromMember = $sender->id === $conversation->member_id;
+        $risk = $fromMember ? $this->detector->assess($body) : RiskLevel::None;
 
         $message = $conversation->messages()->create([
             'sender_id' => $sender->id,
@@ -36,11 +36,19 @@ final class SendMessage
             'is_flagged' => $risk !== RiskLevel::None,
         ]);
 
+        // Délai de première réponse, suivi par la supervision.
+        if (! $fromMember && $conversation->first_response_at === null) {
+            $conversation->first_response_at = now();
+        }
         $conversation->touch();
         MessageSent::dispatch($message);
 
+        // Les mots-clés réagissent tout de suite ; l'IA, si elle est activée, relit ensuite le message dans son contexte.
         if ($risk !== RiskLevel::None) {
             $this->emergency->raise($sender, 'keyword', $risk, $conversation, $message);
+        }
+        if ($fromMember && $risk !== RiskLevel::High && config('sunoogo.ai.enabled')) {
+            AssessMessageRisk::dispatch($message);
         }
 
         return [$message, $risk];

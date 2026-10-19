@@ -2,14 +2,16 @@
 
 namespace App\Http\Requests\Listening;
 
+use App\Domain\Listening\Enums\Topic;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class OpenConversationRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            'topic' => ['nullable', 'string', 'in:stress,anxiety,sadness,relationship,family,grief,violence,self_esteem,other'],
+            'topic' => ['nullable', Rule::enum(Topic::class)],
             'channel' => ['nullable', 'string', 'in:chat,call'],
         ];
     }

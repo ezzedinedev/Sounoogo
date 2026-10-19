@@ -16,7 +16,10 @@
                     @foreach ($alerts as $alert)
                         <tr>
                             <td><x-admin.status :value="$alert->level" /></td>
-                            <td>{{ $alert->source === 'sos' ? 'Bouton SOS' : 'Mots à risque' }}</td>
+                            <td>
+                                {{ $alert->sourceLabel() }}
+                                @if ($alert->reason)<p class="mt-1 max-w-xs text-xs text-muted-foreground">{{ $alert->reason }}</p>@endif
+                            </td>
                             <td class="font-medium">{{ $alert->member->pseudonym }}</td>
                             <td class="text-muted-foreground">{{ $alert->conversation?->listener?->displayName() ?? 'En attente' }}</td>
                             <td>

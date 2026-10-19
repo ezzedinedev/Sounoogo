@@ -16,4 +16,14 @@ enum RiskLevel: string
             self::High => 'Élevé',
         };
     }
+
+    /** Pour comparer deux niveaux. */
+    public function weight(): int
+    {
+        return match ($this) {
+            self::None => 0,
+            self::Medium => 1,
+            self::High => 2,
+        };
+    }
 }

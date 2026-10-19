@@ -17,6 +17,7 @@ const icons = [
     'search', 'notes', 'arrow-left', 'layout-sidebar', 'headset', 'hourglass', 'dots-vertical',
     'user', 'list', 'calendar-plus', 'settings', 'circle-plus', 'alert-circle', 'loader-2',
     'selector', 'chevron-right', 'mail', 'pencil', 'player-pause', 'player-play', 'ban', 'circle-dot',
+    'radar', 'user-off', 'bulb', 'file-text', 'copy',
 ];
 
 const entries = icons.map((name) => {

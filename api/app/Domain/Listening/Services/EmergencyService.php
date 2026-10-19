@@ -24,13 +24,14 @@ class EmergencyService
         RiskLevel $level = RiskLevel::High,
         ?Conversation $conversation = null,
         ?Message $message = null,
+        ?string $reason = null,
     ): EmergencyAlert {
         // Une seule alerte ouverte par conversation : on la réhausse au besoin.
         $alert = $conversation?->alerts()->where('status', '!=', AlertStatus::Resolved)->first();
 
         if ($alert !== null) {
-            if ($level === RiskLevel::High && $alert->level !== RiskLevel::High) {
-                $alert->update(['level' => $level, 'message_id' => $message?->id]);
+            if ($level->weight() > $alert->level->weight()) {
+                $alert->update(['level' => $level, 'message_id' => $message?->id, 'source' => $source, 'reason' => $reason]);
             }
         } else {
             $alert = EmergencyAlert::create([
@@ -38,12 +39,13 @@ class EmergencyService
                 'conversation_id' => $conversation?->id,
                 'message_id' => $message?->id,
                 'source' => $source,
+                'reason' => $reason,
                 'level' => $level,
                 'status' => AlertStatus::Open,
             ]);
         }
 
-        if ($conversation !== null && $conversation->risk_level !== RiskLevel::High) {
+        if ($conversation !== null && $level->weight() > $conversation->risk_level->weight()) {
             $conversation->update(['risk_level' => $level]);
         }
 

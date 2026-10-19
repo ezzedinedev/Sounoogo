@@ -53,7 +53,7 @@
                             @foreach ($alerts as $alert)
                                 <tr>
                                     <td><x-admin.status :value="$alert->level" /></td>
-                                    <td>{{ $alert->source === 'sos' ? 'Bouton SOS' : 'Mots à risque' }}</td>
+                                    <td>{{ $alert->sourceLabel() }}</td>
                                     <td>
                                         @if ($alert->conversation)
                                             <a href="{{ route('backoffice.listening.show', $alert->conversation) }}" class="font-medium hover:underline">{{ $alert->member->pseudonym }}</a>

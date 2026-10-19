@@ -11,11 +11,17 @@ use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Models\Course;
 use App\Domain\Learning\Models\Lesson;
+use App\Domain\Listening\Contracts\ListenerCopilot;
+use App\Domain\Listening\Contracts\RiskClassifier;
 use App\Domain\Listening\Models\Conversation;
 use App\Domain\Listening\Models\EmergencyAlert;
 use App\Domain\Listening\Models\EmergencyContact;
 use App\Domain\Listening\Models\Report;
 use App\Http\View\EmergencyContactsComposer;
+use App\Infrastructure\AI\ClaudeListenerCopilot;
+use App\Infrastructure\AI\ClaudeRiskClassifier;
+use App\Infrastructure\AI\DisabledListenerCopilot;
+use App\Infrastructure\AI\DisabledRiskClassifier;
 use App\Policies\BookingPolicy;
 use App\Policies\ConversationPolicy;
 use Dedoc\Scramble\Scramble;
@@ -34,7 +40,13 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        // IA : implémentations Claude si elle est activée, sinon des versions neutres (mots-clés seuls, copilote absent).
+        $this->app->bind(RiskClassifier::class, fn ($app) => config('sunoogo.ai.enabled')
+            ? $app->make(ClaudeRiskClassifier::class)
+            : new DisabledRiskClassifier);
+        $this->app->bind(ListenerCopilot::class, fn ($app) => config('sunoogo.ai.enabled')
+            ? $app->make(ClaudeListenerCopilot::class)
+            : new DisabledListenerCopilot);
     }
 
     public function boot(): void
@@ -74,6 +86,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', fn (Request $request) => Limit::perMinute(120)->by($request->user()?->id ?: $request->ip()));
         RateLimiter::for('auth', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
         RateLimiter::for('messages', fn (Request $request) => Limit::perMinute(40)->by($request->user()?->id ?: $request->ip()));
+        RateLimiter::for('copilot', fn (Request $request) => Limit::perMinute(20)->by($request->user()?->id ?: $request->ip()));
         RateLimiter::for('sos', fn (Request $request) => Limit::perMinute(5)->by($request->user()?->id ?: $request->ip()));
     }
 

@@ -55,6 +55,19 @@
                     @endif
                 </dl>
             </x-admin.card>
+            @if (config('sunoogo.ai.enabled'))
+                <x-admin.card title="Copilote" description="Des pistes à relire et adapter : rien n'est envoyé sans toi."
+                    data-copilot data-summary-url="{{ route('backoffice.copilot.summary', $conversation) }}"
+                    data-suggest-url="{{ $participant && $conversation->isOpen() ? route('backoffice.copilot.suggestions', $conversation) : '' }}">
+                    <div class="flex flex-wrap gap-2">
+                        @if ($participant && $conversation->isOpen())
+                            <x-admin.button type="button" variant="outline" size="sm" icon="bulb" data-copilot-action="suggest">Suggérer une réponse</x-admin.button>
+                        @endif
+                        <x-admin.button type="button" variant="outline" size="sm" icon="file-text" data-copilot-action="summary">Résumer</x-admin.button>
+                    </div>
+                    <div class="mt-4 grid gap-2 text-sm empty:hidden" data-copilot-output aria-live="polite"></div>
+                </x-admin.card>
+            @endif
             <x-admin.card title="Repères d'écoute">
                 <ul class="grid gap-3 text-sm text-muted-foreground">
                     <li class="flex gap-2"><x-icon name="check" :size="16" class="mt-0.5 text-primary" />Reformule, ne juge pas, ne conseille pas trop vite.</li>

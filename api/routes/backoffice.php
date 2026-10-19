@@ -24,6 +24,18 @@ Route::prefix('admin')->name('backoffice.')->group(function () {
             Route::post('{conversation}/cloturer', 'close')->name('close');
         });
 
+        // Copilote de l'écoutant (IA, si activée)
+        Route::middleware(['permission:conversations.listen', 'throttle:copilot'])->prefix('ecoute/{conversation}/copilote')->name('copilot.')->controller(Backoffice\CopilotController::class)->group(function () {
+            Route::post('suggestions', 'suggestions')->name('suggestions');
+            Route::post('resume', 'summary')->name('summary');
+        });
+
+        // Poste de supervision temps réel
+        Route::middleware('permission:alerts.manage')->prefix('supervision')->name('supervision.')->controller(Backoffice\SupervisionController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('direct', 'live')->name('live');
+        });
+
         // Supervision
         Route::middleware('permission:alerts.manage')->prefix('alertes')->name('alerts.')->controller(Backoffice\AlertController::class)->group(function () {
             Route::get('/', 'index')->name('index');

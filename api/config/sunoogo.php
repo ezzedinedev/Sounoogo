@@ -28,6 +28,26 @@ return [
         ],
     ],
 
+    /*
+     * Intelligence artificielle (Claude, Anthropic). Désactivée par défaut : l'activer revient à confier
+     * le texte des conversations, sans pseudonyme ni identité, à un sous-traitant. À déclarer dans la
+     * politique de confidentialité. L'IA ne parle jamais aux membres : elle alerte les superviseurs
+     * et propose des formulations aux écoutants, qui décident.
+     */
+    'ai' => [
+        // Actif seulement si la clé d'API est aussi fournie.
+        'enabled' => (bool) env('SUNOOGO_AI_ENABLED', false) && (bool) env('ANTHROPIC_API_KEY'),
+        'api_key' => env('ANTHROPIC_API_KEY'),
+        'base_url' => env('ANTHROPIC_BASE_URL', 'https://api.anthropic.com'),
+        // Classement du risque : rapide et économique, appelé à chaque message de membre.
+        'risk_model' => env('SUNOOGO_AI_RISK_MODEL', 'claude-haiku-5-5'),
+        // Copilote des écoutants : qualité de formulation.
+        'copilot_model' => env('SUNOOGO_AI_COPILOT_MODEL', 'claude-sonnet-5-5'),
+        // Nombre de messages récents transmis comme contexte.
+        'context_messages' => 30,
+        'timeout' => 25,
+    ],
+
     'payments' => [
         // mock | moneyfusion | paypal
         'default' => env('PAYMENT_PROVIDER', 'mock'),

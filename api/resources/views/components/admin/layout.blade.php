@@ -10,6 +10,7 @@
         'Accompagnement' => [
             ['backoffice.dashboard', 'Tableau de bord', 'layout-dashboard', 'backoffice.access', 'backoffice.dashboard'],
             ['backoffice.listening.index', 'Écoute', 'messages', 'conversations.listen', 'backoffice.listening.*'],
+            ['backoffice.supervision.index', 'Supervision', 'radar', 'alerts.manage', 'backoffice.supervision.*'],
             ['backoffice.alerts.index', 'Alertes', 'alert-triangle', 'alerts.manage', 'backoffice.alerts.*'],
             ['backoffice.reports.index', 'Signalements', 'flag', 'reports.moderate', 'backoffice.reports.*'],
             ['backoffice.agenda.index', 'Mon agenda', 'calendar', null, 'backoffice.agenda.*'],

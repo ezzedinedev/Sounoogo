@@ -22,12 +22,13 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $acknowledged_at
  * @property Carbon|null $resolved_at
  * @property string|null $notes
+ * @property string|null $reason
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
 #[Fillable([
     'member_id', 'conversation_id', 'message_id', 'source', 'level', 'status',
-    'handled_by', 'acknowledged_at', 'resolved_at', 'notes',
+    'handled_by', 'acknowledged_at', 'resolved_at', 'notes', 'reason',
 ])]
 class EmergencyAlert extends Model
 {
@@ -62,5 +63,15 @@ class EmergencyAlert extends Model
     public function handler(): BelongsTo
     {
         return $this->belongsTo(User::class, 'handled_by');
+    }
+
+    public function sourceLabel(): string
+    {
+        return match ($this->source) {
+            'sos' => 'Bouton SOS',
+            'keyword' => 'Mots à risque',
+            'ai' => 'IA · à confirmer',
+            default => ucfirst($this->source),
+        };
     }
 }

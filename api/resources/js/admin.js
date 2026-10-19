@@ -94,10 +94,124 @@ function mountRealtime() {
     }
 }
 
+const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
+/** « 45 s », « 12 min », « 1 h 05 ». */
+function formatElapsed(seconds) {
+    if (seconds < 60) return `${Math.floor(seconds)} s`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} min`;
+    const hours = Math.floor(seconds / 3600);
+    return `${hours} h ${String(Math.floor((seconds % 3600) / 60)).padStart(2, '0')}`;
+}
+
+/**
+ * Poste de supervision : le fragment data-supervision="{url}" est rechargé à chaque événement temps réel
+ * (et toutes les 15 s en filet de sécurité) ; les durées data-since défilent à la seconde.
+ */
+function mountSupervision() {
+    const root = document.querySelector('[data-supervision]');
+    if (!root) {
+        return;
+    }
+
+    const tick = () => root.querySelectorAll('[data-since]').forEach((el) => {
+        const seconds = Math.max(0, (Date.now() - Date.parse(el.dataset.since)) / 1000);
+        el.textContent = formatElapsed(seconds);
+        el.classList.toggle('text-destructive', Boolean(el.dataset.warnAfter) && seconds > Number(el.dataset.warnAfter));
+    });
+
+    let pending = null;
+    const refresh = () => {
+        clearTimeout(pending);
+        pending = setTimeout(async () => {
+            const response = await fetch(root.dataset.supervision, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }).catch(() => null);
+            if (response?.ok) {
+                root.innerHTML = await response.text();
+                tick();
+            }
+        }, 250);
+    };
+
+    const title = document.title;
+    const notify = () => {
+        refresh();
+        document.title = `● Nouvelle alerte · ${title}`;
+        setTimeout(() => { document.title = title; }, 15000);
+    };
+
+    tick();
+    setInterval(tick, 1000);
+    setInterval(refresh, 15000);
+    window.Echo?.private('supervisors').listen('.emergency.raised', notify);
+    window.Echo?.private('listeners').listen('.conversation.updated', refresh);
+}
+
+/** Copilote de l'écoutant : propositions insérées dans la zone de réponse, à relire avant envoi. */
+function mountCopilot() {
+    const card = document.querySelector('[data-copilot]');
+    if (!card) {
+        return;
+    }
+    const output = card.querySelector('[data-copilot-output]');
+    const composer = document.getElementById('body');
+
+    const element = (tag, className, text) => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+    };
+
+    const show = (...nodes) => output.replaceChildren(...nodes);
+
+    card.querySelectorAll('[data-copilot-action]').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const action = button.dataset.copilotAction;
+            const url = action === 'suggest' ? card.dataset.suggestUrl : card.dataset.summaryUrl;
+            button.disabled = true;
+            show(element('p', 'text-muted-foreground animate-pulse', 'Le copilote réfléchit…'));
+
+            try {
+                const response = await fetch(url, { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf(), Accept: 'application/json' } });
+                const data = await response.json();
+                if (!response.ok) {
+                    show(element('p', 'text-destructive', data.message ?? 'Le copilote ne répond pas.'));
+                    return;
+                }
+
+                if (action === 'suggest') {
+                    show(...data.suggestions.map((text) => {
+                        const option = element('button', 'rounded-lg border bg-background px-3 py-2.5 text-start leading-relaxed transition-colors hover:border-primary hover:bg-primary-soft/40', text);
+                        option.type = 'button';
+                        option.title = 'Utiliser dans ma réponse';
+                        option.addEventListener('click', () => {
+                            if (composer) {
+                                composer.value = text;
+                                composer.focus();
+                            }
+                        });
+                        return option;
+                    }), element('p', 'text-xs text-muted-foreground', 'Clique sur une proposition pour la reprendre dans ta réponse.'));
+                } else {
+                    const list = element('ul', 'mt-1 grid gap-1 text-muted-foreground');
+                    data.watch_points.forEach((point) => list.appendChild(element('li', 'flex gap-2', `• ${point}`)));
+                    show(element('p', 'leading-relaxed', data.summary), ...(data.watch_points.length ? [element('p', 'mt-2 font-medium', 'Points de vigilance'), list] : []));
+                }
+            } catch {
+                show(element('p', 'text-destructive', 'Connexion impossible. Réessaie dans un instant.'));
+            } finally {
+                button.disabled = false;
+            }
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     HSDropdown.autoInit();
     HSOverlay.autoInit();
     HSCollapse.autoInit();
     mountAreaCharts();
     mountRealtime();
+    mountSupervision();
+    mountCopilot();
 });
