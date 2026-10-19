@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
             node.querySelector('[data-author]').textContent = message.sender?.display_name ?? 'SUNOOGO';
             node.querySelector('[data-time]').textContent = new Date(message.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
             thread.appendChild(node);
-            thread.scrollTop = thread.scrollHeight;
+            const scroller = thread.closest('[data-autoscroll]') ?? thread;
+            scroller.scrollTop = scroller.scrollHeight;
         });
     });
 

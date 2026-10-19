@@ -73,7 +73,7 @@ class CourseController extends Controller
 
         $data['slug'] = $data['slug'] ?: Str::slug($data['title']);
         $data['included_in_subscription'] = $request->boolean('included_in_subscription');
-        $data['published_at'] = $request->boolean('published') ? ($course?->published_at ?? now()) : null;
+        $data['published_at'] = $request->boolean('published') ? ($course->published_at ?? now()) : null;
         unset($data['published']);
 
         return $data;

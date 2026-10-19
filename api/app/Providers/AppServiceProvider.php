@@ -2,12 +2,19 @@
 
 namespace App\Providers;
 
+use App\Domain\Billing\Models\Payment;
+use App\Domain\Billing\Models\Plan;
 use App\Domain\Billing\Models\Subscription;
 use App\Domain\Consultation\Models\Booking;
+use App\Domain\Consultation\Models\ProfessionalProfile;
 use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Models\Course;
+use App\Domain\Learning\Models\Lesson;
 use App\Domain\Listening\Models\Conversation;
+use App\Domain\Listening\Models\EmergencyAlert;
+use App\Domain\Listening\Models\EmergencyContact;
+use App\Domain\Listening\Models\Report;
 use App\Http\View\EmergencyContactsComposer;
 use App\Policies\BookingPolicy;
 use App\Policies\ConversationPolicy;
@@ -37,9 +44,17 @@ class AppServiceProvider extends ServiceProvider
         // Alias stables en base plutôt que des noms de classes (les namespaces peuvent évoluer).
         Relation::enforceMorphMap([
             'user' => User::class,
+            'conversation' => Conversation::class,
+            'emergency_alert' => EmergencyAlert::class,
+            'emergency_contact' => EmergencyContact::class,
+            'report' => Report::class,
+            'professional_profile' => ProfessionalProfile::class,
             'booking' => Booking::class,
+            'payment' => Payment::class,
+            'plan' => Plan::class,
             'subscription' => Subscription::class,
             'course' => Course::class,
+            'lesson' => Lesson::class,
         ]);
 
         Gate::policy(Conversation::class, ConversationPolicy::class);

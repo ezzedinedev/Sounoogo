@@ -43,3 +43,7 @@
 .chat-bubble-body p {
     white-space: pre-line;
 }
+
+.chat-bubble-flagged {
+    box-shadow: inset 3px 0 0 var(--tblr-danger);
+}

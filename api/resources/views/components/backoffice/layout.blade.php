@@ -42,7 +42,7 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Menu">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a href="{{ route('backoffice.dashboard') }}" class="navbar-brand navbar-brand-autodark gap-2">
+            <a href="{{ route('backoffice.dashboard') }}" class="navbar-brand navbar-brand-autodark justify-content-start gap-2">
                 <img src="{{ asset('images/brand/logo-mark-inverse.svg') }}" alt="" width="28" height="28">
                 <span>SUNOOGO</span>
             </a>
@@ -61,40 +61,40 @@
         </div>
     </aside>
 
-    <header class="navbar navbar-expand-md d-none d-lg-flex d-print-none">
-        <div class="container-xl">
-            <div class="navbar-nav flex-row order-md-last ms-auto">
-                @if ($user->can('conversations.listen'))
-                    <form method="post" action="{{ route('backoffice.listening.availability') }}" class="d-flex align-items-center me-3">
-                        @csrf @method('patch')
-                        <button type="submit" @class(['btn btn-sm', 'btn-success' => $user->is_available, 'btn-outline-secondary' => ! $user->is_available])>
-                            <span @class(['status-dot me-2', 'status-dot-animated status-green' => $user->is_available, 'status-secondary' => ! $user->is_available])></span>
-                            {{ $user->is_available ? 'Disponible' : 'Indisponible' }}
-                        </button>
-                    </form>
-                @endif
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Menu du compte">
-                        <span class="avatar avatar-sm">{{ mb_substr($user->name ?? $user->pseudonym, 0, 1) }}</span>
-                        <div class="d-none d-xl-block ps-2">
-                            <div>{{ $user->name ?? $user->pseudonym }}</div>
-                            <div class="mt-1 small text-secondary">{{ $user->primaryRole()?->label() }}</div>
-                        </div>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <a href="{{ route('home') }}" class="dropdown-item" target="_blank"><i class="ti ti-external-link me-2"></i>Voir le site</a>
-                        <div class="dropdown-divider"></div>
-                        <form method="post" action="{{ route('backoffice.logout') }}">
-                            @csrf
-                            <button type="submit" class="dropdown-item"><i class="ti ti-logout me-2"></i>Se déconnecter</button>
+
+    <div class="page-wrapper">
+        <header class="navbar navbar-expand-md d-none d-lg-flex d-print-none">
+            <div class="container-xl">
+                <div class="navbar-nav flex-row order-md-last ms-auto">
+                    @if ($user->can('conversations.listen'))
+                        <form method="post" action="{{ route('backoffice.listening.availability') }}" class="d-flex align-items-center me-3">
+                            @csrf @method('patch')
+                            <button type="submit" @class(['btn btn-sm', 'btn-success' => $user->is_available, 'btn-outline-secondary' => ! $user->is_available])>
+                                <span @class(['status-dot me-2', 'status-dot-animated status-green' => $user->is_available, 'status-secondary' => ! $user->is_available])></span>
+                                {{ $user->is_available ? 'Disponible' : 'Indisponible' }}
+                            </button>
                         </form>
+                    @endif
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Menu du compte">
+                            <span class="avatar avatar-sm">{{ mb_substr($user->name ?? $user->pseudonym, 0, 1) }}</span>
+                            <div class="d-none d-xl-block ps-2">
+                                <div>{{ $user->name ?? $user->pseudonym }}</div>
+                                <div class="mt-1 small text-secondary">{{ $user->primaryRole()?->label() }}</div>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <a href="{{ route('home') }}" class="dropdown-item" target="_blank"><i class="ti ti-external-link me-2"></i>Voir le site</a>
+                            <div class="dropdown-divider"></div>
+                            <form method="post" action="{{ route('backoffice.logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item"><i class="ti ti-logout me-2"></i>Se déconnecter</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </header>
-
-    <div class="page-wrapper">
+        </header>
         {{ $slot }}
         <footer class="footer footer-transparent d-print-none">
             <div class="container-xl text-secondary small">SUNOOGO · Espace équipe. Les échanges consultés ici sont strictement confidentiels.</div>

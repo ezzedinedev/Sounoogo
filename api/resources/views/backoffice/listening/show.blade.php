@@ -25,10 +25,14 @@
             @endif
 
             <div class="card">
-                <div class="card-body chat-thread" data-live-conversation="{{ $conversation->id }}" data-autoscroll aria-live="polite">
-                    @foreach ($messages as $message)
-                        @include('backoffice.listening.partials.message', ['message' => $message])
-                    @endforeach
+                <div class="card-body chat-thread" data-autoscroll>
+                    <div class="chat">
+                        <div class="chat-bubbles" data-live-conversation="{{ $conversation->id }}" aria-live="polite">
+                            @foreach ($messages as $message)
+                                @include('backoffice.listening.partials.message', ['message' => $message])
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
                 @if ($participant && $conversation->isOpen())
                     <div class="card-footer">
