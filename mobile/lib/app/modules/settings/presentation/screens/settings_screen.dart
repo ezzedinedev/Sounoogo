@@ -7,6 +7,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../domain/entities/display_settings.dart';
 import '../../domain/entities/privacy_settings.dart';
+import '../../../../core/widgets/app_toast.dart';
+import '../../../notifications/presentation/services/notification_service.dart';
 import '../controllers/settings_controller.dart';
 
 /// Confidentialité (mode discret) et affichage.
@@ -77,6 +79,9 @@ class SettingsScreen extends GetView<SettingsController> {
                 ),
               ],
             ),
+            const SizedBox(height: AppSpacing.xl),
+            const _Heading('Rappels', 'Un petit rappel par jour pour faire ton check-in d\'humeur.'),
+            const _ReminderGroup(),
             const SizedBox(height: AppSpacing.xl),
             const _Heading('Affichage', 'S\'ajoute à la taille de texte choisie sur le téléphone.'),
             _Group(
@@ -160,5 +165,49 @@ class _Group extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(children: children),
     );
+  }
+}
+
+class _ReminderGroup extends StatelessWidget {
+  const _ReminderGroup();
+
+  @override
+  Widget build(BuildContext context) {
+    final notifications = Get.find<NotificationService>();
+
+    Future<void> update(bool enabled, TimeOfDay time) async {
+      final saved = await notifications.updateReminder(
+        notifications.reminder.value.copyWith(enabled: enabled, hour: time.hour, minute: time.minute),
+      );
+      if (!saved) {
+        AppToast.show('Notifications désactivées', 'Autorise les notifications de SUNOOGO dans les réglages du téléphone.');
+      }
+    }
+
+    return Obx(() {
+      final reminder = notifications.reminder.value;
+      final time = TimeOfDay(hour: reminder.hour, minute: reminder.minute);
+      return _Group(
+        children: [
+          SwitchListTile(
+            value: reminder.enabled,
+            title: const Text('Rappel quotidien', style: AppTextStyles.label),
+            subtitle: const Text('Le texte reste discret sur l\'écran verrouillé.', style: AppTextStyles.caption),
+            onChanged: (on) => update(on, time),
+          ),
+          if (reminder.enabled)
+            ListTile(
+              title: const Text('Heure', style: AppTextStyles.label),
+              trailing: Text(time.format(context), style: AppTextStyles.label.copyWith(color: AppColors.violet700)),
+              onTap: () async {
+                final picked = await showTimePicker(context: context, initialTime: time, helpText: 'Heure du rappel');
+                if (picked != null) {
+                  await update(true, picked);
+                }
+              },
+            ),
+        ],
+      );
+    });
   }
 }

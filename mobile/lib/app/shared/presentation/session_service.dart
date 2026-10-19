@@ -31,7 +31,12 @@ class SessionService extends GetxService {
   final paymentProviders = <PaymentProvider>[].obs;
   final plans = <Plan>[].obs;
 
+  final _beforeSignOut = <Future<void> Function()>[];
+
   bool get isSignedIn => user.value != null;
+
+  /// Action à mener tant que la session est encore valide (désinscrire l'appareil des notifications…).
+  void onBeforeSignOut(Future<void> Function() callback) => _beforeSignOut.add(callback);
 
   /// Au démarrage : charge les données de référence et restaure la session si possible.
   Future<void> restore() async {
@@ -60,6 +65,11 @@ class SessionService extends GetxService {
   void updateUser(User profile) => user.value = profile;
 
   Future<void> signOut({bool remote = true}) async {
+    if (remote) {
+      for (final callback in _beforeSignOut) {
+        await callback().catchError((Object _) {});
+      }
+    }
     await _endSession(remote: remote);
     user.value = null;
   }

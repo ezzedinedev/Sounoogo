@@ -5,11 +5,13 @@ use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\ContentController;
 use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\CourseController;
+use App\Http\Controllers\Api\V1\DeviceController;
 use App\Http\Controllers\Api\V1\EmergencyController;
 use App\Http\Controllers\Api\V1\ListenerController;
 use App\Http\Controllers\Api\V1\MetaController;
 use App\Http\Controllers\Api\V1\MoodController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PreferredListenerController;
 use App\Http\Controllers\Api\V1\ProfessionalAgendaController;
 use App\Http\Controllers\Api\V1\ProfessionalController;
 use App\Http\Controllers\Api\V1\ProfileController;
@@ -53,6 +55,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::patch('me', [ProfileController::class, 'update'])->name('me.update');
         Route::post('me/upgrade', [ProfileController::class, 'upgrade'])->name('me.upgrade');
         Route::delete('me', [ProfileController::class, 'destroy'])->name('me.destroy');
+        Route::post('me/devices', [DeviceController::class, 'store'])->name('me.devices.store');
+        Route::delete('me/devices', [DeviceController::class, 'destroy'])->name('me.devices.destroy');
+        Route::post('me/preferred-listener', [PreferredListenerController::class, 'store'])->middleware('role:member')->name('me.preferred-listener.store');
+        Route::delete('me/preferred-listener', [PreferredListenerController::class, 'destroy'])->name('me.preferred-listener.destroy');
 
         // Niveau 1 — écoute anonyme
         Route::post('emergency', EmergencyController::class)->middleware('throttle:sos')->name('emergency');
@@ -63,6 +69,8 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('{conversation}', 'show')->name('show');
             Route::get('{conversation}/messages', 'messages')->name('messages');
             Route::post('{conversation}/messages', 'send')->middleware('throttle:messages')->name('send');
+            Route::post('{conversation}/voice', 'sendVoice')->middleware('throttle:messages')->name('voice');
+            Route::get('{conversation}/messages/{message}/audio', 'audio')->name('audio');
             Route::post('{conversation}/close', 'close')->name('close');
             Route::post('{conversation}/rating', 'rate')->name('rate');
             Route::post('{conversation}/reports', 'report')->name('report');

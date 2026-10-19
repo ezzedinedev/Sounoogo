@@ -77,6 +77,13 @@ class ProfileTab extends GetView<ProfileController> {
             const SizedBox(height: AppSpacing.xl),
             _Section(
               children: [
+                if (user.preferredListener != null)
+                  _Tile(
+                    icon: Icons.favorite_border_rounded,
+                    label: 'Écoutant préféré : ${user.preferredListener!.displayName}',
+                    trailing: user.preferredListener!.isAvailable ? 'Disponible' : 'Absent',
+                    onTap: _confirmForgetListener,
+                  ),
                 _Tile(icon: Icons.event_note_outlined, label: 'Mes consultations', onTap: () => Get.toNamed(AppRoutes.bookings)),
                 _Tile(icon: Icons.insights_outlined, label: 'Mon journal d\'humeur', onTap: () => Get.toNamed(AppRoutes.mood)),
                 _Tile(icon: Icons.shield_moon_outlined, label: 'Mon plan de sécurité', onTap: () => Get.toNamed(AppRoutes.safetyPlan)),
@@ -107,6 +114,22 @@ class ProfileTab extends GetView<ProfileController> {
         );
       }),
     );
+  }
+
+  Future<void> _confirmForgetListener() async {
+    final forget = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('Ne plus demander cet écoutant ?'),
+        content: const Text('Tes prochaines conversations seront confiées au premier écoutant disponible.'),
+        actions: [
+          TextButton(onPressed: () => Get.back(result: false), child: const Text('Garder')),
+          TextButton(onPressed: () => Get.back(result: true), child: const Text('Ne plus demander')),
+        ],
+      ),
+    );
+    if (forget ?? false) {
+      await controller.forgetPreferredListener();
+    }
   }
 
   Future<void> _confirmDelete() async {

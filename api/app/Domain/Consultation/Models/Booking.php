@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property bool $keep_anonymous
  * @property string|null $member_note
  * @property Carbon|null $confirmed_at
+ * @property Carbon|null $reminded_at
  * @property Carbon|null $cancelled_at
  * @property Carbon|null $completed_at
  * @property Carbon|null $created_at
@@ -31,7 +32,7 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable([
     'member_id', 'professional_profile_id', 'availability_slot_id', 'mode', 'status',
-    'price', 'keep_anonymous', 'member_note', 'confirmed_at', 'cancelled_at', 'completed_at',
+    'price', 'keep_anonymous', 'member_note', 'confirmed_at', 'reminded_at', 'cancelled_at', 'completed_at',
 ])]
 class Booking extends Model implements Payable
 {
@@ -47,6 +48,7 @@ class Booking extends Model implements Payable
             'status' => BookingStatus::class,
             'keep_anonymous' => 'boolean',
             'confirmed_at' => 'datetime',
+            'reminded_at' => 'datetime',
             'cancelled_at' => 'datetime',
             'completed_at' => 'datetime',
         ];

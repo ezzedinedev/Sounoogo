@@ -1,5 +1,13 @@
 import 'subscription.dart';
 
+/// Écoutant que le membre souhaite retrouver.
+class PreferredListener {
+  const PreferredListener({required this.displayName, required this.isAvailable});
+
+  final String displayName;
+  final bool isAvailable;
+}
+
 /// Membre connecté. Un membre anonyme n'a ni nom, ni e-mail, ni téléphone.
 class User {
   const User({
@@ -12,6 +20,7 @@ class User {
     this.email,
     this.phone,
     this.subscription,
+    this.preferredListener,
   });
 
   final int id;
@@ -23,4 +32,5 @@ class User {
   final String? email;
   final String? phone;
   final Subscription? subscription;
+  final PreferredListener? preferredListener;
 }

@@ -8,6 +8,8 @@ import '../../../../core/utils/formatters.dart';
 import '../../../emergency/presentation/widgets/emergency_sheet.dart';
 import '../controllers/listening_controller.dart';
 import '../../domain/entities/message.dart';
+import '../widgets/voice_bubble.dart';
+import '../widgets/voice_recorder_bar.dart';
 
 /// Le chat d'écoute.
 class ConversationScreen extends StatefulWidget {
@@ -126,7 +128,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
             if (current?.isClosed ?? false) {
               return _RatingBar(onRate: controller.rate);
             }
-            return _Composer(input: _input, sending: controller.isSending.value, onSend: _send, error: controller.errorMessage.value);
+            return _Composer(
+              input: _input,
+              sending: controller.isSending.value,
+              onSend: _send,
+              onVoice: controller.sendVoice,
+              error: controller.errorMessage.value,
+            );
           }),
         ],
       ),
@@ -185,7 +193,9 @@ class _Bubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(message.body, style: AppTextStyles.body.copyWith(color: mine ? AppColors.white : AppColors.textPrimary)),
+              message.isVoice
+                  ? VoiceBubble(message: message, mine: mine)
+                  : Text(message.body, style: AppTextStyles.body.copyWith(color: mine ? AppColors.white : AppColors.textPrimary)),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 Formatters.time(message.createdAt),
@@ -202,13 +212,28 @@ class _Bubble extends StatelessWidget {
   }
 }
 
-class _Composer extends StatelessWidget {
-  const _Composer({required this.input, required this.sending, required this.onSend, this.error});
+class _Composer extends StatefulWidget {
+  const _Composer({required this.input, required this.sending, required this.onSend, required this.onVoice, this.error});
 
   final TextEditingController input;
   final bool sending;
   final VoidCallback onSend;
+  final Future<bool> Function(String path, Duration length) onVoice;
   final String? error;
+
+  @override
+  State<_Composer> createState() => _ComposerState();
+}
+
+class _ComposerState extends State<_Composer> {
+  bool _recording = false;
+
+  Future<void> _sendVoice(String path, Duration length) async {
+    await widget.onVoice(path, length);
+    if (mounted) {
+      setState(() => _recording = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,54 +248,73 @@ class _Composer extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (error != null)
+            if (widget.error != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-                child: Text(error!, style: AppTextStyles.caption.copyWith(color: AppColors.sos)),
+                child: Text(widget.error!, style: AppTextStyles.caption.copyWith(color: AppColors.sos)),
               ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: input,
-                    minLines: 1,
-                    maxLines: 5,
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: const InputDecoration(
-                      hintText: 'Écris ce que tu ressens…',
-                      filled: false,
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                    ),
-                  ),
-                ),
-                // Le bouton s'allume dès qu'il y a quelque chose à envoyer.
-                ValueListenableBuilder<TextEditingValue>(
-                  valueListenable: input,
-                  builder: (_, value, _) {
-                    final ready = value.text.trim().isNotEmpty && !sending;
-                    return AnimatedScale(
-                      scale: ready || sending ? 1 : 0.86,
-                      duration: const Duration(milliseconds: 180),
-                      curve: Curves.easeOutBack,
-                      child: IconButton.filled(
-                        onPressed: ready ? onSend : null,
-                        tooltip: 'Envoyer',
-                        style: IconButton.styleFrom(
-                          backgroundColor: AppColors.violet700,
-                          foregroundColor: AppColors.white,
-                          disabledBackgroundColor: AppColors.violet100,
-                          disabledForegroundColor: AppColors.violet300,
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 220),
+              child: _recording
+                  ? VoiceRecorderBar(
+                      key: const ValueKey('recording'),
+                      onCancel: () => setState(() => _recording = false),
+                      onSend: _sendVoice,
+                    )
+                  : Row(
+                      key: const ValueKey('typing'),
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: widget.input,
+                            minLines: 1,
+                            maxLines: 5,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: const InputDecoration(
+                              hintText: 'Écris ce que tu ressens…',
+                              filled: false,
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                            ),
+                          ),
                         ),
-                        icon: sending
-                            ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
-                            : const Icon(Icons.arrow_upward_rounded),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                        // Champ vide : micro pour un message vocal ; sinon, envoi du texte.
+                        ValueListenableBuilder<TextEditingValue>(
+                          valueListenable: widget.input,
+                          builder: (_, value, _) {
+                            final hasText = value.text.trim().isNotEmpty;
+                            return AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 180),
+                              transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
+                              child: hasText || widget.sending
+                                  ? IconButton.filled(
+                                      key: const ValueKey('send'),
+                                      onPressed: widget.sending ? null : widget.onSend,
+                                      tooltip: 'Envoyer',
+                                      style: IconButton.styleFrom(backgroundColor: AppColors.violet700, foregroundColor: AppColors.white),
+                                      icon: widget.sending
+                                          ? const SizedBox.square(
+                                              dimension: 18,
+                                              child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white),
+                                            )
+                                          : const Icon(Icons.arrow_upward_rounded),
+                                    )
+                                  : IconButton.filledTonal(
+                                      key: const ValueKey('mic'),
+                                      onPressed: () => setState(() => _recording = true),
+                                      tooltip: 'Enregistrer un message vocal',
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: AppColors.violet50,
+                                        foregroundColor: AppColors.violet700,
+                                      ),
+                                      icon: const Icon(Icons.mic_none_rounded),
+                                    ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
             ),
           ],
         ),

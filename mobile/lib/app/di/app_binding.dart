@@ -6,6 +6,7 @@ import '../core/storage/json_cache.dart';
 import '../core/storage/secure_cache.dart';
 import '../core/storage/token_storage.dart';
 import '../modules/emergency/presentation/bindings/emergency_binding.dart';
+import '../modules/notifications/presentation/bindings/notification_binding.dart';
 import '../modules/payments/presentation/bindings/payment_binding.dart';
 import '../modules/settings/presentation/bindings/settings_binding.dart';
 import '../shared/data/datasources/reference_remote_data_source.dart';
@@ -49,5 +50,6 @@ class AppBinding extends Bindings {
     SettingsBinding().dependencies();
     EmergencyBinding().dependencies();
     PaymentBinding().dependencies();
+    NotificationBinding().dependencies();
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../../routes/app_routes.dart';
@@ -13,6 +14,9 @@ import '../../domain/usecases/close_conversation.dart';
 import '../../domain/usecases/get_active_conversation.dart';
 import '../../domain/usecases/get_conversation.dart';
 import '../../domain/usecases/get_messages.dart';
+import '../../domain/usecases/get_voice_file.dart';
+import '../../domain/usecases/prefer_listener.dart';
+import '../../domain/usecases/send_voice_message.dart';
 import '../../domain/usecases/open_conversation.dart';
 import '../../domain/usecases/rate_conversation.dart';
 import '../../domain/usecases/report_conversation.dart';
@@ -31,6 +35,9 @@ class ListeningController extends GetxController {
     required this._rateConversation,
     required this._reportConversation,
     required this._watchConversation,
+    required this._sendVoiceMessage,
+    required this._getVoiceFile,
+    required this._preferListener,
   });
 
   final GetActiveConversation _getActiveConversation;
@@ -42,6 +49,9 @@ class ListeningController extends GetxController {
   final RateConversation _rateConversation;
   final ReportConversation _reportConversation;
   final WatchConversation _watchConversation;
+  final SendVoiceMessage _sendVoiceMessage;
+  final GetVoiceFile _getVoiceFile;
+  final PreferListener _preferListener;
   final SessionService _session = Get.find();
 
   final conversation = Rxn<Conversation>();
@@ -126,8 +136,54 @@ class ListeningController extends GetxController {
     conversation.value = null;
     messages.clear();
     Get.back<void>();
-    AppToast.show('Merci', 'Prends soin de toi. Tu peux revenir quand tu veux.');
+    if (rating >= 4 && current.listenerName != null) {
+      await _offerToKeepListener(current);
+    } else {
+      AppToast.show('Merci', 'Prends soin de toi. Tu peux revenir quand tu veux.');
+    }
   });
+
+  /// Après une écoute appréciée : proposer de retrouver la même personne la prochaine fois.
+  Future<void> _offerToKeepListener(Conversation previous) async {
+    final keep = await Get.dialog<bool>(
+      AlertDialog(
+        title: Text('Reparler à ${previous.listenerName} ?'),
+        content: const Text('La prochaine fois, ta conversation lui sera confiée en priorité s\'il ou elle est disponible.'),
+        actions: [
+          TextButton(onPressed: () => Get.back(result: false), child: const Text('Non merci')),
+          FilledButton(onPressed: () => Get.back(result: true), child: const Text('Oui')),
+        ],
+      ),
+    );
+    if (keep ?? false) {
+      _session.updateUser(await _preferListener(previous.id));
+      AppToast.show('C\'est noté', '${previous.listenerName} sera prévenu·e en priorité la prochaine fois.');
+    }
+  }
+
+  /// Message vocal : renvoie `true` s'il est parti.
+  Future<bool> sendVoice(String filePath, Duration length) async {
+    final current = conversation.value;
+    if (current == null || isSending.value) {
+      return false;
+    }
+    isSending.value = true;
+    errorMessage.value = null;
+    try {
+      final sent = await _sendVoiceMessage(current.id, filePath, length);
+      if (sent != null) {
+        _append(sent.message);
+      }
+      return sent != null;
+    } on Failure catch (failure) {
+      errorMessage.value = _friendlyError(failure);
+      return false;
+    } finally {
+      isSending.value = false;
+    }
+  }
+
+  Future<String> voiceFile(Message message) => _getVoiceFile(message);
 
   Future<void> report(String reason) => _guard(() async {
     final current = conversation.value;

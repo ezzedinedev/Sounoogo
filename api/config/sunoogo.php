@@ -48,6 +48,15 @@ return [
         'timeout' => 25,
     ],
 
+    /*
+     * Notifications push (Firebase Cloud Messaging, API HTTP v1). FIREBASE_CREDENTIALS : chemin du fichier
+     * JSON du compte de service, ou son contenu encodé en base64. Les textes restent neutres : aucun
+     * contenu de conversation n'apparaît sur l'écran verrouillé.
+     */
+    'push' => [
+        'credentials' => env('FIREBASE_CREDENTIALS'),
+    ],
+
     'payments' => [
         // mock | moneyfusion | paypal
         'default' => env('PAYMENT_PROVIDER', 'mock'),

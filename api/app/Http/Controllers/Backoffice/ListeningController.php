@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Backoffice;
 use App\Domain\Listening\Actions\SendMessage;
 use App\Domain\Listening\Enums\ConversationStatus;
 use App\Domain\Listening\Models\Conversation;
+use App\Domain\Listening\Models\Message;
 use App\Domain\Listening\Services\ListenerQueue;
+use App\Domain\Listening\Services\VoiceNotes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Listening\SendMessageRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class ListeningController extends Controller
@@ -56,6 +59,15 @@ class ListeningController extends Controller
             'conversation' => $conversation->load(['member', 'listener', 'alerts']),
             'messages' => $conversation->messages()->with('sender')->oldest('id')->get(),
         ]);
+    }
+
+    /** Message vocal d'un membre, lu dans le navigateur de l'écoutant. */
+    public function audio(Conversation $conversation, Message $message, VoiceNotes $voiceNotes): Response
+    {
+        $this->authorize('view', $conversation);
+        abort_unless($message->conversation_id === $conversation->id && $message->isVoice(), 404);
+
+        return response($voiceNotes->read($message), 200, ['Content-Type' => $message->audio_mime ?? 'audio/mp4', 'Cache-Control' => 'private, no-store']);
     }
 
     public function take(Request $request, Conversation $conversation, ListenerQueue $queue): RedirectResponse

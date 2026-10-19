@@ -8,6 +8,9 @@ import '../../domain/usecases/close_conversation.dart';
 import '../../domain/usecases/get_active_conversation.dart';
 import '../../domain/usecases/get_conversation.dart';
 import '../../domain/usecases/get_messages.dart';
+import '../../domain/usecases/get_voice_file.dart';
+import '../../domain/usecases/prefer_listener.dart';
+import '../../domain/usecases/send_voice_message.dart';
 import '../../domain/usecases/open_conversation.dart';
 import '../../domain/usecases/rate_conversation.dart';
 import '../../domain/usecases/report_conversation.dart';
@@ -34,6 +37,9 @@ class ListeningBinding extends Bindings {
         rateConversation: RateConversation(repository),
         reportConversation: ReportConversation(repository),
         watchConversation: WatchConversation(repository),
+        sendVoiceMessage: SendVoiceMessage(repository),
+        getVoiceFile: GetVoiceFile(repository),
+        preferListener: PreferListener(repository),
       );
     }, fenix: true);
   }

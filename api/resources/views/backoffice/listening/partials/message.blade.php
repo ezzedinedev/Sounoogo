@@ -16,6 +16,9 @@
                 'rounded-ss-md bg-muted' => ! $mine,
                 'ring-2 ring-destructive/50' => $message?->is_flagged,
             ]) data-body>{{ $message?->body }}</p>
+            @if ($message?->isVoice())
+                <audio controls preload="none" class="mt-2 h-10 w-72 max-w-full" src="{{ route('backoffice.listening.audio', [$conversation, $message]) }}"></audio>
+            @endif
             @if ($message?->is_flagged && $fromMember)
                 <p class="mt-1 inline-flex items-center gap-1 text-xs font-medium text-destructive"><x-icon name="alert-triangle" :size="14" />Signal de détresse détecté</p>
             @endif

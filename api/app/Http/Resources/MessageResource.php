@@ -16,6 +16,10 @@ class MessageResource extends JsonResource
             'conversation_id' => $this->conversation_id,
             'kind' => $this->kind,
             'body' => $this->body,
+            'audio' => $this->isVoice() ? [
+                'url' => route('api.v1.conversations.audio', [$this->conversation_id, $this->id]),
+                'duration' => $this->audio_duration,
+            ] : null,
             'sender' => $this->sender_id ? [
                 'id' => $this->sender_id,
                 'display_name' => $this->sender?->displayName(),

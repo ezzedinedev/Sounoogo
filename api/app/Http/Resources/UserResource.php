@@ -25,6 +25,10 @@ class UserResource extends JsonResource
             'country' => $this->country,
             'locale' => $this->locale,
             'is_available' => $this->when($this->isOneOf(Role::Listener), $this->is_available),
+            'preferred_listener' => $this->when($this->isOneOf(Role::Member) && $this->preferred_listener_id !== null, fn () => [
+                'display_name' => $this->preferredListener?->displayName(),
+                'is_available' => (bool) $this->preferredListener?->is_available,
+            ]),
             'subscription' => $subscription ? new SubscriptionResource($subscription->load('plan')) : null,
             'created_at' => $this->created_at?->toIso8601String(),
         ];

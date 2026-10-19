@@ -13,5 +13,12 @@ abstract final class UserModel {
     email: json['email'] as String?,
     phone: json['phone'] as String?,
     subscription: json['subscription'] == null ? null : SubscriptionModel.fromJson(json['subscription'] as Map<String, dynamic>),
+    preferredListener: switch (json['preferred_listener']) {
+      {'display_name': final String name, 'is_available': final bool available} => PreferredListener(
+        displayName: name,
+        isAvailable: available,
+      ),
+      _ => null,
+    },
   );
 }

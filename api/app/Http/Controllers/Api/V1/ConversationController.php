@@ -9,6 +9,7 @@ use App\Domain\Listening\Models\Conversation;
 use App\Domain\Listening\Models\Message;
 use App\Domain\Listening\Services\EmergencyService;
 use App\Domain\Listening\Services\ListenerQueue;
+use App\Domain\Listening\Services\VoiceNotes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Listening\OpenConversationRequest;
 use App\Http\Requests\Listening\RateConversationRequest;
@@ -20,6 +21,7 @@ use App\Http\Resources\MessageResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 /**
  * @tags Écoute anonyme
@@ -88,6 +90,36 @@ class ConversationController extends Controller
                 ? EmergencyContactResource::collection($emergency->contactsFor($request->user()->country))
                 : [],
         ], 201);
+    }
+
+    /**
+     * Envoyer un message vocal.
+     *
+     * Fichier audio de 2 minutes au plus (AAC, M4A, MP3, OGG ou WebM), chiffré au repos.
+     */
+    public function sendVoice(Request $request, Conversation $conversation, SendMessage $send, VoiceNotes $voiceNotes): JsonResponse
+    {
+        $this->authorize('participate', $conversation);
+        $data = $request->validate([
+            'audio' => ['required', 'file', 'max:4096', 'mimetypes:audio/mp4,audio/aac,audio/x-m4a,audio/m4a,audio/mpeg,audio/ogg,audio/webm,video/mp4'],
+            'duration' => ['required', 'integer', 'between:1,'.VoiceNotes::MAX_SECONDS],
+        ]);
+
+        [$message] = $send($conversation, $request->user(), '', $voiceNotes->store($request->file('audio'), (int) $data['duration']));
+
+        return response()->json(['message' => new MessageResource($message->load('sender')), 'risk_level' => 'none', 'emergency_contacts' => []], 201);
+    }
+
+    /** Écouter un message vocal (réservé aux participants). */
+    public function audio(Conversation $conversation, Message $message, VoiceNotes $voiceNotes): Response
+    {
+        $this->authorize('view', $conversation);
+        abort_unless($message->conversation_id === $conversation->id && $message->isVoice(), 404);
+
+        return response($voiceNotes->read($message), 200, [
+            'Content-Type' => $message->audio_mime ?? 'audio/mp4',
+            'Cache-Control' => 'private, no-store',
+        ]);
     }
 
     public function close(Request $request, Conversation $conversation, ListenerQueue $queue): ConversationResource

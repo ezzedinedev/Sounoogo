@@ -1,5 +1,7 @@
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/api_provider.dart';
+import '../../../../shared/data/models/user_model.dart';
+import '../../../../shared/domain/entities/user.dart';
 import '../../domain/entities/conversation.dart';
 import '../../domain/entities/message.dart';
 import '../../domain/entities/sent_message.dart';
@@ -29,6 +31,19 @@ class ListeningRemoteDataSource {
 
   Future<SentMessage> send(int id, String body) async =>
       SentMessageModel.fromJson(await _api.post(ApiConstants.conversationMessages(id), data: {'body': body}));
+
+  Future<SentMessage> sendVoice(int id, String filePath, int seconds) async => SentMessageModel.fromJson(
+    await _api.postFile('${ApiConstants.conversation(id)}/voice', field: 'audio', filePath: filePath, fields: {'duration': seconds}),
+  );
+
+  Future<void> download(String url, String savePath) => _api.download(url, savePath);
+
+  Future<User> preferListener(int conversationId) async => UserModel.fromJson(
+    (await _api.post(ApiConstants.preferredListener, data: {'conversation_id': conversationId}))['data'] as Map<String, dynamic>,
+  );
+
+  Future<User> forgetPreferredListener() async =>
+      UserModel.fromJson((await _api.delete(ApiConstants.preferredListener))['data'] as Map<String, dynamic>);
 
   Future<Conversation> close(int id) async => _conversation(await _api.post(ApiConstants.conversationClose(id)));
 

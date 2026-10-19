@@ -8,6 +8,8 @@ use App\Domain\Listening\Enums\ConversationStatus;
 use App\Domain\Listening\Events\ConversationUpdated;
 use App\Domain\Listening\Models\Conversation;
 use App\Domain\Listening\Models\Message;
+use App\Domain\Listening\Notifications\ListenerJoined;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -37,7 +39,8 @@ class ListenerQueue
 
         $this->systemMessage($conversation, 'Bienvenue. Un écoutant formé va te rejoindre. Tu peux commencer à écrire dès maintenant.');
 
-        if ($listener = $this->leastBusyListener()) {
+        // L'écoutant choisi par le membre, s'il est disponible ; sinon le moins chargé.
+        if ($listener = $this->preferredListenerOf($member) ?? $this->leastBusyListener()) {
             $this->assign($conversation, $listener);
         } else {
             ConversationUpdated::dispatch($conversation);
@@ -83,6 +86,7 @@ class ListenerQueue
 
         $this->systemMessage($assigned, "{$listener->displayName()} a rejoint la conversation.");
         ConversationUpdated::dispatch($assigned);
+        $assigned->member->notify(new ListenerJoined($assigned));
 
         return $assigned;
     }
@@ -103,14 +107,30 @@ class ListenerQueue
 
     public function leastBusyListener(): ?User
     {
-        return User::role(Role::Listener->value)
-            ->where('is_available', true)
-            ->whereNull('suspended_at')
-            ->withCount(['listenerConversations as active_count' => fn ($q) => $q->where('status', ConversationStatus::Active)])
-            ->get()
+        return $this->availableListeners()->get()
             ->where('active_count', '<', self::MAX_ACTIVE_PER_LISTENER)
             ->sortBy('active_count')
             ->first();
+    }
+
+    public function preferredListenerOf(User $member): ?User
+    {
+        if ($member->preferred_listener_id === null) {
+            return null;
+        }
+
+        $listener = $this->availableListeners()->whereKey($member->preferred_listener_id)->first();
+
+        return $listener !== null && $listener->getAttribute('active_count') < self::MAX_ACTIVE_PER_LISTENER ? $listener : null;
+    }
+
+    /** @return Builder<User> */
+    private function availableListeners(): Builder
+    {
+        return User::role(Role::Listener->value)
+            ->where('is_available', true)
+            ->whereNull('suspended_at')
+            ->withCount(['listenerConversations as active_count' => fn ($q) => $q->where('status', ConversationStatus::Active)]);
     }
 
     private function systemMessage(Conversation $conversation, string $body): Message

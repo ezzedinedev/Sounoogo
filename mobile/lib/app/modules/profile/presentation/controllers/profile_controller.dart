@@ -6,13 +6,15 @@ import '../../../../shared/domain/entities/user.dart';
 import '../../../../shared/presentation/session_service.dart';
 import '../../domain/usecases/delete_account.dart';
 import '../../domain/usecases/secure_account.dart';
+import '../../../listening/domain/usecases/prefer_listener.dart';
 import '../../../../core/widgets/app_toast.dart';
 
 class ProfileController extends GetxController {
-  ProfileController({required this._secureAccount, required this._deleteAccount});
+  ProfileController({required this._secureAccount, required this._deleteAccount, required this._preferListener});
 
   final SecureAccount _secureAccount;
   final DeleteAccount _deleteAccount;
+  final PreferListener _preferListener;
   final SessionService _session = Get.find();
 
   final isLoading = false.obs;
@@ -47,6 +49,14 @@ class ProfileController extends GetxController {
       AppToast.show('Compte supprimé', 'Toutes tes données ont été effacées.');
     } on Failure catch (failure) {
       AppToast.show('Suppression impossible', failure.message);
+    }
+  }
+
+  Future<void> forgetPreferredListener() async {
+    try {
+      _session.updateUser(await _preferListener.forget());
+    } on Failure catch (failure) {
+      AppToast.show('Modification impossible', failure.message);
     }
   }
 }

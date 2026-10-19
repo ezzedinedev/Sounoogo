@@ -22,6 +22,7 @@ Route::prefix('admin')->name('backoffice.')->group(function () {
             Route::post('{conversation}/prendre', 'take')->name('take');
             Route::post('{conversation}/messages', 'send')->name('send');
             Route::post('{conversation}/cloturer', 'close')->name('close');
+            Route::get('{conversation}/messages/{message}/audio', 'audio')->name('audio');
         });
 
         // Copilote de l'écoutant (IA, si activée)

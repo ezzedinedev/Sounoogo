@@ -31,6 +31,8 @@ abstract final class ApiConstants {
   static const String exercises = '/exercises';
   static const String guides = '/guides';
   static const String resources = '/resources';
+  static const String preferredListener = '/me/preferred-listener';
+  static const String devices = '/me/devices';
 
   static String guide(String slug) => '$guides/$slug';
 

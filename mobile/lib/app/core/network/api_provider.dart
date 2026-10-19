@@ -44,7 +44,27 @@ class ApiProvider {
   Future<Map<String, dynamic>> patch(String path, {Map<String, dynamic>? data}) =>
       _send(() => _dio.patch<Map<String, dynamic>>(path, data: data));
 
-  Future<Map<String, dynamic>> delete(String path) => _send(() => _dio.delete<Map<String, dynamic>>(path));
+  /// Envoi de fichier (formulaire multipart).
+  Future<Map<String, dynamic>> postFile(
+    String path, {
+    required String field,
+    required String filePath,
+    Map<String, Object> fields = const {},
+  }) async => _send(
+    () async => _dio.post<Map<String, dynamic>>(path, data: FormData.fromMap({...fields, field: await MultipartFile.fromFile(filePath)})),
+  );
+
+  /// Téléchargement authentifié vers un fichier local (messages vocaux).
+  Future<void> download(String url, String savePath) async {
+    try {
+      await _dio.download(url, savePath);
+    } on DioException catch (error) {
+      throw _toApiException(error);
+    }
+  }
+
+  Future<Map<String, dynamic>> delete(String path, {Map<String, dynamic>? data}) =>
+      _send(() => _dio.delete<Map<String, dynamic>>(path, data: data));
 
   Future<Map<String, dynamic>> _send(Future<Response<Map<String, dynamic>>> Function() request) async {
     try {

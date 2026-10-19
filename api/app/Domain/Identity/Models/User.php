@@ -9,6 +9,8 @@ use App\Domain\Consultation\Models\ProfessionalProfile;
 use App\Domain\Identity\Enums\Role;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Listening\Models\Conversation;
+use App\Domain\Listening\Models\Message;
+use App\Domain\Listening\Services\VoiceNotes;
 use App\Domain\Wellbeing\Models\MoodEntry;
 use App\Domain\Wellbeing\Models\SafetyPlan;
 use Database\Factories\UserFactory;
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -38,6 +41,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $country
  * @property string $locale
  * @property bool $is_available
+ * @property int|null $preferred_listener_id
  * @property Carbon|null $suspended_at
  * @property Carbon|null $last_seen_at
  * @property string|null $remember_token
@@ -46,7 +50,7 @@ use Spatie\Permission\Traits\HasRoles;
  */
 #[Fillable([
     'pseudonym', 'name', 'email', 'phone', 'password', 'is_anonymous',
-    'recovery_code_hash', 'country', 'locale', 'is_available',
+    'recovery_code_hash', 'country', 'locale', 'is_available', 'preferred_listener_id',
 ])]
 #[Hidden(['password', 'remember_token', 'recovery_code_hash'])]
 #[UseFactory(UserFactory::class)]
@@ -59,6 +63,20 @@ class User extends Authenticatable
         'Baobab', 'Karité', 'Néré', 'Tamarin', 'Savane', 'Harmattan', 'Colibri',
         'Calao', 'Fleuve', 'Étoile', 'Aube', 'Soleil', 'Lune', 'Brise', 'Source',
     ];
+
+    protected static function booted(): void
+    {
+        // Droit à l'effacement : les messages vocaux sont des fichiers, la suppression en cascade
+        // de la base ne les atteint pas.
+        static::deleting(function (User $user) {
+            app(VoiceNotes::class)->delete(
+                Message::query()
+                    ->whereIn('conversation_id', $user->memberConversations()->select('id'))
+                    ->whereNotNull('audio_path')
+                    ->pluck('audio_path')
+            );
+        });
+    }
 
     protected function casts(): array
     {
@@ -113,6 +131,18 @@ class User extends Authenticatable
     public function listenerConversations(): HasMany
     {
         return $this->hasMany(Conversation::class, 'listener_id');
+    }
+
+    /** @return BelongsTo<User, $this> */
+    public function preferredListener(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'preferred_listener_id');
+    }
+
+    /** @return HasMany<DeviceToken, $this> */
+    public function deviceTokens(): HasMany
+    {
+        return $this->hasMany(DeviceToken::class);
     }
 
     /** @return HasOne<ProfessionalProfile, $this> */

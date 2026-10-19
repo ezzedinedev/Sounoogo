@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../../../../routes/app_routes.dart';
 import '../../../../shared/presentation/session_service.dart';
+import '../../../notifications/presentation/services/notification_service.dart';
 
 class SplashController extends GetxController {
   final SessionService _session = Get.find();
@@ -22,5 +23,7 @@ class SplashController extends GetxController {
     // On attend à la fois la fin de l'animation et la restauration de la session.
     await Future.wait([_session.restore(), _animationDone.future]);
     Get.offAllNamed(_session.isSignedIn ? AppRoutes.home : AppRoutes.welcome);
+    // L'app a pu être lancée en touchant une notification : l'écran concerné s'ouvre une fois l'accueil affiché.
+    unawaited(Future<void>.delayed(const Duration(milliseconds: 400), Get.find<NotificationService>().openPending));
   }
 }

@@ -14,12 +14,15 @@ use Illuminate\Support\Carbon;
  * @property int|null $sender_id
  * @property string $kind
  * @property string $body
+ * @property string|null $audio_path
+ * @property string|null $audio_mime
+ * @property int|null $audio_duration
  * @property bool $is_flagged
  * @property Carbon|null $read_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['conversation_id', 'sender_id', 'kind', 'body', 'is_flagged', 'read_at'])]
+#[Fillable(['conversation_id', 'sender_id', 'kind', 'body', 'audio_path', 'audio_mime', 'audio_duration', 'is_flagged', 'read_at'])]
 class Message extends Model
 {
     protected $attributes = [
@@ -35,6 +38,11 @@ class Message extends Model
             'is_flagged' => 'boolean',
             'read_at' => 'datetime',
         ];
+    }
+
+    public function isVoice(): bool
+    {
+        return $this->kind === 'audio' && $this->audio_path !== null;
     }
 
     /** @return BelongsTo<Conversation, $this> */
