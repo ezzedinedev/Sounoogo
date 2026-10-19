@@ -1,0 +1,25 @@
+{
+  "name": "sunoogo",
+  "private": true,
+  "workspaces": [
+    "admin",
+    "mobile",
+    "web",
+    "packages/shared"
+  ],
+  "scripts": {
+    "install:core": "npm install --workspace=packages/shared --workspace=admin --workspace=web && npm run shared:build",
+    "install:mobile": "npm install --workspace=mobile",
+    "admin:dev": "npm run dev --workspace=admin",
+    "web:dev": "npm run dev --workspace=web",
+    "web:build": "npm run build --workspace=web",
+    "web:deploy": "npm run shared:build && npm run web:build",
+    "mobile:start": "npm run start --workspace=mobile",
+    "mobile:dev-client": "npm run dev-client --workspace=mobile",
+    "mobile:prebuild": "npm run prebuild --workspace=mobile",
+    "mobile:build:dev": "npm run build:dev --workspace=mobile",
+    "mobile:eas:init": "npm run eas:init --workspace=mobile",
+    "api:test": "cd api && .venv\\Scripts\\pytest tests -q",
+    "shared:build": "npm run build --workspace=packages/shared"
+  }
+}

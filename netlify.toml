@@ -1,0 +1,7 @@
+[build]
+  base = "."
+  command = "npm run shared:build && npm run web:build"
+  publish = "web/.next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

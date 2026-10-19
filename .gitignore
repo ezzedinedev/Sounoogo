@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+*.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+postgres_data/
+redis_data/
+minio_data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Alembic
+# Keep migrations tracked
+
+# Coverage
+htmlcov/
+.coverage
+coverage/
+
+# MinIO
+.minio/
