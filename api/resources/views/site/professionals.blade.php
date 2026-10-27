@@ -1,7 +1,7 @@
 <x-layouts.site title="Professionnels" description="Psychologues, conseillers et coachs vérifiés, en cabinet, par téléphone ou en visio.">
     <x-slot:hero>
         <x-site.page-hero eyebrow="Consultations" title="Trouver un professionnel" accent="qui te correspond">
-            Tous les professionnels sont vérifiés par notre équipe. La réservation et le paiement se font dans l'application, et tu peux rester anonyme.
+            Tous les professionnels sont vérifiés par notre équipe. La réservation se fait dans l'application, et tu peux rester anonyme.
         </x-site.page-hero>
     </x-slot:hero>
 

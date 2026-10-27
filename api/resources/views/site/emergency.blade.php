@@ -1,6 +1,6 @@
 <x-layouts.site title="Numéros d'urgence" description="Les numéros à appeler en cas de danger immédiat au Burkina Faso.">
     <x-slot:hero>
-        <x-site.page-hero eyebrow="Urgence" title="En danger ?" accent="Appelle maintenant.">
+        <x-site.page-hero eyebrow="Urgence" title="En danger ?" accent="Appelle maintenant." :contacts="$emergencyContacts">
             Ces services sont gratuits et joignables à toute heure. SUNOOGO ne remplace pas les secours.
         </x-site.page-hero>
     </x-slot:hero>
@@ -15,7 +15,7 @@
                                 <span class="block text-lg font-semibold">{{ $contact->label }}</span>
                                 @if ($contact->description)<span class="block mt-1 text-sm text-muted-foreground">{{ $contact->description }}</span>@endif
                             </span>
-                            <span class="inline-flex items-center gap-x-2 rounded-full bg-sos px-5 py-3 text-2xl font-semibold text-white"><x-icon name="phone-call" />{{ $contact->phone }}</span>
+                            <span class="inline-flex items-center gap-x-2 rounded-full bg-sos px-5 py-3 text-2xl font-semibold text-white"><x-site.icon name="phone-call" />{{ $contact->phone }}</span>
                         </a>
                     </li>
                 @endforeach

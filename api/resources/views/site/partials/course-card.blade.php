@@ -6,16 +6,10 @@
     </div>
     <div class="flex flex-1 flex-col px-2 pt-5 pb-2">
         <p class="inline-flex items-center gap-x-2 text-xs font-medium uppercase tracking-wide text-primary-700">
-            <x-icon name="book" :size="16" />{{ \App\Domain\Learning\Models\Course::LEVELS[$course->level] ?? $course->level }} · {{ $course->lessons_count }} leçons
+            <x-site.icon name="book" :size="16" />{{ \App\Domain\Learning\Models\Course::LEVELS[$course->level] ?? $course->level }} · {{ $course->lessons_count }} leçons
         </p>
         <h3 class="mt-3 text-lg font-medium">{{ $course->title }}</h3>
         <p class="mt-2 text-[15px] text-muted-foreground-1 leading-relaxed flex-1">{{ $course->summary }}</p>
-        <p class="mt-6 text-sm">
-            @if ($course->isFree())
-                <span class="font-medium text-primary-700">Offerte</span>
-            @else
-                <span class="font-medium">{{ number_format($course->price, 0, ',', ' ') }} F</span> <span class="text-muted-foreground">ou incluse dans l'abonnement</span>
-            @endif
-        </p>
+        <p class="mt-6 text-sm font-semibold text-primary-700">Gratuit</p>
     </div>
 </article>

@@ -1,7 +1,7 @@
 <x-layouts.site title="Formations" description="Parcours de confiance en soi et d'indépendance affective, conçus avec des professionnels.">
     <x-slot:hero>
         <x-site.page-hero eyebrow="Confiance en soi" title="Des parcours pour" accent="reprendre confiance">
-            Des parcours courts, à suivre dans l'application, à ton rythme. La première leçon de chaque parcours est offerte.
+            Des parcours courts et gratuits, à suivre dans l'application, à ton rythme.
         </x-site.page-hero>
     </x-slot:hero>
 

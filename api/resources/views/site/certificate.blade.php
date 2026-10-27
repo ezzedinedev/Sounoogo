@@ -2,7 +2,7 @@
     <section class="py-24">
         <x-site.container class="max-w-xl text-center">
             <span class="inline-flex size-16 items-center justify-center rounded-full bg-primary-50 text-primary-700">
-                <x-icon name="circle-check" :size="32" />
+                <x-site.icon name="circle-check" :size="32" />
             </span>
             <h1 class="mt-6 text-3xl font-medium tracking-tight">Attestation authentique</h1>
             <p class="mt-4 leading-relaxed text-muted-foreground-1">

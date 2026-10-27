@@ -3,7 +3,7 @@
         <p class="text-center text-sm font-medium">Des pros qui te correspondent</p>
         <div class="mt-4 grid gap-2">
             @foreach (['Anxiété', 'Couple', 'Confiance'] as $tag)
-                <span class="flex items-center justify-between rounded-xl bg-white px-3 py-2 text-xs">{{ $tag }}<x-icon name="arrow-right" :size="14" /></span>
+                <span class="flex items-center justify-between rounded-xl bg-white px-3 py-2 text-xs">{{ $tag }}<x-site.icon name="arrow-right" :size="14" /></span>
             @endforeach
         </div>
         <span class="mt-3 block rounded-full bg-primary-900 px-3 py-2 text-center text-xs font-medium text-white">Voir les profils</span>
@@ -23,7 +23,7 @@
         <span class="mt-2 block rounded-full ring-1 ring-white/30 px-3 py-2 text-center text-xs">16:00</span>
     </div>
     <div class="rounded-3xl bg-linear-to-b from-lilas-100 to-white ring-1 ring-primary-100 p-5 text-center">
-        <span class="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-white text-primary-700 shadow-sm"><x-icon name="circle-check" :size="24" /></span>
+        <span class="mx-auto inline-flex size-12 items-center justify-center rounded-full bg-white text-primary-700 shadow-sm"><x-site.icon name="circle-check" :size="24" /></span>
         <p class="mt-3 text-sm font-medium">C'est réservé !</p>
         <p class="mt-1 text-[11px] text-muted-foreground">Mardi 21 · 14:00 · Téléphone</p>
         <p class="mt-3 rounded-xl bg-white px-2 py-2 text-[11px]">Payé par <strong>Mobile Money</strong></p>

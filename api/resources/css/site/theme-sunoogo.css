@@ -1,6 +1,6 @@
 /*
  * Thème SUNOOGO pour Preline UI — charte violet premium et blanc.
- * Violet profond (confiance, sérénité) · lilas (accent doux) · blanc (respiration).
+ * Le layout reprend les proportions MindCorps, les couleurs restent SUNOOGO.
  */
 @theme inline {
     /* Violet de marque (teinte 295). 700 = couleur principale. */
@@ -16,7 +16,7 @@
     --color-sunoogo-900: oklch(32.4% 0.135 294);
     --color-sunoogo-950: oklch(22.6% 0.09 295);
 
-    /* Lilas : accent doux, jamais en grande surface. */
+    /* Lilas : accent doux, réservé aux états secondaires. */
     --color-lilas-50: oklch(97.8% 0.012 310);
     --color-lilas-100: oklch(95.2% 0.028 310);
     --color-lilas-200: oklch(90.4% 0.055 310);
@@ -27,7 +27,7 @@
     --color-lilas-700: oklch(49.4% 0.175 315);
     --color-lilas-800: oklch(42% 0.145 316);
 
-    /* Neutres : blanc et gris très légèrement violacés. */
+    /* Blanc et gris légèrement violacés. */
     --color-paper-50: oklch(100% 0 0);
     --color-paper-100: oklch(99.2% 0.003 300);
     --color-paper-200: oklch(97.2% 0.007 300);
@@ -122,10 +122,16 @@
     --accent-soft: var(--color-sunoogo-50);
     --accent-strong: var(--color-sunoogo-800);
     --accent-hover: var(--color-sunoogo-700);
-    /* Accent lisible sur fond violet foncé. */
     --on-primary-accent: var(--color-lilas-200);
 
-    /* Rouge d'urgence : réservé au SOS, jamais décoratif. */
+    /* MindCorps elevation and focus behavior, recolored for SUNOOGO. */
+    --shadow-card: 0 12px 32px -4px rgb(96 47 184 / 7%), 0 4px 16px -2px rgb(36 18 63 / 4%);
+    --shadow-card-hover: 0 24px 48px -8px rgb(96 47 184 / 13%), 0 8px 24px -4px rgb(36 18 63 / 7%);
+    --shadow-cta-glow: 0 8px 24px rgb(96 47 184 / 28%);
+    --focus-ring: 0 0 0 4px rgb(96 47 184 / 14%);
+    --radius-card: 1.25rem;
+
+    /* Rouge d'urgence : réservé aux appels SOS. */
     --sos: oklch(52% 0.19 27);
     --sos-soft: oklch(96.5% 0.02 25);
     --sos-hover: oklch(45% 0.17 27);

@@ -25,7 +25,7 @@
             </div>
             <div class="flex items-center gap-x-2 border-t border-line-2 bg-white px-4 py-3">
                 <span class="flex-1 rounded-full bg-background-2 px-4 py-2 text-[12px] text-muted-foreground">Écris ce que tu ressens…</span>
-                <span class="inline-flex size-8 items-center justify-center rounded-full bg-primary text-white"><x-icon name="arrow-up-right" :size="16" /></span>
+                <span class="inline-flex size-8 items-center justify-center rounded-full bg-primary text-white"><x-site.icon name="arrow-up-right" :size="16" /></span>
             </div>
         </div>
     </div>

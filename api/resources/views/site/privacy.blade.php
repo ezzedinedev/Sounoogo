@@ -13,7 +13,7 @@
                 <h2>Ce que nous conservons</h2>
                 <ul>
                     <li>Les messages de tes conversations, <strong>chiffrés</strong> dans notre base de données ;</li>
-                    <li>Si tu réserves une consultation : le créneau, le format et le paiement ;</li>
+                    <li>Si tu réserves une consultation : le créneau et le format choisis ;</li>
                     <li>Ta progression dans les formations.</li>
                 </ul>
                 <h2>Qui peut lire tes échanges</h2>
